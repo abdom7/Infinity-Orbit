@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INFINITY ORBIT v6 — Neon Core</title>
+    <title>INFINITY ORBIT v7 — Constellations</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -11,13 +11,8 @@
         :root {
             --gold: #c9a227;
             --orange: #d4740c;
-            /* Neon Palette */
-            --t25: #00f0ff; /* Cyan Neon */
-            --t50: #ffd700; /* Gold Neon */
-            --t75: #ff2a6d; /* Red Neon */
-            --tinf: #d300c5; /* Purple Neon */
-            
-            --glass: rgba(8, 12, 18, 0.8);
+            --t25: #00f0ff; --t50: #ffd700; --t75: #ff2a6d; --tinf: #d300c5;
+            --glass: rgba(8, 12, 18, 0.85);
             --border: rgba(255, 255, 255, 0.1);
         }
         body {
@@ -32,8 +27,8 @@
                 linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 50px 50px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
             pointer-events: none;
         }
 
@@ -55,12 +50,11 @@
             border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column;
         }
         .panel.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(201, 162, 39, 0.1); }
-
         .panel-head { padding: 15px; border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; color: #888; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
         .panel-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
         .panel-body { padding: 15px; flex: 1; overflow-y: auto; }
 
-        /* --- INPUTS --- */
+        /* --- INPUTS & TIERS --- */
         .input-group { margin-bottom: 15px; }
         .label { font-family: 'Orbitron'; font-size: 0.6rem; color: #666; margin-bottom: 6px; display: block; }
         .input {
@@ -69,7 +63,6 @@
         }
         .input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(201, 162, 39, 0.2); }
         
-        /* Tiers */
         .tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
         .tier {
             padding: 10px 0; text-align: center; border: 1px solid #333; border-radius: 4px; cursor: pointer;
@@ -78,8 +71,7 @@
         .tier:hover { background: rgba(255,255,255,0.05); }
         .t-name { font-family: 'Bebas Neue'; font-size: 1.2rem; }
         
-        /* Neon Active States */
-        .tier.active { background: rgba(0,0,0,0.8); border-width: 1px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
+        .tier.active { background: rgba(0,0,0,0.8); border-width: 1px; }
         .t25 .t-name { color: var(--t25); } .tier.active.t25 { border-color: var(--t25); box-shadow: 0 0 15px var(--t25); }
         .t50 .t-name { color: var(--t50); } .tier.active.t50 { border-color: var(--t50); box-shadow: 0 0 15px var(--t50); }
         .t75 .t-name { color: var(--t75); } .tier.active.t75 { border-color: var(--t75); box-shadow: 0 0 15px var(--t75); }
@@ -92,61 +84,73 @@
         }
         .btn:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(201, 162, 39, 0.4); }
 
-        /* --- ORBIT SPACE --- */
+        /* --- SPACE & SVG CABLES --- */
         .space-area { position: relative; width: 100%; height: 100%; overflow: hidden; }
         
-        /* NEON ORBIT CARD */
+        #svgLayer {
+            position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;
+        }
+        .connection-line {
+            fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 2px;
+            stroke-dasharray: 5, 5; animation: dash 30s linear infinite;
+        }
+        .connection-line.active { stroke: #fff; stroke-opacity: 0.8; stroke-dasharray: none; filter: drop-shadow(0 0 5px #fff); }
+        @keyframes dash { to { stroke-dashoffset: -1000; } }
+
+        /* --- ORBIT NODES --- */
         .orb-wrapper {
-            position: absolute; width: 160px; height: 160px;
+            position: absolute; width: 140px; height: 140px;
             cursor: grab; z-index: 10; touch-action: none;
+            transition: opacity 0.3s, filter 0.3s;
         }
         .orb-wrapper:active { cursor: grabbing; z-index: 100 !important; }
 
+        /* LOCKED STATE (Dependency) */
+        .orb-wrapper.locked {
+            opacity: 0.4; filter: grayscale(1); pointer-events: none;
+        }
+        .orb-wrapper.locked .orb-ctrls { display: none; } /* Hide controls on locked */
+
+        /* COMPLETED STATE */
+        .orb-wrapper.completed .orb-core { border-style: double; border-width: 4px; }
+        .orb-wrapper.completed .orb-title::before { content: '✓ '; color: #0f0; }
+
         .orb-core {
             position: absolute; inset: 0; border-radius: 50%;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--c); /* Dynamic Color */
-            box-shadow: 0 0 15px var(--c), inset 0 0 30px rgba(0,0,0,0.9); /* Inner/Outer Glow */
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--c);
+            box-shadow: 0 0 15px var(--c), inset 0 0 30px rgba(0,0,0,0.9);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(5px);
         }
 
-        /* Rotating Particle Ring */
         .orb-particles {
-            position: absolute; inset: -8px; border-radius: 50%;
-            border: 2px dashed var(--c); /* Matches Tier */
-            opacity: 0.6;
-            filter: drop-shadow(0 0 5px var(--c)); /* Glowing Particles */
+            position: absolute; inset: -5px; border-radius: 50%;
+            border: 2px dashed var(--c); opacity: 0.6;
+            filter: drop-shadow(0 0 5px var(--c));
             animation: spin 30s linear infinite; pointer-events: none;
         }
 
-        /* Inner Content */
-        .orb-icon { 
-            font-size: 3.5rem; color: #fff; margin-bottom: 5px; 
-            text-shadow: 0 0 20px var(--c); /* Icon glows with tier color */
-        }
-        .orb-title { 
-            font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem; 
-            max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            color: var(--c); text-shadow: 0 0 10px rgba(0,0,0,1);
-        }
+        .orb-icon { font-size: 3rem; color: #fff; margin-bottom: 5px; text-shadow: 0 0 20px var(--c); }
+        .orb-title { font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); }
         .orb-time { font-family: 'Orbitron'; font-size: 0.6rem; opacity: 0.8; margin-top: 4px; color: #fff; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Controls */
         .orb-ctrls {
-            position: absolute; top: -15px; right: -15px; display: flex; flex-direction: column; gap: 8px; z-index: 20;
+            position: absolute; top: -10px; right: -25px; display: flex; flex-direction: column; gap: 6px; z-index: 20;
         }
         .ctrl-btn {
-            width: 32px; height: 32px; background: #000; border: 1px solid #333; border-radius: 50%;
+            width: 28px; height: 28px; background: #000; border: 1px solid #333; border-radius: 50%;
             color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
         }
         .ctrl-btn:hover { transform: scale(1.15); border-color: #fff; color: #fff; }
         
         .c-launch { border-color: var(--c); color: var(--c); box-shadow: 0 0 10px var(--c); }
+        .c-link { border-color: #fff; color: #fff; }
+        .c-link:hover { background: #fff; color: #000; }
         .c-del { border-color: #ff2a6d; color: #ff2a6d; }
-        .c-del:hover { background: rgba(255, 42, 109, 0.2); box-shadow: 0 0 15px #ff2a6d; }
 
         /* --- HUD --- */
         .hud-overlay {
@@ -156,7 +160,7 @@
         .hud-overlay.active { display: flex; }
 
         .hud-timer { font-family: 'Bebas Neue'; font-size: 8rem; line-height: 1; color: #fff; text-shadow: 0 0 40px var(--active-c); }
-        .hud-title { font-family: 'Orbitron'; letter-spacing: 5px; color: var(--active-c); margin-bottom: 20px; font-size: 1.5rem; text-shadow: 0 0 15px var(--active-c); }
+        .hud-title { font-family: 'Orbitron'; letter-spacing: 5px; color: var(--active-c); margin-bottom: 20px; font-size: 1.5rem; }
         
         .hud-bar-box { width: 350px; margin-bottom: 30px; }
         .bar-track { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; border: 1px solid #444; }
@@ -165,25 +169,34 @@
         .hud-tasks { width: 350px; max-height: 300px; overflow-y: auto; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 8px; border: 1px solid #333; }
         .task-row { display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
         .task-chk { width: 20px; height: 20px; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-size: 12px; color: black; border-radius: 4px; }
-        .task-row.done .task-chk { background: var(--active-c); border-color: var(--active-c); box-shadow: 0 0 10px var(--active-c); }
+        .task-row.done .task-chk { background: var(--active-c); border-color: var(--active-c); }
         
         .hud-actions { display: flex; gap: 20px; margin-top: 30px; }
         .hud-btn { padding: 12px 40px; background: transparent; border: 1px solid #444; color: #fff; font-family: 'Orbitron'; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
-        .hud-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .hud-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
         /* --- LOGS --- */
         .log-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        .log-score { font-family: 'Bebas Neue'; font-size: 1.4rem; text-shadow: 0 0 10px currentColor; }
+        .log-score { font-family: 'Bebas Neue'; font-size: 1.4rem; }
 
         /* --- UTILS --- */
         .hidden { display: none; }
         .proc-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 2px; margin-right: 8px; color: black; font-weight: bold; }
-        .tag-pos { background: var(--t25); box-shadow: 0 0 8px var(--t25); } .tag-neg { background: var(--t75); box-shadow: 0 0 8px var(--t75); }
+        .tag-pos { background: var(--t25); } .tag-neg { background: var(--t75); }
+        
+        /* Toast for Link Mode */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px;
+            font-family: 'Orbitron'; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 2000;
+        }
+        .toast.show { opacity: 1; top: 40px; }
     </style>
 </head>
 <body>
 
     <div class="grid-bg"></div>
+    <div class="toast" id="toast">LINK MODE: Select Target Orbit</div>
 
     <div class="app">
         <header class="header">
@@ -205,7 +218,7 @@
                     
                     <div class="input-group">
                         <label class="label">CODENAME</label>
-                        <input type="text" class="input" id="inpName" placeholder="e.g. Deep Work">
+                        <input type="text" class="input" id="inpName" placeholder="e.g. Protocol Alpha">
                     </div>
                     <div class="input-group">
                         <label class="label">OBJECTIVE</label>
@@ -229,15 +242,15 @@
                         <div id="editorProcs" style="max-height:150px; overflow-y:auto;"></div>
                     </div>
 
-                    <button class="btn" id="btnSave" onclick="saveOrbit()">INITIALIZE ORBIT</button>
-                    <button id="btnCancel" class="hidden" onclick="resetEditor()" style="width:100%; background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">CANCEL UPDATE</button>
+                    <button class="btn" id="btnSave" onclick="saveOrbit()">INITIALIZE</button>
+                    <button id="btnCancel" class="hidden" onclick="resetEditor()" style="width:100%; background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">CANCEL</button>
                 </div>
             </div>
 
             <div class="panel space-area" id="spaceArea">
-                <div style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); font-family:'Orbitron'; font-size:0.7rem; color:rgba(255,255,255,0.3); pointer-events:none;">
-                    SYSTEM READY
-                </div>
+                <svg id="svgLayer"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="20" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="rgba(255,255,255,0.4)" /></marker></defs></svg>
+                <div id="orbContainer"></div>
+                <div style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); font-family:'Orbitron'; font-size:0.7rem; color:rgba(255,255,255,0.3); pointer-events:none;">SYSTEM READY</div>
             </div>
 
             <div class="panel side-panel">
@@ -245,7 +258,10 @@
                     <div class="panel-dot"></div> FLIGHT LOGS
                 </div>
                 <div class="panel-body" id="logList"></div>
-                <button onclick="clearLogs()" style="background:transparent; border:none; color:#444; font-size:0.6rem; padding:10px; cursor:pointer;">PURGE DATA</button>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="resetProgress()" style="flex:1; background:transparent; border:1px solid var(--gold); color:var(--gold); font-size:0.6rem; padding:10px; cursor:pointer; margin-top:10px;">RESET PROGRESS</button>
+                    <button onclick="clearLogs()" style="flex:1; background:transparent; border:1px solid #444; color:#444; font-size:0.6rem; padding:10px; cursor:pointer; margin-top:10px;">PURGE LOGS</button>
+                </div>
             </div>
         </div>
     </div>
@@ -253,17 +269,13 @@
     <div class="hud-overlay" id="hud">
         <div class="hud-title" id="hudName">MISSION ACTIVE</div>
         <div class="hud-timer" id="hudTimer">00:00</div>
-        
         <div class="hud-bar-box">
             <div class="bar-track"><div class="bar-fill" id="hudBar"></div></div>
             <div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.7rem; margin-top:5px; color:#888;">
-                <span>INTEGRITY</span>
-                <span id="hudScore" style="color:#fff">100%</span>
+                <span>INTEGRITY</span><span id="hudScore" style="color:#fff">100%</span>
             </div>
         </div>
-
         <div class="hud-tasks" id="hudList"></div>
-
         <div class="hud-actions">
             <button class="hud-btn" onclick="endMission('ABORTED')" style="border-color:var(--t75); color:var(--t75)">ABORT</button>
             <button class="hud-btn" onclick="endMission('COMPLETE')" style="border-color:var(--t25); color:var(--t25); box-shadow:0 0 15px rgba(0,240,255,0.2)">COMPLETE</button>
@@ -275,10 +287,12 @@
         const colors = { '25': '#00f0ff', '50': '#ffd700', '75': '#ff2a6d', 'inf': '#d300c5' };
         const state = {
             dock: [],
+            links: [], // {source: id, target: id}
             history: [],
             editor: { editing: false, id: null, tier: null, duration: 0, procs: [] },
             active: null,
-            timerId: null
+            timerId: null,
+            linking: null // id of source orbit
         };
 
         // --- DOM ---
@@ -289,12 +303,12 @@
             loadData();
             renderSpace();
             renderLogs();
+            animateLinks();
         };
 
-        // --- EDITOR LOGIC ---
+        // --- EDITOR ---
         function setTier(t, d) {
-            state.editor.tier = t; 
-            state.editor.duration = d;
+            state.editor.tier = t; state.editor.duration = d;
             document.querySelectorAll('.tier').forEach(el => el.classList.remove('active'));
             document.querySelector(`.t${t}`).classList.add('active');
         }
@@ -332,7 +346,8 @@
                 duration: state.editor.duration,
                 procs: [...state.editor.procs],
                 x: state.editor.editing ? getOrbit(state.editor.id).x : 50,
-                y: state.editor.editing ? getOrbit(state.editor.id).y : 50
+                y: state.editor.editing ? getOrbit(state.editor.id).y : 50,
+                completed: state.editor.editing ? getOrbit(state.editor.id).completed : false
             };
 
             if (state.editor.editing) {
@@ -350,12 +365,9 @@
         function editOrbit(id) {
             const o = getOrbit(id);
             state.editor = { editing: true, id: id, tier: o.tier, duration: o.duration, procs: [...o.procs] };
-            $('inpName').value = o.name;
-            $('inpObj').value = o.obj;
-            $('inpDeadline').value = o.deadline;
+            $('inpName').value = o.name; $('inpObj').value = o.obj; $('inpDeadline').value = o.deadline;
             setTier(o.tier, o.duration);
             renderEditorProcs();
-            
             $('editorTitle').innerText = "EDITING SIGNAL";
             $('btnSave').innerText = "UPDATE ORBIT";
             $('editorPanel').classList.add('active');
@@ -367,44 +379,119 @@
             $('inpName').value = ''; $('inpObj').value = ''; $('inpDeadline').value = ''; $('editorProcs').innerHTML = '';
             document.querySelectorAll('.tier').forEach(el => el.classList.remove('active'));
             $('editorTitle').innerText = "MISSION COMMAND";
-            $('btnSave').innerText = "INITIALIZE ORBIT";
+            $('btnSave').innerText = "INITIALIZE";
             $('editorPanel').classList.remove('active');
             $('btnCancel').classList.add('hidden');
         }
 
-        // --- SPACE & DRAG ---
+        // --- SPACE & LINKS ---
         function renderSpace() {
-            $('spaceArea').innerHTML = state.dock.map(o => {
+            $('orbContainer').innerHTML = state.dock.map(o => {
                 const color = colors[o.tier];
+                const isLocked = checkLocked(o.id);
+                const statusClass = isLocked ? 'locked' : (o.completed ? 'completed' : '');
                 
                 return `
-                <div class="orb-wrapper" id="orb-${o.id}" style="left:${o.x}px; top:${o.y}px;" onmousedown="startDrag(event, ${o.id})" ontouchstart="startDrag(event, ${o.id})">
-                    
+                <div class="orb-wrapper ${statusClass}" id="orb-${o.id}" style="left:${o.x}px; top:${o.y}px;" onmousedown="startDrag(event, ${o.id})" ontouchstart="startDrag(event, ${o.id})">
                     <div class="orb-ctrls">
                         <div class="ctrl-btn c-launch" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="launchMission(${o.id})">🚀</div>
+                        <div class="ctrl-btn c-link" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="startLink(${o.id})">🔗</div>
                         <div class="ctrl-btn" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="editOrbit(${o.id})">✎</div>
                         <div class="ctrl-btn c-del" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="deleteOrbit(${o.id})">×</div>
                     </div>
-
-                    <div class="orb-core" style="--c:${color}">
+                    <div class="orb-core" style="--c:${color}" onclick="completeLink(${o.id})">
                         <div class="orb-particles" style="--c:${color}"></div>
                         <div class="orb-icon">●</div>
                         <div class="orb-title" style="--c:${color}">${o.name}</div>
                         <div class="orb-time">${o.duration} MIN</div>
                     </div>
                 </div>`;
-            }).join('') + '<div style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); font-family:\'Orbitron\'; font-size:0.7rem; color:rgba(255,255,255,0.3); pointer-events:none;">SYSTEM READY</div>';
+            }).join('');
+            renderLinks();
         }
 
-        let drag = { active: false, id: null, offsetX: 0, offsetY: 0 };
+        function checkLocked(id) {
+            // Find incoming links
+            const incoming = state.links.filter(l => l.target === id);
+            if(incoming.length === 0) return false;
+            // If ANY source is NOT completed, then locked
+            return incoming.some(l => {
+                const source = getOrbit(l.source);
+                return source && !source.completed;
+            });
+        }
 
+        // --- LINKING SYSTEM ---
+        function startLink(id) {
+            state.linking = id;
+            $('toast').classList.add('show');
+        }
+
+        function completeLink(targetId) {
+            if(state.linking) {
+                if(state.linking === targetId) { alert("Cannot link to self"); }
+                else {
+                    // Check duplicate
+                    const exists = state.links.find(l => l.source === state.linking && l.target === targetId);
+                    if(!exists) {
+                        state.links.push({ source: state.linking, target: targetId });
+                        saveData();
+                        renderSpace(); // Re-render to update locks
+                    }
+                }
+                state.linking = null;
+                $('toast').classList.remove('show');
+            }
+        }
+
+        function renderLinks() {
+            const svg = $('svgLayer');
+            // clear old lines (keep defs)
+            while(svg.lastChild && svg.lastChild.tagName === 'line') { svg.removeChild(svg.lastChild); }
+            
+            state.links.forEach(l => {
+                const s = getOrbit(l.source);
+                const t = getOrbit(l.target);
+                if(s && t) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    // Add center offset (70px is half of 140px width)
+                    line.setAttribute('x1', s.x + 70);
+                    line.setAttribute('y1', s.y + 70);
+                    line.setAttribute('x2', t.x + 70);
+                    line.setAttribute('y2', t.y + 70);
+                    line.setAttribute('class', 'connection-line');
+                    if(s.completed) line.setAttribute('class', 'connection-line active');
+                    line.setAttribute('marker-end', 'url(#arrow)');
+                    line.ondblclick = () => deleteLink(l);
+                    line.style.pointerEvents = 'auto';
+                    line.style.cursor = 'pointer';
+                    svg.appendChild(line);
+                }
+            });
+        }
+
+        function deleteLink(linkObj) {
+            if(confirm("Remove connection?")) {
+                const idx = state.links.indexOf(linkObj);
+                state.links.splice(idx, 1);
+                saveData();
+                renderSpace();
+            }
+        }
+
+        function animateLinks() {
+            renderLinks();
+            requestAnimationFrame(animateLinks);
+        }
+
+        // --- DRAG ---
+        let drag = { active: false, id: null, offX: 0, offY: 0 };
         function startDrag(e, id) {
             if (e.target.closest('.orb-ctrls')) return;
             const el = $(`orb-${id}`);
-            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-
-            drag = { active: true, id: id, offsetX: clientX - el.offsetLeft, offsetY: clientY - el.offsetTop };
+            const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            drag = { active: true, id: id, offX: cX - el.offsetLeft, offY: cY - el.offsetTop };
             el.style.zIndex = 1000;
         }
 
@@ -416,55 +503,44 @@
         function doDrag(e) {
             if (!drag.active) return;
             e.preventDefault();
-            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            
-            let x = clientX - drag.offsetX;
-            let y = clientY - drag.offsetY;
-
+            const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            let x = cX - drag.offX; let y = cY - drag.offY;
             const rect = $('spaceArea').getBoundingClientRect();
-            x = Math.max(0, Math.min(x, rect.width - 160));
-            y = Math.max(0, Math.min(y, rect.height - 160));
-
+            x = Math.max(0, Math.min(x, rect.width - 140)); y = Math.max(0, Math.min(y, rect.height - 140));
             const el = $(`orb-${drag.id}`);
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
+            el.style.left = x + 'px'; el.style.top = y + 'px';
         }
 
         function endDrag() {
             if (!drag.active) return;
             const o = getOrbit(drag.id);
             const el = $(`orb-${drag.id}`);
-            o.x = parseInt(el.style.left);
-            o.y = parseInt(el.style.top);
+            o.x = parseInt(el.style.left); o.y = parseInt(el.style.top);
             el.style.zIndex = 10;
             drag.active = false;
             saveData();
         }
 
         function deleteOrbit(id) {
-            if(confirm("CONFIRM DELETION: This cannot be undone.")) {
-                const idx = state.dock.findIndex(o => o.id === id);
-                state.dock.splice(idx, 1);
+            if(confirm("Delete orbit?")) {
+                state.dock = state.dock.filter(o => o.id !== id);
+                state.links = state.links.filter(l => l.source !== id && l.target !== id);
                 saveData();
                 renderSpace();
             }
         }
-
         function getOrbit(id) { return state.dock.find(o => o.id === id); }
 
         // --- ACTIVE MISSION ---
         function launchMission(id) {
             const o = getOrbit(id);
+            if(checkLocked(id)) { alert("LOCKED: Complete prerequisite orbit first."); return; }
             state.active = { data: o, timeLeft: o.duration * 60, checklist: o.procs.map(p => ({...p, done: false})) };
-            
             $('hudName').innerText = o.name.toUpperCase();
             document.documentElement.style.setProperty('--active-c', colors[o.tier]);
-            
             $('hud').classList.add('active');
-            renderHUDList();
-            updateIntegrity();
-            startTimer();
+            renderHUDList(); updateIntegrity(); startTimer();
         }
 
         function renderHUDList() {
@@ -475,87 +551,57 @@
                 </div>
             `).join('');
         }
-
-        function toggleTask(i) {
-            state.active.checklist[i].done = !state.active.checklist[i].done;
-            renderHUDList();
-            updateIntegrity();
-        }
-
+        function toggleTask(i) { state.active.checklist[i].done = !state.active.checklist[i].done; renderHUDList(); updateIntegrity(); }
+        
         function updateIntegrity() {
             const list = state.active.checklist;
-            const pos = list.filter(p => p.type === 'pos');
-            const neg = list.filter(p => p.type === 'neg');
-            
+            const pos = list.filter(p => p.type === 'pos'); const neg = list.filter(p => p.type === 'neg');
             let score = 100;
             if(pos.length > 0) {
-                const valPerPos = 100 / pos.length;
-                const missedPos = pos.filter(p => !p.done).length;
-                score -= (missedPos * valPerPos);
+                const val = 100 / pos.length;
+                score -= (pos.filter(p => !p.done).length * val);
             }
-            const hitNeg = neg.filter(p => p.done).length;
-            score -= (hitNeg * 15);
-            
+            score -= (neg.filter(p => p.done).length * 15);
             score = Math.max(0, Math.round(score));
             state.active.score = score;
-            
-            $('hudScore').innerText = score + "%";
-            $('hudBar').style.width = score + "%";
+            $('hudScore').innerText = score + "%"; $('hudBar').style.width = score + "%";
         }
 
-        function startTimer() {
-            clearInterval(state.timerId);
-            updateTimerDisplay();
-            state.timerId = setInterval(() => {
-                state.active.timeLeft--;
-                updateTimerDisplay();
-                if(state.active.timeLeft <= 0) clearInterval(state.timerId);
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const m = Math.floor(state.active.timeLeft / 60);
-            const s = state.active.timeLeft % 60;
-            $('hudTimer').innerText = `${m}:${s.toString().padStart(2,'0')}`;
-        }
+        function startTimer() { clearInterval(state.timerId); updateTimerDisplay(); state.timerId = setInterval(() => { state.active.timeLeft--; updateTimerDisplay(); if(state.active.timeLeft <= 0) clearInterval(state.timerId); }, 1000); }
+        function updateTimerDisplay() { const m = Math.floor(state.active.timeLeft / 60); const s = state.active.timeLeft % 60; $('hudTimer').innerText = `${m}:${s.toString().padStart(2,'0')}`; }
 
         function endMission(status) {
             clearInterval(state.timerId);
-            state.history.unshift({
-                name: state.active.data.name,
-                score: state.active.score,
-                status: status,
-                time: new Date().toLocaleTimeString(),
-                color: colors[state.active.data.tier]
-            });
+            if(status === 'COMPLETE') {
+                const o = getOrbit(state.active.data.id);
+                o.completed = true;
+            }
+            state.history.unshift({ name: state.active.data.name, score: state.active.score, status: status, time: new Date().toLocaleTimeString(), color: colors[state.active.data.tier] });
             $('hud').classList.remove('active');
             state.active = null;
             saveData();
+            renderSpace(); // Updates locks and checks
             renderLogs();
         }
 
-        // --- LOGS ---
+        // --- UTILS ---
+        function resetProgress() {
+            if(confirm("Reset all orbit progress for the day?")) {
+                state.dock.forEach(o => o.completed = false);
+                saveData();
+                renderSpace();
+            }
+        }
         function renderLogs() {
             $('logList').innerHTML = state.history.map(h => `
                 <div class="log-item">
-                    <div>
-                        <div style="color:${h.color}">${h.name}</div>
-                        <div style="font-size:0.7rem; color:#666">${h.time}</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div class="log-score" style="color:${h.color}">${h.score}%</div>
-                        <div style="font-size:0.6rem; color:#666">${h.status}</div>
-                    </div>
+                    <div><div style="color:${h.color}">${h.name}</div><div style="font-size:0.7rem; color:#666">${h.time}</div></div>
+                    <div style="text-align:right"><div class="log-score" style="color:${h.color}">${h.score}%</div><div style="font-size:0.6rem; color:#666">${h.status}</div></div>
                 </div>
             `).join('');
         }
-
-        // --- STORAGE ---
-        function saveData() { localStorage.setItem('infOrbitV6', JSON.stringify({ dock: state.dock, history: state.history })); }
-        function loadData() {
-            const d = JSON.parse(localStorage.getItem('infOrbitV6'));
-            if(d) { state.dock = d.dock || []; state.history = d.history || []; }
-        }
+        function saveData() { localStorage.setItem('infOrbitV7', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV7')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
         function clearLogs() { state.history = []; saveData(); renderLogs(); }
     </script>
 </body>
