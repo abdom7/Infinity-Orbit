@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFINITY ORBIT v2 — Command Center</title>
+    <title>INFINITY ORBIT v3 — Adaptive System</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE STYLES --- */
@@ -16,239 +16,187 @@
             --orbit-75: #ff6b6b;
             --orbit-infinity: #a855f7;
             --deep-space: #050510;
-            --panel-bg: rgba(10, 22, 40, 0.85);
+            --panel-bg: rgba(10, 22, 40, 0.9);
             --process-pos: #4ecdc4;
             --process-neg: #ff6b6b;
         }
 
         body {
-            min-height: 100vh;
-            background: #000;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-            color: #fff;
+            min-height: 100vh; background: #000; font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden; color: #fff;
         }
 
         /* --- BACKGROUND FX --- */
         .space-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(201, 162, 39, 0.05) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.05) 0%, transparent 25%),
-                linear-gradient(to bottom, #000 0%, #050510 100%);
+            background: radial-gradient(circle at 50% 50%, rgba(20, 30, 50, 0.5) 0%, #000 100%);
             pointer-events: none; z-index: 0;
         }
-        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; opacity: var(--opacity); }
-        @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+        .stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.6; }
 
         /* --- LAYOUT --- */
-        .app-container { position: relative; z-index: 10; min-height: 100vh; padding: 40px 20px; display: flex; flex-direction: column; }
+        .app-container { position: relative; z-index: 10; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; }
         
-        .header { text-align: center; margin-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 20px; }
         .title {
-            font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 10px;
+            font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 8px;
             background: linear-gradient(135deg, #fff 0%, var(--nolan-gold) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .subtitle { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; letter-spacing: 6px; color: rgba(255, 255, 255, 0.4); margin-top: 5px; }
+        .subtitle { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; letter-spacing: 4px; color: rgba(255, 255, 255, 0.4); }
 
         .dashboard {
             display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px;
-            max-width: 1400px; margin: 0 auto; width: 100%; flex: 1;
+            max-width: 1500px; margin: 0 auto; width: 100%; flex: 1;
         }
-        @media (max-width: 1100px) { .dashboard { grid-template-columns: 1fr; max-width: 500px; } }
+        @media (max-width: 1100px) { .dashboard { grid-template-columns: 1fr; max-width: 600px; } }
 
         /* --- PANELS --- */
-        .panel { background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .panel { 
+            background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 6px; display: flex; flex-direction: column; backdrop-filter: blur(10px);
+            transition: border-color 0.3s;
+        }
+        .panel.editing { border-color: var(--nolan-orange); box-shadow: 0 0 20px rgba(212, 116, 12, 0.2); }
+        
         .panel-header {
             padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; gap: 10px;
         }
-        .panel-dot { width: 6px; height: 6px; background: var(--nolan-gold); border-radius: 50%; box-shadow: 0 0 10px var(--nolan-gold); }
-        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 2px; color: var(--nolan-gold); text-transform: uppercase; }
-        .panel-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .panel-dot { width: 6px; height: 6px; background: var(--nolan-gold); border-radius: 50%; }
+        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--nolan-gold); text-transform: uppercase; letter-spacing: 2px; }
+        .panel-body { padding: 20px; flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
 
-        /* --- FORM ELEMENTS --- */
+        /* --- FORM --- */
         .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-family: 'Orbitron', sans-serif; font-size: 0.5rem; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 5px; text-transform: uppercase; }
+        .form-label { display: block; font-family: 'Orbitron', sans-serif; font-size: 0.5rem; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
         .form-input {
-            width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.3);
+            width: 100%; padding: 10px; background: rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
-            color: white; font-family: 'Rajdhani', sans-serif; font-size: 1rem; outline: none; transition: 0.3s;
+            color: white; font-family: 'Rajdhani', sans-serif; font-size: 1rem; outline: none;
         }
-        .form-input:focus { border-color: var(--nolan-gold); box-shadow: 0 0 10px rgba(201, 162, 39, 0.1); }
+        .form-input:focus { border-color: var(--nolan-gold); }
 
-        /* --- TIER GRID --- */
-        .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+        /* Tiers */
+        .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .tier-btn {
-            padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px; cursor: pointer; transition: 0.2s; text-align: center;
+            padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; cursor: pointer; text-align: center; transition: 0.2s;
         }
         .tier-btn:hover { background: rgba(255,255,255,0.08); }
-        .tier-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; margin-bottom: 2px; }
-        .tier-time { font-family: 'Orbitron', sans-serif; font-size: 0.5rem; opacity: 0.6; letter-spacing: 1px; }
+        .tier-btn.active { border-width: 2px; background: rgba(255,255,255,0.1); }
+        .tier-name { font-family: 'Bebas Neue'; font-size: 1.2rem; }
+        .tier-time { font-family: 'Orbitron'; font-size: 0.5rem; opacity: 0.6; }
         
-        /* Tier Active States */
-        .tier-btn.active { background: rgba(255,255,255,0.1); border-width: 2px; }
-        .t25 .tier-name { color: var(--orbit-25); } .tier-btn.active.t25 { border-color: var(--orbit-25); box-shadow: 0 0 15px rgba(78, 205, 196, 0.2); }
-        .t50 .tier-name { color: var(--orbit-50); } .tier-btn.active.t50 { border-color: var(--orbit-50); box-shadow: 0 0 15px rgba(255, 230, 109, 0.2); }
-        .t75 .tier-name { color: var(--orbit-75); } .tier-btn.active.t75 { border-color: var(--orbit-75); box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
-        .tinf .tier-name { color: var(--orbit-infinity); } .tier-btn.active.tinf { border-color: var(--orbit-infinity); box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); }
+        .t25 .tier-name { color: var(--orbit-25); } .tier-btn.active.t25 { border-color: var(--orbit-25); }
+        .t50 .tier-name { color: var(--orbit-50); } .tier-btn.active.t50 { border-color: var(--orbit-50); }
+        .t75 .tier-name { color: var(--orbit-75); } .tier-btn.active.t75 { border-color: var(--orbit-75); }
+        .tinf .tier-name { color: var(--orbit-infinity); } .tier-btn.active.tinf { border-color: var(--orbit-infinity); }
 
-        /* --- PROCESS LIST --- */
-        .process-section { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; padding-top: 10px; flex: 1; display: flex; flex-direction: column; }
-        .process-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .btn-add { background: none; border: 1px solid var(--nolan-gold); color: var(--nolan-gold); font-size: 0.6rem; padding: 4px 10px; cursor: pointer; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
-        .btn-add:hover { background: var(--nolan-gold); color: black; }
-        
-        .process-list { flex: 1; overflow-y: auto; min-height: 100px; max-height: 200px; }
+        /* Process List in Editor */
+        .process-list { flex: 1; overflow-y: auto; min-height: 100px; margin-top: 10px; }
         .process-item {
             display: flex; align-items: center; gap: 8px; padding: 8px; 
-            background: rgba(0,0,0,0.2); margin-bottom: 5px; border-radius: 3px; border-left: 2px solid #555;
+            background: rgba(0,0,0,0.2); margin-bottom: 5px; border-radius: 3px; border-left: 3px solid #555;
         }
-        /* Polarity Colors */
         .process-item.pos { border-left-color: var(--process-pos); }
         .process-item.neg { border-left-color: var(--process-neg); }
+        .btn-add { background: none; border: 1px solid var(--nolan-gold); color: var(--nolan-gold); font-size: 0.6rem; padding: 2px 8px; cursor: pointer; font-family: 'Orbitron'; }
         
-        .process-text { font-size: 0.85rem; flex: 1; }
-        .process-tag { font-size: 0.5rem; font-family: 'Orbitron', sans-serif; padding: 2px 4px; border-radius: 2px; opacity: 0.8; }
-        .pos .process-tag { background: rgba(78, 205, 196, 0.2); color: var(--process-pos); }
-        .neg .process-tag { background: rgba(255, 107, 107, 0.2); color: var(--process-neg); }
-
-        .btn-del-proc { color: #555; cursor: pointer; }
-        .btn-del-proc:hover { color: var(--orbit-75); }
-
-        /* --- BUTTONS --- */
         .btn-main {
             width: 100%; padding: 15px; margin-top: 15px; border: none; cursor: pointer;
             font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px;
             background: linear-gradient(90deg, var(--nolan-gold), var(--nolan-orange)); color: #000;
-            transition: 0.3s; border-radius: 4px;
+            border-radius: 4px;
         }
-        .btn-main:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 20px rgba(201, 162, 39, 0.3); }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .btn-main.updating { background: linear-gradient(90deg, var(--nolan-orange), #ff4500); color: white; }
 
-        /* --- CENTER PANEL (Dock & Vis) --- */
-        .center-stage { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
-        
-        /* DOCK VIEW */
-        .orbit-dock {
-            width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .dock-empty { text-align: center; opacity: 0.4; }
+        /* --- DOCK (Center) --- */
         .dock-grid {
-            display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-content: center;
-            width: 100%; max-height: 100%; overflow-y: auto; padding: 20px;
+            display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; align-content: center;
+            height: 100%; padding: 20px; overflow-y: auto;
         }
         
-        /* PLANET CARD */
         .planet-card {
-            width: 140px; height: 140px; background: rgba(255,255,255,0.03);
+            width: 130px; height: 130px; background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; position: relative; transition: transform 0.3s;
         }
-        .planet-card:hover { transform: scale(1.1); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .planet-card:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.3); }
         .planet-card::before {
             content: ''; position: absolute; inset: -5px; border-radius: 50%;
             border: 1px dashed transparent; animation: rotate 20s linear infinite;
         }
-        /* Planet Tiers */
-        .planet-card.t25::before { border-color: var(--orbit-25); } .planet-card.t25 .planet-icon { color: var(--orbit-25); text-shadow: 0 0 10px var(--orbit-25); }
-        .planet-card.t50::before { border-color: var(--orbit-50); } .planet-card.t50 .planet-icon { color: var(--orbit-50); text-shadow: 0 0 10px var(--orbit-50); }
-        .planet-card.t75::before { border-color: var(--orbit-75); } .planet-card.t75 .planet-icon { color: var(--orbit-75); text-shadow: 0 0 10px var(--orbit-75); }
-        .planet-card.tinf::before { border-color: var(--orbit-infinity); } .planet-card.tinf .planet-icon { color: var(--orbit-infinity); text-shadow: 0 0 10px var(--orbit-infinity); }
-
-        .planet-icon { font-size: 2rem; margin-bottom: 5px; transition: 0.3s; }
-        .planet-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; max-width: 80%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .planet-time { font-family: 'Orbitron', sans-serif; font-size: 0.5rem; opacity: 0.6; margin-top: 2px; }
         
-        .delete-planet {
-            position: absolute; top: 0; right: 0; background: #000; border: 1px solid var(--orbit-75);
-            color: var(--orbit-75); border-radius: 50%; width: 20px; height: 20px; font-size: 12px;
-            display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s;
-        }
-        .planet-card:hover .delete-planet { opacity: 1; transform: translate(5px, -5px); }
+        /* Planet Colors */
+        .planet-card.t25::before { border-color: var(--orbit-25); } .planet-card.t25 .planet-icon { color: var(--orbit-25); }
+        .planet-card.t50::before { border-color: var(--orbit-50); } .planet-card.t50 .planet-icon { color: var(--orbit-50); }
+        .planet-card.t75::before { border-color: var(--orbit-75); } .planet-card.t75 .planet-icon { color: var(--orbit-75); }
+        .planet-card.tinf::before { border-color: var(--orbit-infinity); } .planet-card.tinf .planet-icon { color: var(--orbit-infinity); }
 
-        /* ACTIVE ORBIT VIEW (The Timer) */
-        .active-orbit { display: none; text-align: center; width: 100%; flex-direction: column; align-items: center; }
+        .planet-icon { font-size: 2rem; margin-bottom: 5px; }
+        .planet-name { font-family: 'Rajdhani'; font-weight: 700; font-size: 0.9rem; max-width: 80%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Action Buttons on Planet */
+        .planet-actions {
+            position: absolute; top: -10px; right: -10px; display: flex; gap: 5px;
+            opacity: 0; transition: opacity 0.2s; pointer-events: none;
+        }
+        .planet-card:hover .planet-actions { opacity: 1; pointer-events: auto; }
+        
+        .planet-btn {
+            width: 24px; height: 24px; border-radius: 50%; border: 1px solid #555; background: #000;
+            color: #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px;
+        }
+        .planet-btn.edit:hover { border-color: var(--nolan-orange); color: var(--nolan-orange); }
+        .planet-btn.del:hover { border-color: var(--orbit-75); color: var(--orbit-75); }
+
+        /* --- ACTIVE MISSION --- */
+        .active-orbit { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active-orbit.show { display: flex; }
 
-        .timer-ring {
-            width: 300px; height: 300px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.1); position: relative;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        .timer-display { font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; color: var(--nolan-gold); }
+        .integrity-bar {
+            width: 300px; height: 4px; background: rgba(255,255,255,0.1); margin: 20px 0;
+            border-radius: 2px; overflow: hidden;
         }
-        .timer-progress {
-            position: absolute; inset: -2px; border-radius: 50%;
-            background: conic-gradient(var(--active-color) var(--deg), transparent 0);
-            mask: radial-gradient(transparent 69%, black 70%);
-            -webkit-mask: radial-gradient(transparent 69%, black 70%);
-        }
-        .timer-text { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; z-index: 2; line-height: 1; }
-        .timer-sub { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 4px; opacity: 0.5; margin-top: 10px; }
+        .integrity-fill { height: 100%; background: var(--process-pos); width: 0%; transition: width 0.5s; }
+        .integrity-label { font-family: 'Orbitron'; font-size: 0.6rem; margin-bottom: 5px; color: rgba(255,255,255,0.5); }
 
-        /* ACTIVE CONTROLS */
-        .mission-controls { display: flex; gap: 10px; margin-top: 30px; }
-        .btn-ctrl {
-            background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white;
-            padding: 10px 20px; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; cursor: pointer; transition: 0.3s;
+        .active-checklist { width: 100%; max-width: 400px; max-height: 300px; overflow-y: auto; text-align: left; }
+        .check-item {
+            display: flex; align-items: center; gap: 10px; padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
         }
-        .btn-ctrl:hover { background: rgba(255,255,255,0.1); border-color: white; }
-        .btn-abort { border-color: var(--orbit-75); color: var(--orbit-75); }
-        .btn-abort:hover { background: rgba(255, 107, 107, 0.1); }
-        .btn-finish { border-color: var(--orbit-25); color: var(--orbit-25); }
-        .btn-finish:hover { background: rgba(78, 205, 196, 0.1); }
-
-        /* --- ACTIVE PROCESS CHECKLIST (When Running) --- */
-        .active-checklist { margin-top: 20px; width: 80%; text-align: left; }
-        .checklist-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s;
-        }
-        .checklist-item:hover { background: rgba(255,255,255,0.05); }
-        .check-box { width: 18px; height: 18px; border: 2px solid #555; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
-        .checklist-item.done .check-box { border-color: var(--nolan-gold); background: var(--nolan-gold); color: black; }
-        .checklist-item.done span { text-decoration: line-through; opacity: 0.5; }
-
-        /* --- RIGHT PANEL (Status) --- */
-        .history-list { overflow-y: auto; flex: 1; padding-top: 10px; }
-        .history-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .h-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .h-info { flex: 1; min-width: 0; /* Important for flex truncation */ }
-        .h-name { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .h-meta { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
-        .h-status { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; }
-        .escaped { color: var(--orbit-25); }
-        .aborted { color: var(--orbit-75); }
-
-        /* --- MODALS --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
-        .modal-box {
-            background: #0a1628; border: 1px solid var(--nolan-gold); padding: 30px; width: 90%; max-width: 400px;
-            text-align: center; transform: scale(0.9); transition: 0.3s;
-        }
-        .modal-overlay.open .modal-box { transform: scale(1); }
+        .check-box { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; }
+        .check-item.done.pos .check-box { background: var(--process-pos); border-color: var(--process-pos); }
+        .check-item.done.neg .check-box { background: var(--process-neg); border-color: var(--process-neg); }
+        .check-text { font-size: 0.9rem; color: #aaa; flex: 1; }
         
-        /* Process Modal specific */
-        .type-select { display: flex; gap: 10px; margin-bottom: 15px; }
-        .type-btn { flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid #333; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: #777; transition: 0.2s; }
-        .type-btn.active.pos { background: rgba(78, 205, 196, 0.1); border-color: var(--process-pos); color: var(--process-pos); }
-        .type-btn.active.neg { background: rgba(255, 107, 107, 0.1); border-color: var(--process-neg); color: var(--process-neg); }
+        .mission-controls { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-ctrl { background: transparent; border: 1px solid #444; color: #888; padding: 8px 20px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
+        .btn-ctrl:hover { border-color: #fff; color: #fff; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--nolan-gold); }
+        /* --- SETTINGS BAR --- */
+        .settings-bar {
+            position: absolute; bottom: 20px; right: 20px; display: flex; gap: 10px;
+        }
+        .btn-set { background: rgba(0,0,0,0.5); border: 1px solid #333; color: #555; font-size: 0.6rem; padding: 5px 10px; cursor: pointer; font-family: 'Orbitron'; }
+        .btn-set:hover { color: var(--orbit-75); border-color: var(--orbit-75); }
+
+        /* --- MODAL --- */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100;
+            display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal.open { opacity: 1; pointer-events: auto; }
+        .modal-content { background: #0a1628; border: 1px solid var(--nolan-gold); padding: 30px; width: 90%; max-width: 400px; text-align: center; }
+        .type-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
+        .toggle-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
+        .toggle-btn.pos.active { background: rgba(78, 205, 196, 0.1); border-color: var(--process-pos); color: var(--process-pos); }
+        .toggle-btn.neg.active { background: rgba(255, 107, 107, 0.1); border-color: var(--process-neg); color: var(--process-neg); }
 
         @keyframes rotate { 100% { transform: rotate(360deg); } }
     </style>
@@ -261,208 +209,165 @@
     <div class="app-container">
         <header class="header">
             <h1 class="title">INFINITY ORBIT</h1>
-            <p class="subtitle">GRAVITATIONAL PRODUCTIVITY SYSTEM v2.0</p>
+            <p class="subtitle">GRAVITATIONAL PRODUCTIVITY SYSTEM v3.0</p>
         </header>
 
         <div class="dashboard">
             
-            <div class="panel">
+            <div class="panel" id="panelEditor">
                 <div class="panel-header">
                     <div class="panel-dot"></div>
-                    <span class="panel-title">Orbit Configuration</span>
+                    <span class="panel-title" id="editorTitle">NEW ORBIT</span>
                 </div>
                 <div class="panel-body">
                     <div class="tier-grid">
-                        <div class="tier-btn t25" onclick="setTier('25', 25)">
-                            <div class="tier-name">25</div><div class="tier-time">MINUTES</div>
-                        </div>
-                        <div class="tier-btn t50" onclick="setTier('50', 50)">
-                            <div class="tier-name">50</div><div class="tier-time">MINUTES</div>
-                        </div>
-                        <div class="tier-btn t75" onclick="setTier('75', 75)">
-                            <div class="tier-name">75</div><div class="tier-time">MINUTES</div>
-                        </div>
-                        <div class="tier-btn tinf" onclick="setTier('inf', 90)">
-                            <div class="tier-name">∞</div><div class="tier-time">HORIZON</div>
-                        </div>
+                        <div class="tier-btn t25" onclick="setTier('25', 25)"><div class="tier-name">25</div></div>
+                        <div class="tier-btn t50" onclick="setTier('50', 50)"><div class="tier-name">50</div></div>
+                        <div class="tier-btn t75" onclick="setTier('75', 75)"><div class="tier-name">75</div></div>
+                        <div class="tier-btn tinf" onclick="setTier('inf', 90)"><div class="tier-name">∞</div></div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Orbit Name</label>
-                        <input type="text" class="form-input" id="inpName" placeholder="e.g. Coding, Gym, Writing...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Objective</label>
-                        <input type="text" class="form-input" id="inpObj" placeholder="Primary goal...">
+                        <input type="text" class="form-input" id="inpName" placeholder="e.g. Coding...">
                     </div>
 
-                    <div class="process-section">
-                        <div class="process-header">
+                    <div class="process-section" style="flex:1; display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span class="form-label">PROCESS RUBRIC</span>
-                            <button class="btn-add" onclick="openProcessModal()">+ STEP</button>
+                            <button class="btn-add" onclick="openProcessModal()">+ ADD STEP</button>
                         </div>
-                        <div class="process-list" id="configProcessList">
-                            </div>
+                        <div class="process-list" id="editorProcessList"></div>
                     </div>
 
-                    <button class="btn-main" id="btnAddDock" disabled onclick="addToDock()">ADD TO SYSTEM</button>
+                    <button class="btn-main" id="btnAction" onclick="handleDockAction()">ADD TO SYSTEM</button>
+                    <button id="btnCancelEdit" style="display:none; width:100%; background:transparent; border:none; color:#555; margin-top:10px; cursor:pointer;" onclick="cancelEdit()">CANCEL EDIT</button>
                 </div>
             </div>
 
-            <div class="panel" style="background: rgba(0,0,0,0.6); border: none;">
-                <div class="center-stage">
+            <div class="panel" style="background: rgba(0,0,0,0.5); border: none;">
+                
+                <div class="dock-grid" id="viewDock">
+                    </div>
+
+                <div class="active-orbit" id="viewActive">
+                    <div class="timer-display" id="timerDisplay">00:00</div>
+                    <div style="font-family:'Orbitron'; color:#666; font-size:0.8rem; margin-top:5px;" id="activeName">MISSION NAME</div>
                     
-                    <div class="orbit-dock" id="viewDock">
-                        <div class="dock-grid" id="dockGrid">
-                            </div>
-                        <div class="dock-empty" id="dockEmpty" style="display:none;">
-                            <p style="font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #555;">SYSTEM EMPTY</p>
-                            <p style="font-size: 0.8rem; color: #444;">Configure orbits on the left to populate.</p>
+                    <div style="width:100%; max-width:300px; margin-top:20px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="integrity-label">ORBIT INTEGRITY</span>
+                            <span class="integrity-label" id="scoreValue" style="color:var(--nolan-gold)">0%</span>
                         </div>
+                        <div class="integrity-bar"><div class="integrity-fill" id="scoreBar"></div></div>
                     </div>
 
-                    <div class="active-orbit" id="viewActive">
-                        <div class="timer-ring" id="timerRing">
-                            <div class="timer-progress" id="timerProgress"></div>
-                            <div style="z-index: 2; text-align: center;">
-                                <div class="timer-text" id="timerDisplay">00:00</div>
-                                <div class="timer-sub" id="activeName">NAME</div>
-                            </div>
-                        </div>
+                    <div class="active-checklist" id="activeChecklist"></div>
 
-                        <div class="active-checklist" id="activeChecklist"></div>
-
-                        <div class="mission-controls">
-                            <button class="btn-ctrl btn-abort" onclick="abortOrbit()">ABORT MISSION</button>
-                            <button class="btn-ctrl" onclick="togglePause()" id="btnPause">PAUSE</button>
-                            <button class="btn-ctrl btn-finish" onclick="finishOrbit()">COMPLETE</button>
-                        </div>
+                    <div class="mission-controls">
+                        <button class="btn-ctrl" onclick="abortMission()" style="color:var(--orbit-75); border-color:rgba(255,107,107,0.3)">ABORT</button>
+                        <button class="btn-ctrl" onclick="togglePause()" id="btnPause">PAUSE</button>
+                        <button class="btn-ctrl" onclick="finishMission()" style="color:var(--orbit-25); border-color:rgba(78,205,196,0.3)">COMPLETE</button>
                     </div>
-
                 </div>
+
             </div>
 
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-dot"></div>
-                    <span class="panel-title">Flight Log</span>
+                    <span class="panel-title">FLIGHT LOGS</span>
                 </div>
-                <div class="panel-body">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <div style="text-align: center;">
-                            <div style="font-family: 'Bebas Neue'; font-size: 1.5rem; color: var(--nolan-gold);" id="statEscaped">0</div>
-                            <div style="font-size: 0.6rem; opacity: 0.5;">ESCAPED</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-family: 'Bebas Neue'; font-size: 1.5rem; color: white;" id="statTotal">0</div>
-                            <div style="font-size: 0.6rem; opacity: 0.5;">ATTEMPTED</div>
-                        </div>
+                <div class="panel-body" id="historyList">
                     </div>
-                    <div class="history-list" id="historyList">
-                        </div>
-                </div>
             </div>
+        </div>
 
+        <div class="settings-bar">
+            <button class="btn-set" onclick="clearLogs()">CLEAR LOGS</button>
+            <button class="btn-set" onclick="resetSystem()">RESET SYSTEM</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modalProcess">
-        <div class="modal-box">
-            <h3 style="font-family: 'Orbitron'; color: var(--nolan-gold); margin-bottom: 15px;">ADD PROCESS</h3>
-            <div class="type-select">
-                <button class="type-btn active pos" onclick="setProcType('pos')" id="btnTypePos">BUILD (+)</button>
-                <button class="type-btn neg" onclick="setProcType('neg')" id="btnTypeNeg">BURN (-)</button>
+    <div class="modal" id="modalProcess">
+        <div class="modal-content">
+            <h3 style="font-family:'Orbitron'; color:var(--nolan-gold); margin-bottom:15px;">ADD PROCESS STEP</h3>
+            <div class="type-toggle">
+                <button class="toggle-btn pos active" id="btnTypePos" onclick="setProcType('pos')">POSITIVE (+)</button>
+                <button class="toggle-btn neg" id="btnTypeNeg" onclick="setProcType('neg')">NEGATIVE (-)</button>
             </div>
-            <input type="text" class="form-input" id="inpProcText" placeholder="Describe the step...">
-            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <button class="btn-ctrl" style="flex:1" onclick="closeProcessModal()">CANCEL</button>
-                <button class="btn-ctrl" style="flex:1; background: var(--nolan-gold); color: black; border:none;" onclick="confirmAddProcess()">ADD</button>
-            </div>
+            <input type="text" class="form-input" id="inpProcText" placeholder="Describe habit...">
+            <button class="btn-main" onclick="confirmAddProcess()" style="margin-top:15px; padding:10px; font-size:1rem;">ADD</button>
+            <button onclick="closeProcessModal()" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">CANCEL</button>
         </div>
     </div>
 
     <script>
         // --- STATE ---
         const state = {
-            config: { tier: null, time: 0, processes: [] }, // Current form data
-            dock: [], // Array of configured orbits waiting to launch
-            active: null, // Currently running orbit
+            dock: [],
             history: [],
-            stats: { escaped: 0, total: 0 },
-            
-            // Timer internals
-            timerId: null,
-            timeLeft: 0,
-            duration: 0,
-            isPaused: false
+            editor: {
+                isEditing: false,
+                editIndex: null,
+                tier: null,
+                time: 0,
+                processes: [] // {text, type}
+            },
+            active: null,
+            timer: null
+        };
+
+        // --- DOM REFS ---
+        const dom = {
+            inpName: document.getElementById('inpName'),
+            btnAction: document.getElementById('btnAction'),
+            btnCancelEdit: document.getElementById('btnCancelEdit'),
+            editorTitle: document.getElementById('editorTitle'),
+            editorList: document.getElementById('editorProcessList'),
+            panelEditor: document.getElementById('panelEditor'),
+            viewDock: document.getElementById('viewDock'),
+            viewActive: document.getElementById('viewActive'),
+            modalProcess: document.getElementById('modalProcess'),
+            inpProcText: document.getElementById('inpProcText'),
+            timerDisplay: document.getElementById('timerDisplay'),
+            activeChecklist: document.getElementById('activeChecklist'),
+            scoreBar: document.getElementById('scoreBar'),
+            scoreValue: document.getElementById('scoreValue'),
+            historyList: document.getElementById('historyList')
         };
 
         let tempProcType = 'pos';
 
-        // --- DOM ---
-        const dom = {
-            inpName: document.getElementById('inpName'),
-            inpObj: document.getElementById('inpObj'),
-            btnAddDock: document.getElementById('btnAddDock'),
-            configList: document.getElementById('configProcessList'),
-            dockGrid: document.getElementById('dockGrid'),
-            dockEmpty: document.getElementById('dockEmpty'),
-            viewDock: document.getElementById('viewDock'),
-            viewActive: document.getElementById('viewActive'),
-            timerDisplay: document.getElementById('timerDisplay'),
-            activeName: document.getElementById('activeName'),
-            timerProgress: document.getElementById('timerProgress'),
-            activeChecklist: document.getElementById('activeChecklist'),
-            historyList: document.getElementById('historyList'),
-            statEscaped: document.getElementById('statEscaped'),
-            statTotal: document.getElementById('statTotal'),
-            modalProcess: document.getElementById('modalProcess'),
-            inpProcText: document.getElementById('inpProcText')
-        };
-
         // --- INIT ---
-        window.addEventListener('load', () => {
+        window.onload = () => {
             createStars();
             loadData();
             renderDock();
             renderHistory();
-            updateStats();
-            checkConfigValidity();
-        });
+        };
 
         function createStars() {
-            const container = document.getElementById('stars');
-            for(let i=0; i<100; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                s.style.left = Math.random()*100 + '%';
-                s.style.top = Math.random()*100 + '%';
-                const size = Math.random()*2 + 1;
-                s.style.width = size+'px'; s.style.height = size+'px';
-                s.style.setProperty('--duration', (Math.random()*3+2)+'s');
-                s.style.setProperty('--opacity', Math.random());
-                container.appendChild(s);
+            const el = document.getElementById('stars');
+            for(let i=0; i<80; i++){
+                let d = document.createElement('div');
+                d.className='star';
+                d.style.left = Math.random()*100+'%';
+                d.style.top = Math.random()*100+'%';
+                d.style.width = Math.random()*2+'px';
+                d.style.height = d.style.width;
+                el.appendChild(d);
             }
         }
 
-        // --- CONFIGURATION LOGIC ---
+        // --- EDITOR LOGIC ---
         function setTier(tier, time) {
-            state.config.tier = tier;
-            state.config.time = time;
+            state.editor.tier = tier;
+            state.editor.time = time;
             document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.tier-btn.t${tier}`).classList.add('active');
-            checkConfigValidity();
         }
 
-        dom.inpName.addEventListener('input', checkConfigValidity);
-        dom.inpObj.addEventListener('input', checkConfigValidity);
-
-        function checkConfigValidity() {
-            const valid = state.config.tier && dom.inpName.value.trim() !== '';
-            dom.btnAddDock.disabled = !valid;
-        }
-
-        // --- PROCESS MODAL ---
         function openProcessModal() {
             dom.modalProcess.classList.add('open');
             dom.inpProcText.value = '';
@@ -470,253 +375,332 @@
             setProcType('pos');
         }
         function closeProcessModal() { dom.modalProcess.classList.remove('open'); }
+        
         function setProcType(type) {
             tempProcType = type;
-            document.getElementById('btnTypePos').className = `type-btn pos ${type==='pos'?'active':''}`;
-            document.getElementById('btnTypeNeg').className = `type-btn neg ${type==='neg'?'active':''}`;
+            document.getElementById('btnTypePos').className = `toggle-btn pos ${type==='pos'?'active':''}`;
+            document.getElementById('btnTypeNeg').className = `toggle-btn neg ${type==='neg'?'active':''}`;
         }
+
         function confirmAddProcess() {
-            const text = dom.inpProcText.value.trim();
-            if(!text) return;
-            state.config.processes.push({ text, type: tempProcType });
-            renderConfigProcesses();
+            const txt = dom.inpProcText.value.trim();
+            if(!txt) return;
+            state.editor.processes.push({ text: txt, type: tempProcType });
+            renderEditorProcesses();
             closeProcessModal();
         }
 
-        function renderConfigProcesses() {
-            dom.configList.innerHTML = '';
-            state.config.processes.forEach((p, i) => {
-                const div = document.createElement('div');
-                div.className = `process-item ${p.type}`;
-                div.innerHTML = `
-                    <span class="process-tag">${p.type === 'pos' ? 'BUILD' : 'BURN'}</span>
-                    <span class="process-text">${p.text}</span>
-                    <span class="btn-del-proc" onclick="removeProcess(${i})">×</span>
+        function renderEditorProcesses() {
+            dom.editorList.innerHTML = '';
+            state.editor.processes.forEach((p, i) => {
+                const row = document.createElement('div');
+                row.className = `process-item ${p.type}`;
+                row.innerHTML = `
+                    <span style="font-size:0.6rem; opacity:0.7; margin-right:5px;">${p.type==='pos'?'BUILD':'BURN'}</span>
+                    <span style="flex:1; font-size:0.8rem;">${p.text}</span>
+                    <span style="cursor:pointer; color:#555;" onclick="removeEditorProcess(${i})">×</span>
                 `;
-                dom.configList.appendChild(div);
+                dom.editorList.appendChild(row);
             });
         }
-        function removeProcess(idx) {
-            state.config.processes.splice(idx, 1);
-            renderConfigProcesses();
+
+        function removeEditorProcess(i) {
+            state.editor.processes.splice(i, 1);
+            renderEditorProcesses();
         }
 
-        // --- DOCK LOGIC ---
-        function addToDock() {
-            const orbit = {
-                id: Date.now(),
-                name: dom.inpName.value.trim(),
-                objective: dom.inpObj.value.trim(),
-                tier: state.config.tier,
-                duration: state.config.time,
-                processes: [...state.config.processes] // Copy array
+        // --- ACTIONS: ADD / EDIT / DELETE ---
+        function handleDockAction() {
+            const name = dom.inpName.value.trim();
+            if(!name || !state.editor.tier) {
+                alert("Please select a Tier and enter a Name.");
+                return;
+            }
+
+            const orbitData = {
+                name: name,
+                tier: state.editor.tier,
+                duration: state.editor.time,
+                processes: [...state.editor.processes]
             };
 
-            state.dock.push(orbit);
+            if (state.editor.isEditing) {
+                // Update Existing
+                state.dock[state.editor.editIndex] = orbitData;
+                cancelEdit(); // Exit edit mode
+            } else {
+                // Create New
+                state.dock.push(orbitData);
+                resetEditor();
+            }
+
             saveData();
             renderDock();
+        }
+
+        function editOrbit(index, event) {
+            event.stopPropagation(); // Prevent launching
+            const orb = state.dock[index];
             
-            // Reset Form
+            // Load into state
+            state.editor.isEditing = true;
+            state.editor.editIndex = index;
+            state.editor.processes = [...orb.processes];
+            state.editor.tier = orb.tier;
+            state.editor.time = orb.duration;
+
+            // Update UI
+            dom.inpName.value = orb.name;
+            setTier(orb.tier, orb.duration);
+            renderEditorProcesses();
+            
+            dom.btnAction.innerText = "UPDATE ORBIT";
+            dom.btnAction.classList.add('updating');
+            dom.editorTitle.innerText = "EDIT ORBIT";
+            dom.btnCancelEdit.style.display = 'block';
+            dom.panelEditor.classList.add('editing');
+        }
+
+        function deleteOrbit(index, event) {
+            event.stopPropagation();
+            if(confirm("Delete this orbit?")) {
+                state.dock.splice(index, 1);
+                if(state.editor.editIndex === index) cancelEdit();
+                saveData();
+                renderDock();
+            }
+        }
+
+        function cancelEdit() {
+            resetEditor();
+        }
+
+        function resetEditor() {
+            state.editor = { isEditing: false, editIndex: null, tier: null, time: 0, processes: [] };
             dom.inpName.value = '';
-            dom.inpObj.value = '';
-            state.config.processes = [];
-            renderConfigProcesses();
-            checkConfigValidity();
+            document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+            renderEditorProcesses();
+            
+            dom.btnAction.innerText = "ADD TO SYSTEM";
+            dom.btnAction.classList.remove('updating');
+            dom.editorTitle.innerText = "NEW ORBIT";
+            dom.btnCancelEdit.style.display = 'none';
+            dom.panelEditor.classList.remove('editing');
         }
 
         function renderDock() {
-            dom.dockGrid.innerHTML = '';
-            if(state.dock.length === 0) {
-                dom.dockEmpty.style.display = 'block';
-                return;
-            }
-            dom.dockEmpty.style.display = 'none';
-
-            state.dock.forEach((orbit, idx) => {
+            dom.viewDock.innerHTML = '';
+            state.dock.forEach((orb, i) => {
                 const el = document.createElement('div');
-                el.className = `planet-card t${orbit.tier}`;
-                el.onclick = (e) => { if(!e.target.classList.contains('delete-planet')) launchOrbit(idx); };
+                el.className = `planet-card t${orb.tier}`;
+                el.onclick = () => launchOrbit(i);
                 el.innerHTML = `
-                    <div class="delete-planet" onclick="deleteFromDock(${idx})">×</div>
+                    <div class="planet-actions">
+                        <div class="planet-btn edit" onclick="editOrbit(${i}, event)">✎</div>
+                        <div class="planet-btn del" onclick="deleteOrbit(${i}, event)">×</div>
+                    </div>
                     <div class="planet-icon">●</div>
-                    <div class="planet-name">${orbit.name}</div>
-                    <div class="planet-time">${orbit.duration} MIN</div>
+                    <div class="planet-name">${orb.name}</div>
                 `;
-                dom.dockGrid.appendChild(el);
+                dom.viewDock.appendChild(el);
             });
         }
 
-        function deleteFromDock(idx) {
-            state.dock.splice(idx, 1);
-            saveData();
-            renderDock();
-        }
+        // --- MISSION CONTROL ---
+        function launchOrbit(index) {
+            if(state.editor.isEditing) {
+                alert("Please finish editing first.");
+                return;
+            }
+            const orb = state.dock[index];
+            state.active = {
+                data: orb,
+                timeLeft: orb.duration * 60,
+                isPaused: false,
+                checklist: orb.processes.map(p => ({...p, done: false}))
+            };
 
-        // --- MISSION LAUNCH ---
-        function launchOrbit(idx) {
-            const orbit = state.dock[idx];
-            // Remove from dock (optional, depends if reusable. Let's keep it reusable? User said "access orbits after I add them". Let's keep them in dock for reuse).
-            // Actually user implies a queue. But reusability is better. Let's keep in dock.
-            
-            state.active = JSON.parse(JSON.stringify(orbit)); // Deep copy
-            state.active.startTime = Date.now();
-            
-            // UI Switch
             dom.viewDock.style.display = 'none';
             dom.viewActive.classList.add('show');
+            document.getElementById('activeName').innerText = orb.name.toUpperCase();
             
-            // Setup Active State
-            dom.activeName.innerText = orbit.name;
-            state.duration = orbit.duration * 60; // minutes to seconds
-            state.timeLeft = state.duration;
-            state.isPaused = false;
-            
-            // Setup Timer Ring Color
-            const colors = { '25': 'var(--orbit-25)', '50': 'var(--orbit-50)', '75': 'var(--orbit-75)', 'inf': 'var(--orbit-infinity)' };
-            document.documentElement.style.setProperty('--active-color', colors[orbit.tier]);
-
             renderActiveChecklist();
+            updateScore();
             startTimer();
         }
 
         function renderActiveChecklist() {
             dom.activeChecklist.innerHTML = '';
-            state.active.processes.forEach((p, i) => {
-                const row = document.createElement('div');
-                row.className = 'checklist-item';
-                row.onclick = () => toggleCheck(i);
-                row.innerHTML = `
+            state.active.checklist.forEach((item, i) => {
+                const el = document.createElement('div');
+                el.className = `check-item ${item.type} ${item.done ? 'done' : ''}`;
+                el.onclick = () => toggleCheck(i);
+                el.innerHTML = `
                     <div class="check-box"></div>
-                    <span style="color: ${p.type === 'pos' ? 'var(--process-pos)' : 'var(--process-neg)'}">${p.text}</span>
+                    <div class="check-text">${item.text}</div>
                 `;
-                // Add checked state if needed (not saving state yet for checklists inside dock, but for active mission yes)
-                if(p.done) row.classList.add('done');
-                dom.activeChecklist.appendChild(row);
+                dom.activeChecklist.appendChild(el);
             });
         }
 
         function toggleCheck(i) {
-            state.active.processes[i].done = !state.active.processes[i].done;
+            state.active.checklist[i].done = !state.active.checklist[i].done;
             renderActiveChecklist();
+            updateScore();
         }
 
-        // --- TIMER ---
+        function updateScore() {
+            const list = state.active.checklist;
+            const positives = list.filter(i => i.type === 'pos');
+            const negatives = list.filter(i => i.type === 'neg');
+
+            // Scoring Logic:
+            // Base = 0
+            // Each Positive done = + (100 / total_positives)
+            // Each Negative done = - 15% (Penalties)
+            
+            let score = 0;
+            const posValue = positives.length > 0 ? (100 / positives.length) : 100; // If no positives, free 100? No, let's say 0.
+            
+            if(positives.length === 0 && negatives.length === 0) {
+                score = 100; // Empty orbit is perfect
+            } else {
+                const posDone = positives.filter(i => i.done).length;
+                const negDone = negatives.filter(i => i.done).length;
+                
+                // Add for positives
+                if (positives.length > 0) {
+                    score += (posDone * posValue);
+                } else {
+                    // If only negatives exist, start at 100
+                    score = 100;
+                }
+
+                // Subtract for negatives
+                score -= (negDone * 15);
+            }
+
+            // Clamp 0-100
+            score = Math.max(0, Math.min(100, Math.round(score)));
+            
+            dom.scoreValue.innerText = score + '%';
+            dom.scoreBar.style.width = score + '%';
+            
+            // Color change based on score
+            if(score > 80) dom.scoreBar.style.background = 'var(--process-pos)';
+            else if(score > 50) dom.scoreBar.style.background = 'var(--nolan-gold)';
+            else dom.scoreBar.style.background = 'var(--process-neg)';
+
+            state.active.currentScore = score;
+        }
+
         function startTimer() {
-            clearInterval(state.timerId);
-            updateTimerUI();
-            state.timerId = setInterval(() => {
-                if(!state.isPaused) {
-                    state.timeLeft--;
-                    updateTimerUI();
-                    if(state.timeLeft <= 0) {
-                        clearInterval(state.timerId);
-                        // Timer end logic
-                        dom.timerDisplay.style.color = 'var(--nolan-gold)';
+            clearInterval(state.timer);
+            updateTimerDisplay();
+            state.timer = setInterval(() => {
+                if(!state.active.isPaused) {
+                    state.active.timeLeft--;
+                    updateTimerDisplay();
+                    if(state.active.timeLeft <= 0) {
+                        clearInterval(state.timer);
+                        alert("Time limit reached. Complete your orbit.");
                     }
                 }
             }, 1000);
         }
 
-        function updateTimerUI() {
-            const m = Math.floor(state.timeLeft / 60);
-            const s = state.timeLeft % 60;
+        function updateTimerDisplay() {
+            const m = Math.floor(state.active.timeLeft / 60);
+            const s = state.active.timeLeft % 60;
             dom.timerDisplay.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            
-            // Conic Gradient Progress
-            const deg = (1 - (state.timeLeft / state.duration)) * 360;
-            document.documentElement.style.setProperty('--deg', deg + 'deg');
         }
 
         function togglePause() {
-            state.isPaused = !state.isPaused;
-            document.getElementById('btnPause').innerText = state.isPaused ? "RESUME" : "PAUSE";
+            state.active.isPaused = !state.active.isPaused;
+            document.getElementById('btnPause').innerText = state.active.isPaused ? "RESUME" : "PAUSE";
         }
 
-        function abortOrbit() {
-            if(!confirm("Abort Mission?")) return;
-            endMission('aborted');
+        function abortMission() {
+            if(confirm("Abort mission?")) endMission('ABORTED');
         }
 
-        function finishOrbit() {
-            // Logic: Can only finish if timer done OR all checks done?
-            // User said "use processes to measure perfection". 
-            // We'll allow finishing anytime, but status depends on completion.
-            endMission('escaped');
+        function finishMission() {
+            endMission('COMPLETED');
         }
 
         function endMission(status) {
-            clearInterval(state.timerId);
-            
-            // Add to history
+            clearInterval(state.timer);
             const entry = {
-                name: state.active.name || "Unknown", // Fallback for whitespace bug
-                tier: state.active.tier,
+                name: state.active.data.name,
+                date: new Date().toLocaleString(),
+                score: state.active.currentScore,
                 status: status,
-                timestamp: Date.now()
+                tier: state.active.data.tier
             };
             
             state.history.unshift(entry);
-            if(status === 'escaped') state.stats.escaped++;
-            state.stats.total++;
-            
             saveData();
-            updateStats();
             renderHistory();
             
-            // UI Reset
+            // Reset UI
             dom.viewActive.classList.remove('show');
             dom.viewDock.style.display = 'flex';
             state.active = null;
         }
 
-        // --- HISTORY ---
+        // --- HISTORY & DATA ---
         function renderHistory() {
             dom.historyList.innerHTML = '';
             state.history.forEach(h => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
+                const row = document.createElement('div');
+                row.style.padding = '10px';
+                row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                row.style.display = 'flex';
+                row.style.justifyContent = 'space-between';
+                row.style.alignItems = 'center';
                 
-                // Tier Color
-                let color = '#fff';
-                if(h.tier == '25') color = 'var(--orbit-25)';
-                if(h.tier == '50') color = 'var(--orbit-50)';
-                if(h.tier == '75') color = 'var(--orbit-75)';
-                if(h.tier == 'inf') color = 'var(--orbit-infinity)';
+                let color = '#777';
+                if(h.status === 'COMPLETED') color = 'var(--orbit-25)';
+                if(h.status === 'ABORTED') color = 'var(--orbit-75)';
 
-                const date = new Date(h.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                div.innerHTML = `
-                    <div class="h-dot" style="background:${color}"></div>
-                    <div class="h-info">
-                        <span class="h-name">${h.name}</span>
-                        <span class="h-meta">${date}</span>
+                row.innerHTML = `
+                    <div>
+                        <div style="font-size:0.9rem;">${h.name}</div>
+                        <div style="font-size:0.6rem; color:#555;">${h.date}</div>
                     </div>
-                    <span class="h-status ${h.status}">${h.status.toUpperCase()}</span>
+                    <div style="text-align:right;">
+                        <div style="font-family:'Bebas Neue'; color:${color}; font-size:1.2rem;">${h.score}%</div>
+                        <div style="font-size:0.5rem; color:${color};">${h.status}</div>
+                    </div>
                 `;
-                dom.historyList.appendChild(div);
+                dom.historyList.appendChild(row);
             });
         }
 
-        function updateStats() {
-            dom.statEscaped.innerText = state.stats.escaped;
-            dom.statTotal.innerText = state.stats.total;
-        }
-
-        // --- STORAGE ---
         function saveData() {
-            localStorage.setItem('infOrbitV2', JSON.stringify({
-                dock: state.dock,
-                history: state.history,
-                stats: state.stats
-            }));
+            localStorage.setItem('infOrbitV3', JSON.stringify({dock: state.dock, history: state.history}));
         }
 
         function loadData() {
-            const d = JSON.parse(localStorage.getItem('infOrbitV2'));
+            const d = JSON.parse(localStorage.getItem('infOrbitV3'));
             if(d) {
                 state.dock = d.dock || [];
                 state.history = d.history || [];
-                state.stats = d.stats || { escaped: 0, total: 0 };
+            }
+        }
+
+        function clearLogs() {
+            if(confirm("Clear flight history?")) {
+                state.history = [];
+                saveData();
+                renderHistory();
+            }
+        }
+
+        function resetSystem() {
+            if(confirm("FACTORY RESET: Delete all orbits and history?")) {
+                localStorage.removeItem('infOrbitV3');
+                location.reload();
             }
         }
     </script>
