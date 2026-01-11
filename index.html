@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INFINITY ORBIT v9 — Responsive Gravity</title>
+    <title>INFINITY ORBIT v10 — Boundary Secure</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -11,7 +11,7 @@
         :root {
             --gold: #c9a227; --orange: #d4740c;
             --t25: #00f0ff; --t50: #ffd700; --t75: #ff2a6d; --tinf: #d300c5;
-            --glass: rgba(8, 12, 18, 0.85); --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(8, 12, 18, 0.95); --border: rgba(255, 255, 255, 0.1);
         }
         body { height: 100vh; background: #020204; font-family: 'Rajdhani', sans-serif; overflow: hidden; color: #fff; }
 
@@ -34,10 +34,14 @@
 
         /* --- PANELS --- */
         .panel { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; }
-        .panel.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(201, 162, 39, 0.1); }
+        
+        /* SIDE PANELS (Higher Z-Index to stay on top) */
+        .side-panel { z-index: 50; position: relative; }
+        
         .panel-head { padding: 15px; border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; color: #888; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
         .panel-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
         .panel-body { padding: 15px; flex: 1; overflow-y: auto; }
+        .panel.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(201, 162, 39, 0.1); }
 
         /* --- INPUTS --- */
         .input-group { margin-bottom: 15px; }
@@ -58,19 +62,20 @@
         .btn:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(201, 162, 39, 0.4); }
 
         /* --- SPACE AREA --- */
-        .space-area { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .space-area { position: relative; width: 100%; height: 100%; overflow: hidden; z-index: 1; }
+        
         #svgLayer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         .connection-line { fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 2px; stroke-dasharray: 5, 5; animation: dash 30s linear infinite; }
         .connection-line.active { stroke: #fff; stroke-opacity: 0.8; stroke-dasharray: none; filter: drop-shadow(0 0 5px #fff); }
+        .connection-hitbox { fill: none; stroke: transparent; stroke-width: 15px; cursor: pointer; pointer-events: stroke; } /* Invisible Thick Line for clicking */
         @keyframes dash { to { stroke-dashoffset: -1000; } }
 
         /* --- ORBIT NODES --- */
         .orb-wrapper {
             position: absolute; 
             cursor: grab; z-index: 10; touch-action: none;
-            /* Font size is set dynamically via JS */
         }
-        .orb-wrapper:active { cursor: grabbing; z-index: 100 !important; }
+        .orb-wrapper:active { cursor: grabbing; z-index: 40 !important; } /* Below sidebar (50) */
         
         .orb-wrapper.locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
         .orb-wrapper.locked .orb-ctrls, .orb-wrapper.locked .resize-handle { display: none; }
@@ -93,22 +98,9 @@
             animation: spin 30s linear infinite; pointer-events: none;
         }
 
-        /* DYNAMIC SCALING TEXT */
-        /* Note: Units are EM, which scale based on parent Font-Size */
-        .orb-icon { 
-            font-size: 2.2em; /* Relative to wrapper font-size */
-            color: #fff; margin-bottom: 2%; text-shadow: 0 0 20px var(--c); line-height: 1; 
-        }
-        .orb-title { 
-            font-family: 'Rajdhani'; font-weight: 700; 
-            font-size: 0.9em; /* Relative to wrapper */
-            max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); 
-        }
-        .orb-time { 
-            font-family: 'Orbitron'; 
-            font-size: 0.5em; /* Relative to wrapper */
-            opacity: 0.8; margin-top: 2%; color: #fff; 
-        }
+        .orb-icon { font-size: 2.2em; color: #fff; margin-bottom: 2%; text-shadow: 0 0 20px var(--c); line-height: 1; }
+        .orb-title { font-family: 'Rajdhani'; font-weight: 700; font-size: 0.9em; max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); }
+        .orb-time { font-family: 'Orbitron'; font-size: 0.5em; opacity: 0.8; margin-top: 2%; color: #fff; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -118,6 +110,7 @@
         .ctrl-btn:hover { transform: scale(1.15); border-color: #fff; color: #fff; }
         .c-launch { border-color: var(--c); color: var(--c); box-shadow: 0 0 10px var(--c); }
         .c-link { border-color: #fff; color: #fff; }
+        .c-link.active { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
         .c-del { border-color: #ff2a6d; color: #ff2a6d; }
 
         /* RESIZE HANDLE */
@@ -125,7 +118,7 @@
             position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
             cursor: nwse-resize; z-index: 30;
             background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.5) 50%);
-            border-radius: 0 0 50% 0; /* Curve to match circle roughly */
+            border-radius: 0 0 50% 0;
             pointer-events: auto;
         }
         .resize-handle:hover { background: linear-gradient(135deg, transparent 50%, #fff 50%); }
@@ -161,7 +154,7 @@
 <body>
 
     <div class="grid-bg"></div>
-    <div class="toast" id="toast">LINK MODE: Select Target Orbit</div>
+    <div class="toast" id="toast">LINK MODE</div>
 
     <div class="app">
         <header class="header">
@@ -247,7 +240,7 @@
                 tier: state.editor.tier, duration: state.editor.duration, procs: [...state.editor.procs],
                 x: state.editor.editing ? getOrbit(state.editor.id).x : 50,
                 y: state.editor.editing ? getOrbit(state.editor.id).y : 50,
-                size: state.editor.editing ? (getOrbit(state.editor.id).size || 140) : 140, // DEFAULT SIZE 140
+                size: state.editor.editing ? (getOrbit(state.editor.id).size || 140) : 140,
                 completed: state.editor.editing ? getOrbit(state.editor.id).completed : false
             };
             if (state.editor.editing) { state.dock[state.dock.findIndex(o => o.id === data.id)] = data; } else { state.dock.push(data); }
@@ -264,11 +257,9 @@
         function renderSpace() {
             $('orbContainer').innerHTML = state.dock.map(o => {
                 const color = colors[o.tier]; const isLocked = checkLocked(o.id);
-                const size = o.size || 140; // Use stored size or default
-                
-                // --- DYNAMIC FONT CALCULATION ---
-                // Base size is size/9. If size is 140, font is ~15px. If 80, font is ~9px.
+                const size = o.size || 140; 
                 const fontSize = Math.max(8, size / 9); 
+                const linkActive = state.linking === o.id;
 
                 return `
                 <div class="orb-wrapper ${isLocked?'locked':''} ${o.completed?'completed':''}" id="orb-${o.id}" 
@@ -277,7 +268,7 @@
                     
                     <div class="orb-ctrls">
                         <div class="ctrl-btn c-launch" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="launchMission(${o.id})">🚀</div>
-                        <div class="ctrl-btn c-link" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="startLink(${o.id})">🔗</div>
+                        <div class="ctrl-btn c-link ${linkActive?'active':''}" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="startLink(${o.id})">🔗</div>
                         <div class="ctrl-btn" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="editOrbit(${o.id})">✎</div>
                         <div class="ctrl-btn c-del" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="deleteOrbit(${o.id})">×</div>
                     </div>
@@ -308,23 +299,15 @@
             if(!resizing.active) return;
             const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const diff = cX - resizing.startX;
-            const newSize = Math.max(70, resizing.startWidth + diff); // Min size 70px
-            
+            const newSize = Math.max(70, resizing.startWidth + diff); 
             const el = $(`orb-${resizing.id}`);
-            el.style.width = newSize + 'px';
-            el.style.height = newSize + 'px';
-            
-            // DYNAMIC FONT UPDATE DURING DRAG
-            const newFS = Math.max(8, newSize / 9);
-            el.style.fontSize = newFS + 'px';
+            el.style.width = newSize + 'px'; el.style.height = newSize + 'px';
+            const newFS = Math.max(8, newSize / 9); el.style.fontSize = newFS + 'px';
         }
         function endResize() {
             if(!resizing.active) return;
-            const o = getOrbit(resizing.id);
-            const el = $(`orb-${resizing.id}`);
-            o.size = parseInt(el.style.width);
-            saveData();
-            resizing.active = false;
+            const o = getOrbit(resizing.id); const el = $(`orb-${resizing.id}`);
+            o.size = parseInt(el.style.width); saveData(); resizing.active = false;
         }
 
         // DRAGGING
@@ -343,8 +326,21 @@
             e.preventDefault();
             const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            // BOUNDARY LOGIC
+            const rect = $('spaceArea').getBoundingClientRect();
+            const orbitW = getOrbit(drag.id).size || 140;
+            const margin = 20;
+
+            let x = cX - drag.offX;
+            let y = cY - drag.offY;
+
+            // Strict Clamping
+            x = Math.max(margin, Math.min(x, rect.width - orbitW - margin));
+            y = Math.max(margin, Math.min(y, rect.height - orbitW - margin));
+
             const el = $(`orb-${drag.id}`);
-            el.style.left = (cX - drag.offX) + 'px'; el.style.top = (cY - drag.offY) + 'px';
+            el.style.left = x + 'px'; el.style.top = y + 'px';
         }
         function endDrag() {
             if (resizing.active) { endResize(); return; }
@@ -358,29 +354,67 @@
         window.addEventListener('mouseup', endDrag); window.addEventListener('touchend', endDrag);
 
         // LINKS
-        function startLink(id) { state.linking = id; $('toast').classList.add('show'); }
-        function completeLink(targetId) {
-            if(state.linking && state.linking !== targetId) {
-                if(!state.links.find(l => l.source === state.linking && l.target === targetId)) {
-                    state.links.push({ source: state.linking, target: targetId }); saveData(); renderSpace();
-                }
-            }
-            state.linking = null; $('toast').classList.remove('show');
+        function startLink(id) { 
+            state.linking = id; 
+            $('toast').innerText = "SELECT TARGET ORBIT";
+            $('toast').classList.add('show'); 
+            renderSpace(); // Update UI for active link button
         }
+        
+        function completeLink(targetId) {
+            if(state.linking) {
+                if(state.linking === targetId) { 
+                    alert("Cannot link to self"); 
+                } else {
+                    // CHECK IF LINK EXISTS
+                    const existingIdx = state.links.findIndex(l => 
+                        (l.source === state.linking && l.target === targetId)
+                    );
+
+                    if (existingIdx >= 0) {
+                        // REMOVE
+                        state.links.splice(existingIdx, 1);
+                        $('toast').innerText = "CONNECTION SEVERED";
+                    } else {
+                        // ADD
+                        state.links.push({ source: state.linking, target: targetId });
+                        $('toast').innerText = "ORBITS LINKED";
+                    }
+                    saveData(); 
+                    renderSpace();
+                    
+                    // Hide toast after delay
+                    setTimeout(() => $('toast').classList.remove('show'), 2000);
+                }
+                state.linking = null; 
+            }
+        }
+
         function renderLinks() {
             const svg = $('svgLayer');
-            while(svg.lastChild && svg.lastChild.tagName === 'line') { svg.removeChild(svg.lastChild); }
+            // Remove old lines only, keep marker
+            Array.from(svg.children).forEach(c => { if(c.tagName==='line' || c.tagName==='path') svg.removeChild(c) });
+
             state.links.forEach(l => {
                 const s = getOrbit(l.source); const t = getOrbit(l.target);
                 if(s && t) {
                     const sSize = s.size || 140; const tSize = t.size || 140;
+                    
+                    // Visual Line
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     line.setAttribute('x1', s.x + (sSize/2)); line.setAttribute('y1', s.y + (sSize/2));
                     line.setAttribute('x2', t.x + (tSize/2)); line.setAttribute('y2', t.y + (tSize/2));
                     line.setAttribute('class', `connection-line ${s.completed?'active':''}`);
                     line.setAttribute('marker-end', 'url(#arrow)');
-                    line.ondblclick = () => deleteLink(l); line.style.pointerEvents = 'auto'; line.style.cursor = 'pointer';
                     svg.appendChild(line);
+
+                    // Hitbox (Thicker invisible line for double-click delete)
+                    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    hit.setAttribute('x1', s.x + (sSize/2)); hit.setAttribute('y1', s.y + (sSize/2));
+                    hit.setAttribute('x2', t.x + (tSize/2)); hit.setAttribute('y2', t.y + (tSize/2));
+                    hit.setAttribute('class', 'connection-hitbox');
+                    hit.ondblclick = () => deleteLink(l);
+                    svg.appendChild(hit);
                 }
             });
         }
@@ -417,8 +451,8 @@
         // UTILS
         function resetProgress() { if(confirm("Reset day?")) { state.dock.forEach(o => o.completed = false); saveData(); renderSpace(); } }
         function renderLogs() { $('logList').innerHTML = state.history.map(h => `<div class="log-item"><div><div style="color:${h.color}">${h.name}</div><div style="font-size:0.7rem; color:#666">${h.time}</div></div><div style="text-align:right"><div class="log-score" style="color:${h.color}">${h.score}%</div><div style="font-size:0.6rem; color:#666">${h.status}</div></div></div>`).join(''); }
-        function saveData() { localStorage.setItem('infOrbitV9', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
-        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV9')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
+        function saveData() { localStorage.setItem('infOrbitV10', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV10')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
         function clearLogs() { state.history = []; saveData(); renderLogs(); }
     </script>
 </body>
