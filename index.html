@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INFINITY ORBIT v10 — Boundary Secure</title>
+    <title>INFINITY ORBIT v11 — Smart Link</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -34,14 +34,10 @@
 
         /* --- PANELS --- */
         .panel { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; }
-        
-        /* SIDE PANELS (Higher Z-Index to stay on top) */
-        .side-panel { z-index: 50; position: relative; }
-        
+        .panel.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(201, 162, 39, 0.1); }
         .panel-head { padding: 15px; border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; color: #888; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
         .panel-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
         .panel-body { padding: 15px; flex: 1; overflow-y: auto; }
-        .panel.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(201, 162, 39, 0.1); }
 
         /* --- INPUTS --- */
         .input-group { margin-bottom: 15px; }
@@ -67,15 +63,12 @@
         #svgLayer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         .connection-line { fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 2px; stroke-dasharray: 5, 5; animation: dash 30s linear infinite; }
         .connection-line.active { stroke: #fff; stroke-opacity: 0.8; stroke-dasharray: none; filter: drop-shadow(0 0 5px #fff); }
-        .connection-hitbox { fill: none; stroke: transparent; stroke-width: 15px; cursor: pointer; pointer-events: stroke; } /* Invisible Thick Line for clicking */
+        .connection-hitbox { fill: none; stroke: transparent; stroke-width: 20px; cursor: pointer; pointer-events: stroke; }
         @keyframes dash { to { stroke-dashoffset: -1000; } }
 
         /* --- ORBIT NODES --- */
-        .orb-wrapper {
-            position: absolute; 
-            cursor: grab; z-index: 10; touch-action: none;
-        }
-        .orb-wrapper:active { cursor: grabbing; z-index: 40 !important; } /* Below sidebar (50) */
+        .orb-wrapper { position: absolute; cursor: grab; z-index: 10; touch-action: none; }
+        .orb-wrapper:active { cursor: grabbing; z-index: 40 !important; } 
         
         .orb-wrapper.locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
         .orb-wrapper.locked .orb-ctrls, .orb-wrapper.locked .resize-handle { display: none; }
@@ -89,7 +82,10 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(5px);
             overflow: hidden;
+            transition: box-shadow 0.3s;
         }
+        /* Highlight when targeted for linking */
+        .orb-core.link-target { box-shadow: 0 0 30px var(--c), inset 0 0 20px #fff; cursor: crosshair; }
 
         .orb-particles {
             position: absolute; inset: -5px; border-radius: 50%;
@@ -110,7 +106,7 @@
         .ctrl-btn:hover { transform: scale(1.15); border-color: #fff; color: #fff; }
         .c-launch { border-color: var(--c); color: var(--c); box-shadow: 0 0 10px var(--c); }
         .c-link { border-color: #fff; color: #fff; }
-        .c-link.active { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
+        .c-link.active { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold); border-color: var(--gold); }
         .c-del { border-color: #ff2a6d; color: #ff2a6d; }
 
         /* RESIZE HANDLE */
@@ -147,14 +143,14 @@
         .hidden { display: none; }
         .proc-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 2px; margin-right: 8px; color: black; font-weight: bold; }
         .tag-pos { background: var(--t25); } .tag-neg { background: var(--t75); }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 2000; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 2000; box-shadow: 0 0 20px var(--gold); }
         .toast.show { opacity: 1; top: 40px; }
     </style>
 </head>
 <body>
 
     <div class="grid-bg"></div>
-    <div class="toast" id="toast">LINK MODE</div>
+    <div class="toast" id="toast">LINK MODE: Select Target Orbit</div>
 
     <div class="app">
         <header class="header">
@@ -188,7 +184,7 @@
                 </div>
             </div>
 
-            <div class="panel space-area" id="spaceArea">
+            <div class="panel space-area" id="spaceArea" onclick="bgClick(event)">
                 <svg id="svgLayer"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="20" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="rgba(255,255,255,0.4)" /></marker></defs></svg>
                 <div id="orbContainer"></div>
                 <div style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); font-family:'Orbitron'; font-size:0.7rem; color:rgba(255,255,255,0.3); pointer-events:none;">SYSTEM READY</div>
@@ -201,6 +197,7 @@
                     <button onclick="resetProgress()" style="flex:1; background:transparent; border:1px solid var(--gold); color:var(--gold); font-size:0.6rem; padding:10px; cursor:pointer; margin-top:10px;">RESET PROGRESS</button>
                     <button onclick="clearLogs()" style="flex:1; background:transparent; border:1px solid #444; color:#444; font-size:0.6rem; padding:10px; cursor:pointer; margin-top:10px;">PURGE LOGS</button>
                 </div>
+                <button onclick="clearLinks()" style="width:100%; background:rgba(255,0,0,0.1); border:1px solid #ff4444; color:#ff4444; font-size:0.6rem; padding:5px; cursor:pointer; margin-top:5px;">UNLINK ALL</button>
             </div>
         </div>
     </div>
@@ -260,6 +257,7 @@
                 const size = o.size || 140; 
                 const fontSize = Math.max(8, size / 9); 
                 const linkActive = state.linking === o.id;
+                const linkTarget = state.linking && state.linking !== o.id;
 
                 return `
                 <div class="orb-wrapper ${isLocked?'locked':''} ${o.completed?'completed':''}" id="orb-${o.id}" 
@@ -273,7 +271,7 @@
                         <div class="ctrl-btn c-del" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="deleteOrbit(${o.id})">×</div>
                     </div>
 
-                    <div class="orb-core" style="--c:${color}" onclick="completeLink(${o.id})">
+                    <div class="orb-core ${linkTarget?'link-target':''}" style="--c:${color}" onclick="completeLink(${o.id})">
                         <div class="orb-particles" style="--c:${color}"></div>
                         <div class="orb-icon">●</div>
                         <div class="orb-title" style="--c:${color}">${o.name}</div>
@@ -327,15 +325,10 @@
             const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             
-            // BOUNDARY LOGIC
             const rect = $('spaceArea').getBoundingClientRect();
             const orbitW = getOrbit(drag.id).size || 140;
             const margin = 20;
-
-            let x = cX - drag.offX;
-            let y = cY - drag.offY;
-
-            // Strict Clamping
+            let x = cX - drag.offX; let y = cY - drag.offY;
             x = Math.max(margin, Math.min(x, rect.width - orbitW - margin));
             y = Math.max(margin, Math.min(y, rect.height - orbitW - margin));
 
@@ -355,10 +348,24 @@
 
         // LINKS
         function startLink(id) { 
-            state.linking = id; 
-            $('toast').innerText = "SELECT TARGET ORBIT";
-            $('toast').classList.add('show'); 
-            renderSpace(); // Update UI for active link button
+            if (state.linking === id) {
+                // Cancel if clicked again
+                state.linking = null;
+                $('toast').classList.remove('show');
+            } else {
+                state.linking = id; 
+                $('toast').innerText = "SELECT TARGET TO CONNECT/DISCONNECT";
+                $('toast').classList.add('show'); 
+            }
+            renderSpace(); 
+        }
+        
+        function bgClick(e) {
+            if(state.linking && e.target.id === 'spaceArea') {
+                state.linking = null;
+                $('toast').classList.remove('show');
+                renderSpace();
+            }
         }
         
         function completeLink(targetId) {
@@ -366,25 +373,25 @@
                 if(state.linking === targetId) { 
                     alert("Cannot link to self"); 
                 } else {
-                    // CHECK IF LINK EXISTS
+                    // SMART LINK LOGIC (Bidirectional check)
                     const existingIdx = state.links.findIndex(l => 
-                        (l.source === state.linking && l.target === targetId)
+                        (l.source === state.linking && l.target === targetId) ||
+                        (l.source === targetId && l.target === state.linking)
                     );
 
                     if (existingIdx >= 0) {
-                        // REMOVE
+                        // REMOVE (Toggle Off)
                         state.links.splice(existingIdx, 1);
                         $('toast').innerText = "CONNECTION SEVERED";
                     } else {
-                        // ADD
+                        // ADD (Toggle On)
                         state.links.push({ source: state.linking, target: targetId });
                         $('toast').innerText = "ORBITS LINKED";
                     }
                     saveData(); 
                     renderSpace();
                     
-                    // Hide toast after delay
-                    setTimeout(() => $('toast').classList.remove('show'), 2000);
+                    setTimeout(() => $('toast').classList.remove('show'), 1500);
                 }
                 state.linking = null; 
             }
@@ -392,15 +399,12 @@
 
         function renderLinks() {
             const svg = $('svgLayer');
-            // Remove old lines only, keep marker
-            Array.from(svg.children).forEach(c => { if(c.tagName==='line' || c.tagName==='path') svg.removeChild(c) });
+            Array.from(svg.children).forEach(c => { if(c.tagName==='line') svg.removeChild(c) });
 
             state.links.forEach(l => {
                 const s = getOrbit(l.source); const t = getOrbit(l.target);
                 if(s && t) {
                     const sSize = s.size || 140; const tSize = t.size || 140;
-                    
-                    // Visual Line
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     line.setAttribute('x1', s.x + (sSize/2)); line.setAttribute('y1', s.y + (sSize/2));
                     line.setAttribute('x2', t.x + (tSize/2)); line.setAttribute('y2', t.y + (tSize/2));
@@ -408,7 +412,6 @@
                     line.setAttribute('marker-end', 'url(#arrow)');
                     svg.appendChild(line);
 
-                    // Hitbox (Thicker invisible line for double-click delete)
                     const hit = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     hit.setAttribute('x1', s.x + (sSize/2)); hit.setAttribute('y1', s.y + (sSize/2));
                     hit.setAttribute('x2', t.x + (tSize/2)); hit.setAttribute('y2', t.y + (tSize/2));
@@ -426,7 +429,7 @@
 
         // MISSION
         function launchMission(id) {
-            const o = getOrbit(id); if(checkLocked(id)) { alert("LOCKED"); return; }
+            const o = getOrbit(id); if(checkLocked(id)) { alert("LOCKED: Complete prerequisite first."); return; }
             state.active = { data: o, timeLeft: o.duration * 60, checklist: o.procs.map(p => ({...p, done: false})) };
             $('hudName').innerText = o.name.toUpperCase(); document.documentElement.style.setProperty('--active-c', colors[o.tier]); $('hud').classList.add('active'); renderHUDList(); updateIntegrity(); startTimer();
         }
@@ -450,9 +453,10 @@
 
         // UTILS
         function resetProgress() { if(confirm("Reset day?")) { state.dock.forEach(o => o.completed = false); saveData(); renderSpace(); } }
+        function clearLinks() { if(confirm("Remove all connections?")) { state.links = []; saveData(); renderSpace(); } }
         function renderLogs() { $('logList').innerHTML = state.history.map(h => `<div class="log-item"><div><div style="color:${h.color}">${h.name}</div><div style="font-size:0.7rem; color:#666">${h.time}</div></div><div style="text-align:right"><div class="log-score" style="color:${h.color}">${h.score}%</div><div style="font-size:0.6rem; color:#666">${h.status}</div></div></div>`).join(''); }
-        function saveData() { localStorage.setItem('infOrbitV10', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
-        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV10')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
+        function saveData() { localStorage.setItem('infOrbitV11', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV11')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
         function clearLogs() { state.history = []; saveData(); renderLogs(); }
     </script>
 </body>
