@@ -21,7 +21,7 @@
             --orbit-infinity: #a855f7;
             --deep-space: #000000;
             --cosmic-blue: #0a1628;
-            --panel-bg: rgba(10, 22, 40, 0.85);
+            --panel-bg: rgba(10, 22, 40, 0.9);
         }
 
         body {
@@ -37,41 +37,30 @@
             position: fixed;
             left: 0;
             width: 100%;
-            height: 50px;
+            height: 40px;
             background: #000;
             z-index: 1000;
+            pointer-events: none;
         }
         .letterbox-top { top: 0; }
         .letterbox-bottom { bottom: 0; }
 
-        /* Film grain */
-        .film-grain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
-        }
-
         /* Space background */
-        .space-container {
+        .space-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(ellipse at 20% 20%, rgba(78, 205, 196, 0.1) 0%, transparent 40%),
-                radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 20% 20%, rgba(78, 205, 196, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at center, #050510 0%, #000000 100%);
+            pointer-events: none;
         }
 
         /* Stars */
-        .star-field {
+        .stars {
             position: fixed;
             top: 0;
             left: 0;
@@ -84,7 +73,7 @@
             position: absolute;
             background: white;
             border-radius: 50%;
-            animation: twinkle 4s ease-in-out infinite;
+            animation: twinkle 3s ease-in-out infinite;
         }
 
         @keyframes twinkle {
@@ -92,12 +81,12 @@
             50% { opacity: 1; }
         }
 
-        /* Main container */
-        .main-container {
+        /* Main Layout */
+        .app-container {
             position: relative;
             z-index: 10;
             min-height: 100vh;
-            padding: 70px 20px;
+            padding: 60px 20px;
         }
 
         /* Header */
@@ -108,8 +97,8 @@
 
         .title {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 4rem;
-            letter-spacing: 20px;
+            font-size: clamp(2rem, 6vw, 4rem);
+            letter-spacing: 15px;
             background: linear-gradient(135deg, #fff 0%, var(--nolan-gold) 50%, var(--nolan-orange) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -118,355 +107,136 @@
 
         .subtitle {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 10px;
+            font-size: 0.65rem;
+            letter-spacing: 8px;
             color: rgba(255, 255, 255, 0.4);
             margin-top: 5px;
         }
 
-        /* Layout grid */
+        /* Dashboard Grid */
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 500px 1fr;
-            gap: 30px;
-            max-width: 1400px;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 25px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1100px) {
             .dashboard {
                 grid-template-columns: 1fr;
-                max-width: 600px;
+                max-width: 500px;
             }
         }
 
-        /* Orbital visualization */
-        .orbit-visualization {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .orbit-system {
-            position: relative;
-            width: 450px;
-            height: 450px;
-        }
-
-        /* Central body (you/focus) */
-        .central-body {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, var(--nolan-gold) 0%, var(--nolan-orange) 50%, #000 100%);
-            border-radius: 50%;
-            box-shadow: 
-                0 0 30px var(--nolan-gold),
-                0 0 60px rgba(201, 162, 39, 0.5);
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.5rem;
-            letter-spacing: 1px;
-        }
-
-        /* Orbit rings */
-        .orbit-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            border-radius: 50%;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: all 0.5s ease;
-        }
-
-        .orbit-ring.orbit-25 {
-            width: 150px;
-            height: 150px;
-            border-color: rgba(78, 205, 196, 0.3);
-        }
-
-        .orbit-ring.orbit-50 {
-            width: 230px;
-            height: 230px;
-            border-color: rgba(255, 230, 109, 0.3);
-        }
-
-        .orbit-ring.orbit-75 {
-            width: 310px;
-            height: 310px;
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        .orbit-ring.orbit-infinity {
-            width: 400px;
-            height: 400px;
-            border-color: rgba(168, 85, 247, 0.3);
-        }
-
-        .orbit-ring.active {
-            border-style: solid;
-            border-width: 2px;
-            box-shadow: 0 0 30px currentColor;
-        }
-
-        .orbit-ring.orbit-25.active { 
-            border-color: var(--orbit-25); 
-            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
-        }
-        .orbit-ring.orbit-50.active { 
-            border-color: var(--orbit-50); 
-            box-shadow: 0 0 30px rgba(255, 230, 109, 0.5);
-        }
-        .orbit-ring.orbit-75.active { 
-            border-color: var(--orbit-75); 
-            box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
-        }
-        .orbit-ring.orbit-infinity.active { 
-            border-color: var(--orbit-infinity); 
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
-        }
-
-        /* Orbit labels */
-        .orbit-label {
-            position: absolute;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.55rem;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.4);
-            transform: translate(-50%, -50%);
-        }
-
-        .orbit-label.label-25 { top: 50%; left: calc(50% + 85px); color: var(--orbit-25); }
-        .orbit-label.label-50 { top: 50%; left: calc(50% + 125px); color: var(--orbit-50); }
-        .orbit-label.label-75 { top: 50%; left: calc(50% + 165px); color: var(--orbit-75); }
-        .orbit-label.label-infinity { top: 50%; left: calc(50% + 210px); color: var(--orbit-infinity); }
-
-        /* Orbiting satellite (current task) */
-        .satellite {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: var(--nolan-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 20px var(--nolan-gold);
-            z-index: 20;
-            display: none;
-        }
-
-        .satellite.active {
-            display: block;
-            animation: orbit var(--orbit-duration, 25s) linear infinite;
-        }
-
-        .satellite.orbit-25 { --orbit-radius: 75px; --orbit-color: var(--orbit-25); }
-        .satellite.orbit-50 { --orbit-radius: 115px; --orbit-color: var(--orbit-50); }
-        .satellite.orbit-75 { --orbit-radius: 155px; --orbit-color: var(--orbit-75); }
-        .satellite.orbit-infinity { --orbit-radius: 200px; --orbit-color: var(--orbit-infinity); }
-
-        .satellite.active {
-            background: var(--orbit-color);
-            box-shadow: 0 0 20px var(--orbit-color), 0 0 40px var(--orbit-color);
-        }
-
-        @keyframes orbit {
-            from {
-                transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg);
-            }
-        }
-
-        /* Trail effect */
-        .satellite-trail {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: var(--orbit-radius);
-            height: var(--orbit-radius);
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--orbit-color);
-            transform: translate(-50%, -50%);
-            opacity: 0.5;
-            display: none;
-        }
-
-        .satellite-trail.active {
-            display: block;
-            animation: trailRotate var(--orbit-duration, 25s) linear infinite;
-        }
-
-        @keyframes trailRotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Power meter */
-        .power-meter {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            text-align: center;
-        }
-
-        .power-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.55rem;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 5px;
-        }
-
-        .power-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .power-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--orbit-25), var(--orbit-50), var(--orbit-75), var(--orbit-infinity));
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        .power-value {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
-            color: var(--nolan-gold);
-            margin-top: 5px;
-        }
-
-        /* Left panel - Mission Control */
+        /* Panels */
         .panel {
             background: var(--panel-bg);
             border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
+            border-radius: 4px;
         }
 
         .panel-header {
-            background: linear-gradient(90deg, rgba(201, 162, 39, 0.2), transparent);
-            padding: 15px 20px;
+            padding: 12px 18px;
+            background: rgba(201, 162, 39, 0.1);
             border-bottom: 1px solid rgba(201, 162, 39, 0.2);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .panel-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--nolan-gold);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
         .panel-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             letter-spacing: 3px;
             color: var(--nolan-gold);
             text-transform: uppercase;
         }
 
-        .panel-indicator {
-            width: 8px;
-            height: 8px;
-            background: var(--nolan-gold);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+        .panel-body {
+            padding: 18px;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .panel-content {
-            padding: 20px;
-        }
-
-        /* Orbit selection */
-        .orbit-selector {
+        /* Tier Selection */
+        .tier-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        .orbit-option {
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+        .tier-btn {
+            padding: 14px 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
         }
 
-        .orbit-option:hover {
+        .tier-btn:hover {
             border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
-        .orbit-option.selected {
-            border-width: 2px;
-        }
+        .tier-btn.active.t25 { border-color: var(--orbit-25); background: rgba(78, 205, 196, 0.15); }
+        .tier-btn.active.t50 { border-color: var(--orbit-50); background: rgba(255, 230, 109, 0.15); }
+        .tier-btn.active.t75 { border-color: var(--orbit-75); background: rgba(255, 107, 107, 0.15); }
+        .tier-btn.active.tinf { border-color: var(--orbit-infinity); background: rgba(168, 85, 247, 0.15); }
 
-        .orbit-option.tier-25 { border-color: var(--orbit-25); }
-        .orbit-option.tier-50 { border-color: var(--orbit-50); }
-        .orbit-option.tier-75 { border-color: var(--orbit-75); }
-        .orbit-option.tier-infinity { border-color: var(--orbit-infinity); }
-
-        .orbit-option.tier-25.selected { background: rgba(78, 205, 196, 0.1); box-shadow: 0 0 20px rgba(78, 205, 196, 0.3); }
-        .orbit-option.tier-50.selected { background: rgba(255, 230, 109, 0.1); box-shadow: 0 0 20px rgba(255, 230, 109, 0.3); }
-        .orbit-option.tier-75.selected { background: rgba(255, 107, 107, 0.1); box-shadow: 0 0 20px rgba(255, 107, 107, 0.3); }
-        .orbit-option.tier-infinity.selected { background: rgba(168, 85, 247, 0.1); box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
-
-        .orbit-tier-name {
+        .tier-name {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
-        .tier-25 .orbit-tier-name { color: var(--orbit-25); }
-        .tier-50 .orbit-tier-name { color: var(--orbit-50); }
-        .tier-75 .orbit-tier-name { color: var(--orbit-75); }
-        .tier-infinity .orbit-tier-name { color: var(--orbit-infinity); }
+        .t25 .tier-name { color: var(--orbit-25); }
+        .t50 .tier-name { color: var(--orbit-50); }
+        .t75 .tier-name { color: var(--orbit-75); }
+        .tinf .tier-name { color: var(--orbit-infinity); }
 
-        .orbit-tier-time {
+        .tier-time {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: rgba(255, 255, 255, 0.5);
             letter-spacing: 1px;
+            margin-top: 3px;
         }
 
-        /* Input fields */
-        .input-group {
+        /* Form Inputs */
+        .form-group {
             margin-bottom: 15px;
         }
 
-        .input-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            color: rgba(201, 162, 39, 0.7);
-            margin-bottom: 8px;
+        .form-label {
             display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            letter-spacing: 2px;
+            color: rgba(201, 162, 39, 0.8);
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
 
-        .input-field {
+        .form-input {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
             color: white;
             font-family: 'Rajdhani', sans-serif;
             font-size: 1rem;
@@ -474,19 +244,19 @@
             transition: all 0.3s;
         }
 
-        .input-field:focus {
+        .form-input:focus {
             border-color: var(--nolan-gold);
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+            box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
         }
 
-        .input-field::placeholder {
+        .form-input::placeholder {
             color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Process/Rubric section */
+        /* Process Section */
         .process-section {
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 18px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -494,11 +264,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+
+        .btn-add {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(201, 162, 39, 0.5);
+            color: var(--nolan-gold);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background: rgba(201, 162, 39, 0.15);
         }
 
         .process-list {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
@@ -506,35 +293,35 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 2px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.3);
             border-left: 3px solid var(--nolan-gold);
+            border-radius: 0 3px 3px 0;
+            margin-bottom: 8px;
         }
 
-        .process-checkbox {
-            width: 18px;
-            height: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
+        .process-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
             flex-shrink: 0;
+            font-size: 12px;
         }
 
-        .process-checkbox.checked {
-            background: var(--nolan-gold);
+        .process-check:hover {
             border-color: var(--nolan-gold);
         }
 
-        .process-checkbox.checked::after {
-            content: '✓';
+        .process-check.done {
+            background: var(--nolan-gold);
+            border-color: var(--nolan-gold);
             color: black;
-            font-size: 0.7rem;
         }
 
         .process-text {
@@ -542,208 +329,358 @@
             font-size: 0.9rem;
         }
 
-        .process-text.completed {
+        .process-text.done {
             text-decoration: line-through;
             opacity: 0.5;
         }
 
-        .btn-add-process {
-            padding: 8px 15px;
-            background: transparent;
-            border: 1px solid rgba(201, 162, 39, 0.5);
-            color: var(--nolan-gold);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 1px;
+        .process-delete {
+            color: rgba(255, 107, 107, 0.6);
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 0 5px;
         }
 
-        .btn-add-process:hover {
-            background: rgba(201, 162, 39, 0.1);
+        .process-delete:hover {
+            color: var(--orbit-75);
         }
 
-        /* Launch button */
+        /* Launch Button */
         .btn-launch {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(135deg, var(--nolan-gold), var(--nolan-orange));
             border: none;
             color: black;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 5px;
+            font-size: 1.4rem;
+            letter-spacing: 4px;
             cursor: pointer;
+            border-radius: 4px;
+            margin-top: 18px;
             transition: all 0.3s;
-            margin-top: 20px;
         }
 
-        .btn-launch:hover {
+        .btn-launch:hover:not(:disabled) {
             transform: scale(1.02);
-            box-shadow: 0 0 40px rgba(201, 162, 39, 0.5);
+            box-shadow: 0 0 30px rgba(201, 162, 39, 0.4);
         }
 
         .btn-launch:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
-            transform: none;
         }
 
-        /* Right panel - Mission Status */
-        .status-panel .panel-content {
-            padding: 0;
-        }
-
-        /* Active mission display */
-        .active-mission {
+        /* Orbit Visualization */
+        .orbit-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            display: none;
         }
 
-        .active-mission.visible {
-            display: block;
+        .orbit-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
         }
 
-        .mission-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
+        /* Orbit Rings */
+        .orbit-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            transition: all 0.5s;
+        }
+
+        .orbit-ring.r25 { width: 35%; height: 35%; border-color: rgba(78, 205, 196, 0.25); }
+        .orbit-ring.r50 { width: 55%; height: 55%; border-color: rgba(255, 230, 109, 0.25); }
+        .orbit-ring.r75 { width: 75%; height: 75%; border-color: rgba(255, 107, 107, 0.25); }
+        .orbit-ring.rinf { width: 95%; height: 95%; border-color: rgba(168, 85, 247, 0.25); }
+
+        .orbit-ring.active {
+            border-style: solid;
+            border-width: 2px;
+        }
+
+        .orbit-ring.active.r25 { border-color: var(--orbit-25); box-shadow: 0 0 20px rgba(78, 205, 196, 0.3); }
+        .orbit-ring.active.r50 { border-color: var(--orbit-50); box-shadow: 0 0 20px rgba(255, 230, 109, 0.3); }
+        .orbit-ring.active.r75 { border-color: var(--orbit-75); box-shadow: 0 0 20px rgba(255, 107, 107, 0.3); }
+        .orbit-ring.active.rinf { border-color: var(--orbit-infinity); box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+
+        /* Central Focus */
+        .focus-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, var(--nolan-gold), var(--nolan-orange), #000);
+            border-radius: 50%;
+            box-shadow: 0 0 30px var(--nolan-gold), 0 0 60px rgba(201, 162, 39, 0.3);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .focus-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.4rem;
+            letter-spacing: 1px;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Satellite */
+        .satellite {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: var(--nolan-gold);
+            border-radius: 50%;
+            transform-origin: center center;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .satellite.visible {
+            opacity: 1;
+        }
+
+        .satellite.orbiting {
+            animation: orbit var(--orbit-speed, 20s) linear infinite;
+        }
+
+        .satellite.t25 { 
+            background: var(--orbit-25); 
+            box-shadow: 0 0 15px var(--orbit-25);
+            --orbit-radius: 17.5%;
+        }
+        .satellite.t50 { 
+            background: var(--orbit-50); 
+            box-shadow: 0 0 15px var(--orbit-50);
+            --orbit-radius: 27.5%;
+        }
+        .satellite.t75 { 
+            background: var(--orbit-75); 
+            box-shadow: 0 0 15px var(--orbit-75);
+            --orbit-radius: 37.5%;
+        }
+        .satellite.tinf { 
+            background: var(--orbit-infinity); 
+            box-shadow: 0 0 15px var(--orbit-infinity);
+            --orbit-radius: 47.5%;
+        }
+
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg); }
+        }
+
+        /* Power Meter */
+        .power-section {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 70%;
+        }
+
+        .power-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
             margin-bottom: 5px;
         }
 
-        .mission-objective {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .power-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        /* Timer display */
-        .timer-display {
-            text-align: center;
-            padding: 30px 0;
+        .power-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--orbit-25), var(--orbit-50), var(--orbit-75), var(--orbit-infinity));
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
-        .timer-value {
+        .power-value {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 5rem;
-            line-height: 1;
+            font-size: 1.3rem;
+            color: var(--nolan-gold);
+            margin-top: 5px;
         }
 
-        .timer-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 10px;
-        }
-
-        /* Mission controls */
-        .mission-controls {
-            display: flex;
-            gap: 10px;
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-mission {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-mission:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-            color: white;
-        }
-
-        .btn-mission.btn-abort {
-            border-color: rgba(255, 107, 107, 0.5);
-            color: var(--orbit-75);
-        }
-
-        .btn-mission.btn-abort:hover {
-            background: rgba(255, 107, 107, 0.1);
-        }
-
-        .btn-mission.btn-complete {
-            border-color: rgba(78, 205, 196, 0.5);
-            color: var(--orbit-25);
-        }
-
-        .btn-mission.btn-complete:hover {
-            background: rgba(78, 205, 196, 0.1);
-        }
-
-        /* No active mission state */
-        .no-mission {
-            padding: 60px 20px;
+        /* Right Panel - Status */
+        .status-idle {
+            padding: 50px 20px;
             text-align: center;
             color: rgba(255, 255, 255, 0.3);
         }
 
-        .no-mission-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+        .idle-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             opacity: 0.3;
         }
 
-        /* Statistics section */
+        /* Active Mission */
+        .mission-active {
+            display: none;
+        }
+
+        .mission-active.show {
+            display: block;
+        }
+
+        .mission-info {
+            padding: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mission-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            line-height: 1.2;
+        }
+
+        .mission-obj {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        /* Timer */
+        .timer-section {
+            padding: 30px 18px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            color: var(--orbit-25);
+        }
+
+        .timer-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 8px;
+        }
+
+        /* Mission Controls */
+        .mission-controls {
+            display: flex;
+            gap: 8px;
+            padding: 15px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-ctrl {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .btn-ctrl:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .btn-ctrl.abort {
+            border-color: rgba(255, 107, 107, 0.5);
+            color: var(--orbit-75);
+        }
+
+        .btn-ctrl.abort:hover {
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .btn-ctrl.complete {
+            border-color: rgba(78, 205, 196, 0.5);
+            color: var(--orbit-25);
+        }
+
+        .btn-ctrl.complete:hover {
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        /* Stats */
         .stats-section {
-            padding: 20px;
+            padding: 18px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        .stat-item {
+        .stat-box {
             text-align: center;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 3px;
         }
 
-        .stat-value {
+        .stat-num {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--nolan-gold);
         }
 
-        .stat-label {
+        .stat-lbl {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             letter-spacing: 1px;
             color: rgba(255, 255, 255, 0.4);
-            margin-top: 5px;
+            margin-top: 3px;
         }
 
-        /* Orbit history */
+        /* History */
         .history-section {
-            padding: 20px;
+            padding: 18px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .history-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 12px;
         }
 
         .history-list {
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
@@ -751,411 +688,393 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
         }
 
-        .history-tier {
+        .history-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            flex-shrink: 0;
         }
 
-        .history-tier.tier-25 { background: var(--orbit-25); }
-        .history-tier.tier-50 { background: var(--orbit-50); }
-        .history-tier.tier-75 { background: var(--orbit-75); }
-        .history-tier.tier-infinity { background: var(--orbit-infinity); }
+        .history-dot.t25 { background: var(--orbit-25); }
+        .history-dot.t50 { background: var(--orbit-50); }
+        .history-dot.t75 { background: var(--orbit-75); }
+        .history-dot.tinf { background: var(--orbit-infinity); }
 
         .history-name {
             flex: 1;
-            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .history-status {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             letter-spacing: 1px;
         }
 
-        .history-status.completed {
-            color: var(--orbit-25);
-        }
+        .history-status.escaped { color: var(--orbit-25); }
+        .history-status.aborted { color: var(--orbit-75); }
 
-        .history-status.escaped {
-            color: var(--nolan-gold);
-        }
-
-        .history-status.aborted {
-            color: var(--orbit-75);
-        }
-
-        /* Escape velocity modal */
-        .escape-modal {
+        /* Escape Modal */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.5s;
+            transition: all 0.4s;
         }
 
-        .escape-modal.active {
+        .modal-overlay.show {
             opacity: 1;
             visibility: visible;
         }
 
-        .escape-content {
+        .modal-content {
             text-align: center;
-            animation: escapeIn 0.8s ease-out;
+            transform: scale(0.8);
+            transition: transform 0.4s;
         }
 
-        @keyframes escapeIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
         }
 
-        .escape-title {
+        .modal-title {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 5rem;
-            letter-spacing: 15px;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            letter-spacing: 10px;
             background: linear-gradient(135deg, var(--nolan-gold), var(--orbit-infinity));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 20px;
         }
 
-        .escape-subtitle {
+        .modal-sub {
             font-family: 'Orbitron', sans-serif;
             font-size: 0.8rem;
             letter-spacing: 5px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 10px 0 30px;
         }
 
-        .escape-stats {
+        .modal-stats {
             display: flex;
             justify-content: center;
             gap: 40px;
             margin-bottom: 40px;
         }
 
-        .escape-stat {
-            text-align: center;
-        }
-
-        .escape-stat-value {
+        .modal-stat-val {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--nolan-gold);
         }
 
-        .escape-stat-label {
+        .modal-stat-lbl {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             letter-spacing: 2px;
             color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
         }
 
-        .btn-close-escape {
-            padding: 15px 50px;
+        .btn-modal {
+            padding: 14px 40px;
             background: transparent;
             border: 1px solid var(--nolan-gold);
             color: var(--nolan-gold);
             font-family: 'Orbitron', sans-serif;
             font-size: 0.7rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .btn-modal:hover {
+            background: rgba(201, 162, 39, 0.15);
+        }
+
+        /* Process Input Modal */
+        .process-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .process-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .process-modal-box {
+            background: var(--panel-bg);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 5px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .process-modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
             letter-spacing: 3px;
+            color: var(--nolan-gold);
+            margin-bottom: 15px;
+        }
+
+        .process-modal-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .process-modal-input:focus {
+            border-color: var(--nolan-gold);
+        }
+
+        .process-modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .process-modal-btns button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .btn-close-escape:hover {
-            background: rgba(201, 162, 39, 0.1);
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
         }
 
-        /* Warning indicators */
-        .orbital-warning {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
-            color: var(--orbit-75);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 500;
-            text-shadow: 0 0 30px var(--orbit-75);
+        .btn-confirm {
+            background: var(--nolan-gold);
+            border: none;
+            color: black;
         }
 
-        .orbital-warning.active {
-            animation: warningFlash 1s ease-in-out;
+        .btn-confirm:hover {
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
         }
 
-        @keyframes warningFlash {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(201, 162, 39, 0.5);
-            border-radius: 2px;
-        }
-
-        /* Sound toggle */
-        .sound-toggle {
+        /* Toast Notification */
+        .toast {
             position: fixed;
             top: 60px;
             right: 20px;
-            padding: 8px 15px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.5);
+            background: var(--panel-bg);
+            border: 1px solid var(--nolan-gold);
+            padding: 15px 25px;
+            border-radius: 4px;
+            z-index: 3000;
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 0.55rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .sound-toggle:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .sound-toggle.active {
-            border-color: var(--nolan-gold);
+            letter-spacing: 2px;
             color: var(--nolan-gold);
         }
 
-        /* Quote section */
-        .daily-quote {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            max-width: 500px;
-            padding: 0 20px;
+        .toast-msg {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            margin-top: 3px;
         }
 
-        .quote-text {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 300;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.3);
-            font-style: italic;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2rem;
-                letter-spacing: 10px;
-            }
-
-            .orbit-system {
-                width: 300px;
-                height: 300px;
-            }
-
-            .orbit-ring.orbit-25 { width: 100px; height: 100px; }
-            .orbit-ring.orbit-50 { width: 150px; height: 150px; }
-            .orbit-ring.orbit-75 { width: 200px; height: 200px; }
-            .orbit-ring.orbit-infinity { width: 260px; height: 260px; }
-
-            .satellite.orbit-25 { --orbit-radius: 50px; }
-            .satellite.orbit-50 { --orbit-radius: 75px; }
-            .satellite.orbit-75 { --orbit-radius: 100px; }
-            .satellite.orbit-infinity { --orbit-radius: 130px; }
-
-            .orbit-label { display: none; }
-
-            .escape-title {
-                font-size: 2.5rem;
-                letter-spacing: 5px;
-            }
-
-            .timer-value {
-                font-size: 3.5rem;
-            }
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: rgba(201, 162, 39, 0.5); border-radius: 2px; }
     </style>
 </head>
 <body>
     <div class="letterbox-top"></div>
     <div class="letterbox-bottom"></div>
-    <div class="film-grain"></div>
-    <div class="space-container"></div>
-    <div class="star-field" id="starField"></div>
+    <div class="space-bg"></div>
+    <div class="stars" id="stars"></div>
 
-    <button class="sound-toggle" id="soundToggle">◯ AMBIENT OFF</button>
-
-    <div class="main-container">
+    <div class="app-container">
         <header class="header">
             <h1 class="title">INFINITY ORBIT</h1>
             <p class="subtitle">Gravitational Productivity System</p>
         </header>
 
         <div class="dashboard">
-            <!-- Left Panel - Mission Control -->
-            <div class="panel mission-control">
+            <!-- Left Panel: Mission Control -->
+            <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-indicator"></div>
+                    <div class="panel-dot"></div>
                     <span class="panel-title">Mission Control</span>
                 </div>
-                <div class="panel-content">
-                    <!-- Orbit Selection -->
-                    <div class="orbit-selector">
-                        <div class="orbit-option tier-25" data-tier="25">
-                            <div class="orbit-tier-name">TIER 25</div>
-                            <div class="orbit-tier-time">25 Minutes</div>
-                        </div>
-                        <div class="orbit-option tier-50" data-tier="50">
-                            <div class="orbit-tier-name">TIER 50</div>
-                            <div class="orbit-tier-time">50 Minutes</div>
-                        </div>
-                        <div class="orbit-option tier-75" data-tier="75">
-                            <div class="orbit-tier-name">TIER 75</div>
-                            <div class="orbit-tier-time">75 Minutes</div>
-                        </div>
-                        <div class="orbit-option tier-infinity" data-tier="infinity">
-                            <div class="orbit-tier-name">∞ HORIZON</div>
-                            <div class="orbit-tier-time">Full Day</div>
-                        </div>
+                <div class="panel-body">
+                    <!-- Tier Selection -->
+                    <div class="tier-grid">
+                        <button class="tier-btn t25" data-tier="25" data-time="25">
+                            <div class="tier-name">TIER 25</div>
+                            <div class="tier-time">25 MINUTES</div>
+                        </button>
+                        <button class="tier-btn t50" data-tier="50" data-time="50">
+                            <div class="tier-name">TIER 50</div>
+                            <div class="tier-time">50 MINUTES</div>
+                        </button>
+                        <button class="tier-btn t75" data-tier="75" data-time="75">
+                            <div class="tier-name">TIER 75</div>
+                            <div class="tier-time">75 MINUTES</div>
+                        </button>
+                        <button class="tier-btn tinf" data-tier="inf" data-time="960">
+                            <div class="tier-name">∞ HORIZON</div>
+                            <div class="tier-time">FULL DAY</div>
+                        </button>
                     </div>
 
                     <!-- Orbit Name -->
-                    <div class="input-group">
-                        <label class="input-label">Orbit Name</label>
-                        <input type="text" class="input-field" id="orbitName" placeholder="e.g., English, Coding, Research...">
+                    <div class="form-group">
+                        <label class="form-label">Orbit Name</label>
+                        <input type="text" class="form-input" id="orbitName" placeholder="e.g., English, Coding, Research...">
                     </div>
 
                     <!-- Objective -->
-                    <div class="input-group">
-                        <label class="input-label">Primary Objective</label>
-                        <input type="text" class="input-field" id="orbitObjective" placeholder="What must you achieve to escape?">
+                    <div class="form-group">
+                        <label class="form-label">Primary Objective</label>
+                        <input type="text" class="form-input" id="orbitObjective" placeholder="What must you achieve to escape?">
                     </div>
 
-                    <!-- Process/Rubric Section -->
+                    <!-- Process Rubric -->
                     <div class="process-section">
                         <div class="process-header">
-                            <span class="input-label" style="margin: 0;">Process Rubric</span>
-                            <button class="btn-add-process" id="addProcessBtn">+ ADD STEP</button>
+                            <span class="form-label" style="margin: 0;">Process Rubric</span>
+                            <button class="btn-add" id="btnAddProcess">+ ADD STEP</button>
                         </div>
-                        <div class="process-list" id="processList">
-                            <!-- Process items will be added here -->
-                        </div>
+                        <div class="process-list" id="processList"></div>
                     </div>
 
                     <!-- Launch Button -->
-                    <button class="btn-launch" id="launchBtn" disabled>ENTER ORBIT</button>
+                    <button class="btn-launch" id="btnLaunch" disabled>ENTER ORBIT</button>
                 </div>
             </div>
 
-            <!-- Center - Orbital Visualization -->
-            <div class="orbit-visualization">
-                <div class="orbit-system">
-                    <!-- Orbit rings -->
-                    <div class="orbit-ring orbit-infinity"></div>
-                    <div class="orbit-ring orbit-75"></div>
-                    <div class="orbit-ring orbit-50"></div>
-                    <div class="orbit-ring orbit-25"></div>
+            <!-- Center: Orbit Visualization -->
+            <div class="orbit-visual">
+                <div class="orbit-container">
+                    <div class="orbit-ring rinf"></div>
+                    <div class="orbit-ring r75"></div>
+                    <div class="orbit-ring r50"></div>
+                    <div class="orbit-ring r25"></div>
                     
-                    <!-- Orbit labels -->
-                    <span class="orbit-label label-25">T25</span>
-                    <span class="orbit-label label-50">T50</span>
-                    <span class="orbit-label label-75">T75</span>
-                    <span class="orbit-label label-infinity">∞</span>
-
-                    <!-- Central body -->
-                    <div class="central-body">FOCUS</div>
-
-                    <!-- Satellite (current task) -->
+                    <div class="focus-core">
+                        <span class="focus-label">FOCUS</span>
+                    </div>
+                    
                     <div class="satellite" id="satellite"></div>
 
-                    <!-- Power meter -->
-                    <div class="power-meter">
-                        <div class="power-label">ESCAPE VELOCITY PROGRESS</div>
-                        <div class="power-bar">
-                            <div class="power-fill" id="powerFill"></div>
+                    <div class="power-section">
+                        <div class="power-label">ESCAPE VELOCITY</div>
+                        <div class="power-track">
+                            <div class="power-bar" id="powerBar"></div>
                         </div>
                         <div class="power-value"><span id="powerValue">0</span>%</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Panel - Mission Status -->
-            <div class="panel status-panel">
+            <!-- Right Panel: Status -->
+            <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-indicator"></div>
+                    <div class="panel-dot"></div>
                     <span class="panel-title">Mission Status</span>
                 </div>
-                
-                <!-- No Active Mission -->
-                <div class="no-mission" id="noMission">
-                    <div class="no-mission-icon">◯</div>
+
+                <!-- Idle State -->
+                <div class="status-idle" id="statusIdle">
+                    <div class="idle-icon">◯</div>
                     <p>No active orbit</p>
-                    <p style="font-size: 0.8rem; margin-top: 10px;">Select tier and configure mission</p>
+                    <p style="font-size: 0.75rem; margin-top: 8px; opacity: 0.6;">Configure and launch a mission</p>
                 </div>
 
                 <!-- Active Mission -->
-                <div class="active-mission" id="activeMission">
-                    <div class="mission-name" id="missionName">—</div>
-                    <div class="mission-objective" id="missionObjective">—</div>
-                    
-                    <div class="timer-display">
-                        <div class="timer-value" id="timerValue">25:00</div>
+                <div class="mission-active" id="missionActive">
+                    <div class="mission-info">
+                        <div class="mission-name" id="missionName">—</div>
+                        <div class="mission-obj" id="missionObj">—</div>
+                    </div>
+
+                    <div class="timer-section">
+                        <div class="timer-display" id="timerDisplay">25:00</div>
                         <div class="timer-label">TIME REMAINING IN ORBIT</div>
                     </div>
 
                     <div class="mission-controls">
-                        <button class="btn-mission btn-abort" id="abortBtn">⚠ ABORT</button>
-                        <button class="btn-mission" id="pauseBtn">❚❚ PAUSE</button>
-                        <button class="btn-mission btn-complete" id="completeBtn">✓ COMPLETE</button>
+                        <button class="btn-ctrl abort" id="btnAbort">⚠ ABORT</button>
+                        <button class="btn-ctrl" id="btnPause">❚❚ PAUSE</button>
+                        <button class="btn-ctrl complete" id="btnComplete">✓ ESCAPE</button>
                     </div>
                 </div>
 
-                <!-- Statistics -->
+                <!-- Stats -->
                 <div class="stats-section">
                     <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalOrbits">0</div>
-                            <div class="stat-label">Total Orbits</div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="statTotal">0</div>
+                            <div class="stat-lbl">Total Orbits</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="escapedOrbits">0</div>
-                            <div class="stat-label">Escaped</div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="statEscaped">0</div>
+                            <div class="stat-lbl">Escaped</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalTime">0h</div>
-                            <div class="stat-label">Time Orbited</div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="statTime">0m</div>
+                            <div class="stat-lbl">Time Orbited</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="streakCount">0</div>
-                            <div class="stat-label">Current Streak</div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="statStreak">0</div>
+                            <div class="stat-lbl">Streak</div>
                         </div>
                     </div>
                 </div>
@@ -1163,425 +1082,451 @@
                 <!-- History -->
                 <div class="history-section">
                     <div class="history-title">RECENT ORBITS</div>
-                    <div class="history-list" id="historyList">
-                        <!-- History items will be added here -->
-                    </div>
+                    <div class="history-list" id="historyList"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Escape Velocity Modal -->
-    <div class="escape-modal" id="escapeModal">
-        <div class="escape-content">
-            <div class="escape-title">ESCAPE VELOCITY</div>
-            <div class="escape-subtitle">ACHIEVED</div>
-            <div class="escape-stats">
-                <div class="escape-stat">
-                    <div class="escape-stat-value" id="escapeTime">25:00</div>
-                    <div class="escape-stat-label">Time in Orbit</div>
+    <!-- Escape Modal -->
+    <div class="modal-overlay" id="escapeModal">
+        <div class="modal-content">
+            <div class="modal-title">ESCAPE VELOCITY</div>
+            <div class="modal-sub">ACHIEVED</div>
+            <div class="modal-stats">
+                <div>
+                    <div class="modal-stat-val" id="modalTime">00:00</div>
+                    <div class="modal-stat-lbl">Time in Orbit</div>
                 </div>
-                <div class="escape-stat">
-                    <div class="escape-stat-value" id="escapeProcesses">0/0</div>
-                    <div class="escape-stat-label">Processes Completed</div>
+                <div>
+                    <div class="modal-stat-val" id="modalProcess">0/0</div>
+                    <div class="modal-stat-lbl">Processes Done</div>
                 </div>
             </div>
-            <button class="btn-close-escape" id="closeEscapeBtn">CONTINUE MISSION</button>
+            <button class="btn-modal" id="btnCloseModal">CONTINUE</button>
         </div>
     </div>
 
-    <!-- Warning overlay -->
-    <div class="orbital-warning" id="orbitalWarning">STAY IN ORBIT</div>
+    <!-- Process Input Modal -->
+    <div class="process-modal" id="processModal">
+        <div class="process-modal-box">
+            <div class="process-modal-title">ADD PROCESS STEP</div>
+            <input type="text" class="process-modal-input" id="processInput" placeholder="Enter a step or checkpoint...">
+            <div class="process-modal-btns">
+                <button class="btn-cancel" id="btnCancelProcess">CANCEL</button>
+                <button class="btn-confirm" id="btnConfirmProcess">ADD</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Daily quote -->
-    <div class="daily-quote">
-        <p class="quote-text">"It's not possible." — "No, it's necessary."</p>
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-title">NOTIFICATION</div>
+        <div class="toast-msg" id="toastMsg">Message</div>
     </div>
 
     <script>
-        // ========== STATE ==========
-        let state = {
-            // Mission configuration
+        // ============ STATE ============
+        const state = {
             selectedTier: null,
+            selectedTime: 0,
             orbitName: '',
             objective: '',
             processes: [],
             
-            // Active mission
             isActive: false,
             isPaused: false,
             timeRemaining: 0,
             totalTime: 0,
-            startTime: null,
             
-            // Statistics
-            totalOrbits: 0,
-            escapedOrbits: 0,
-            abortedOrbits: 0,
-            totalTimeOrbited: 0,
-            currentStreak: 0,
+            stats: {
+                total: 0,
+                escaped: 0,
+                timeOrbited: 0,
+                streak: 0
+            },
             history: []
         };
 
         let timerInterval = null;
-        let audioContext = null;
 
-        // Tier configurations
-        const tierConfig = {
-            '25': { time: 25 * 60, label: 'TIER 25', color: 'var(--orbit-25)' },
-            '50': { time: 50 * 60, label: 'TIER 50', color: 'var(--orbit-50)' },
-            '75': { time: 75 * 60, label: 'TIER 75', color: 'var(--orbit-75)' },
-            'infinity': { time: 16 * 60 * 60, label: '∞ HORIZON', color: 'var(--orbit-infinity)' } // 16 hours
+        // ============ DOM ELEMENTS ============
+        const dom = {
+            tierBtns: document.querySelectorAll('.tier-btn'),
+            orbitName: document.getElementById('orbitName'),
+            orbitObjective: document.getElementById('orbitObjective'),
+            btnAddProcess: document.getElementById('btnAddProcess'),
+            processList: document.getElementById('processList'),
+            btnLaunch: document.getElementById('btnLaunch'),
+            
+            orbitRings: document.querySelectorAll('.orbit-ring'),
+            satellite: document.getElementById('satellite'),
+            powerBar: document.getElementById('powerBar'),
+            powerValue: document.getElementById('powerValue'),
+            
+            statusIdle: document.getElementById('statusIdle'),
+            missionActive: document.getElementById('missionActive'),
+            missionName: document.getElementById('missionName'),
+            missionObj: document.getElementById('missionObj'),
+            timerDisplay: document.getElementById('timerDisplay'),
+            
+            btnAbort: document.getElementById('btnAbort'),
+            btnPause: document.getElementById('btnPause'),
+            btnComplete: document.getElementById('btnComplete'),
+            
+            statTotal: document.getElementById('statTotal'),
+            statEscaped: document.getElementById('statEscaped'),
+            statTime: document.getElementById('statTime'),
+            statStreak: document.getElementById('statStreak'),
+            historyList: document.getElementById('historyList'),
+            
+            escapeModal: document.getElementById('escapeModal'),
+            modalTime: document.getElementById('modalTime'),
+            modalProcess: document.getElementById('modalProcess'),
+            btnCloseModal: document.getElementById('btnCloseModal'),
+            
+            processModal: document.getElementById('processModal'),
+            processInput: document.getElementById('processInput'),
+            btnCancelProcess: document.getElementById('btnCancelProcess'),
+            btnConfirmProcess: document.getElementById('btnConfirmProcess'),
+            
+            toast: document.getElementById('toast'),
+            toastMsg: document.getElementById('toastMsg')
         };
 
-        // ========== INITIALIZATION ==========
+        // ============ INITIALIZATION ============
         function init() {
             loadState();
             createStars();
-            setupEventListeners();
-            updateUI();
+            bindEvents();
+            updateStats();
             renderHistory();
-            
-            // Resume active mission if exists
-            if (state.isActive) {
-                resumeMission();
-            }
+            renderProcesses();
         }
 
-        // ========== STORAGE ==========
-        function loadState() {
-            const saved = localStorage.getItem('infinityOrbit');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                state = { ...state, ...parsed };
-            }
-        }
-
-        function saveState() {
-            localStorage.setItem('infinityOrbit', JSON.stringify(state));
-        }
-
-        // ========== STARS ==========
+        // ============ STARS ============
         function createStars() {
-            const container = document.getElementById('starField');
-            for (let i = 0; i < 150; i++) {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.width = (Math.random() * 2 + 1) + 'px';
-                star.style.height = star.style.width;
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 4 + 's';
+                star.style.animationDelay = Math.random() * 3 + 's';
                 container.appendChild(star);
             }
         }
 
-        // ========== EVENT LISTENERS ==========
-        function setupEventListeners() {
+        // ============ LOCAL STORAGE ============
+        function loadState() {
+            const saved = localStorage.getItem('infinityOrbitData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.stats = data.stats || state.stats;
+                state.history = data.history || [];
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('infinityOrbitData', JSON.stringify({
+                stats: state.stats,
+                history: state.history
+            }));
+        }
+
+        // ============ EVENT BINDING ============
+        function bindEvents() {
             // Tier selection
-            document.querySelectorAll('.orbit-option').forEach(option => {
-                option.addEventListener('click', () => selectTier(option.dataset.tier));
+            dom.tierBtns.forEach(btn => {
+                btn.addEventListener('click', () => selectTier(btn));
             });
 
             // Input fields
-            document.getElementById('orbitName').addEventListener('input', (e) => {
+            dom.orbitName.addEventListener('input', (e) => {
                 state.orbitName = e.target.value;
                 validateLaunch();
             });
 
-            document.getElementById('orbitObjective').addEventListener('input', (e) => {
+            dom.orbitObjective.addEventListener('input', (e) => {
                 state.objective = e.target.value;
                 validateLaunch();
             });
 
-            // Add process button
-            document.getElementById('addProcessBtn').addEventListener('click', addProcess);
+            // Process management
+            dom.btnAddProcess.addEventListener('click', openProcessModal);
+            dom.btnCancelProcess.addEventListener('click', closeProcessModal);
+            dom.btnConfirmProcess.addEventListener('click', addProcess);
+            dom.processInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addProcess();
+            });
 
-            // Launch button
-            document.getElementById('launchBtn').addEventListener('click', launchOrbit);
+            // Launch
+            dom.btnLaunch.addEventListener('click', launchOrbit);
 
             // Mission controls
-            document.getElementById('abortBtn').addEventListener('click', abortMission);
-            document.getElementById('pauseBtn').addEventListener('click', togglePause);
-            document.getElementById('completeBtn').addEventListener('click', completeMission);
+            dom.btnAbort.addEventListener('click', abortMission);
+            dom.btnPause.addEventListener('click', togglePause);
+            dom.btnComplete.addEventListener('click', attemptEscape);
 
-            // Escape modal close
-            document.getElementById('closeEscapeBtn').addEventListener('click', closeEscapeModal);
-
-            // Sound toggle
-            document.getElementById('soundToggle').addEventListener('click', toggleSound);
-
-            // Prevent leaving page during active orbit
-            window.addEventListener('beforeunload', (e) => {
-                if (state.isActive) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                }
-            });
-
-            // Visibility change detection (tab switching)
-            document.addEventListener('visibilitychange', () => {
-                if (state.isActive && document.hidden) {
-                    showWarning();
-                }
-            });
+            // Modal
+            dom.btnCloseModal.addEventListener('click', closeEscapeModal);
         }
 
-        // ========== TIER SELECTION ==========
-        function selectTier(tier) {
-            state.selectedTier = tier;
-            
-            // Update UI
-            document.querySelectorAll('.orbit-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            document.querySelector(`[data-tier="${tier}"]`).classList.add('selected');
+        // ============ TIER SELECTION ============
+        function selectTier(btn) {
+            // Remove active from all
+            dom.tierBtns.forEach(b => b.classList.remove('active'));
+            dom.orbitRings.forEach(r => r.classList.remove('active'));
 
-            // Update orbit rings
-            document.querySelectorAll('.orbit-ring').forEach(ring => {
-                ring.classList.remove('active');
-            });
-            document.querySelector(`.orbit-ring.orbit-${tier}`).classList.add('active');
+            // Set active
+            btn.classList.add('active');
+            state.selectedTier = btn.dataset.tier;
+            state.selectedTime = parseInt(btn.dataset.time);
+
+            // Activate corresponding ring
+            const tierClass = 't' + state.selectedTier;
+            const ringClass = 'r' + state.selectedTier;
+            
+            if (state.selectedTier === 'inf') {
+                document.querySelector('.orbit-ring.rinf').classList.add('active');
+            } else {
+                document.querySelector(`.orbit-ring.r${state.selectedTier}`).classList.add('active');
+            }
 
             validateLaunch();
         }
 
-        // ========== PROCESS MANAGEMENT ==========
+        // ============ PROCESS MANAGEMENT ============
+        function openProcessModal() {
+            dom.processModal.classList.add('show');
+            dom.processInput.value = '';
+            dom.processInput.focus();
+        }
+
+        function closeProcessModal() {
+            dom.processModal.classList.remove('show');
+        }
+
         function addProcess() {
-            const text = prompt('Enter process step (rubric item):');
-            if (text && text.trim()) {
-                state.processes.push({
-                    id: Date.now(),
-                    text: text.trim(),
-                    completed: false
-                });
-                renderProcesses();
-            }
+            const text = dom.processInput.value.trim();
+            if (!text) return;
+
+            state.processes.push({
+                id: Date.now(),
+                text: text,
+                done: false
+            });
+
+            closeProcessModal();
+            renderProcesses();
         }
 
         function renderProcesses() {
-            const container = document.getElementById('processList');
-            container.innerHTML = '';
+            dom.processList.innerHTML = '';
 
-            state.processes.forEach(process => {
+            state.processes.forEach(proc => {
                 const item = document.createElement('div');
                 item.className = 'process-item';
                 item.innerHTML = `
-                    <div class="process-checkbox ${process.completed ? 'checked' : ''}" 
-                         onclick="toggleProcess(${process.id})"></div>
-                    <span class="process-text ${process.completed ? 'completed' : ''}">${process.text}</span>
+                    <div class="process-check ${proc.done ? 'done' : ''}" data-id="${proc.id}">
+                        ${proc.done ? '✓' : ''}
+                    </div>
+                    <span class="process-text ${proc.done ? 'done' : ''}">${proc.text}</span>
+                    <span class="process-delete" data-id="${proc.id}">×</span>
                 `;
-                container.appendChild(item);
+                dom.processList.appendChild(item);
+            });
+
+            // Bind check toggles
+            document.querySelectorAll('.process-check').forEach(check => {
+                check.addEventListener('click', () => toggleProcessDone(parseInt(check.dataset.id)));
+            });
+
+            // Bind deletes
+            document.querySelectorAll('.process-delete').forEach(del => {
+                del.addEventListener('click', () => deleteProcess(parseInt(del.dataset.id)));
             });
 
             updatePowerMeter();
         }
 
-        function toggleProcess(id) {
-            const process = state.processes.find(p => p.id === id);
-            if (process) {
-                process.completed = !process.completed;
+        function toggleProcessDone(id) {
+            const proc = state.processes.find(p => p.id === id);
+            if (proc) {
+                proc.done = !proc.done;
                 renderProcesses();
-                saveState();
             }
+        }
+
+        function deleteProcess(id) {
+            state.processes = state.processes.filter(p => p.id !== id);
+            renderProcesses();
         }
 
         function updatePowerMeter() {
             if (state.processes.length === 0) {
-                document.getElementById('powerFill').style.width = '0%';
-                document.getElementById('powerValue').textContent = '0';
+                dom.powerBar.style.width = '100%';
+                dom.powerValue.textContent = '100';
                 return;
             }
 
-            const completed = state.processes.filter(p => p.completed).length;
-            const percentage = Math.round((completed / state.processes.length) * 100);
-            
-            document.getElementById('powerFill').style.width = percentage + '%';
-            document.getElementById('powerValue').textContent = percentage;
+            const done = state.processes.filter(p => p.done).length;
+            const pct = Math.round((done / state.processes.length) * 100);
+            dom.powerBar.style.width = pct + '%';
+            dom.powerValue.textContent = pct;
         }
 
-        // ========== VALIDATION ==========
+        // ============ VALIDATION ============
         function validateLaunch() {
-            const btn = document.getElementById('launchBtn');
-            const isValid = state.selectedTier && state.orbitName.trim() && state.objective.trim();
-            btn.disabled = !isValid;
+            const valid = state.selectedTier && state.orbitName.trim() && state.objective.trim();
+            dom.btnLaunch.disabled = !valid;
         }
 
-        // ========== MISSION CONTROL ==========
+        // ============ LAUNCH ORBIT ============
         function launchOrbit() {
-            const tier = state.selectedTier;
-            const config = tierConfig[tier];
-
             state.isActive = true;
             state.isPaused = false;
-            state.timeRemaining = config.time;
-            state.totalTime = config.time;
-            state.startTime = Date.now();
-            state.totalOrbits++;
-
-            // Update satellite
-            const satellite = document.getElementById('satellite');
-            satellite.className = `satellite orbit-${tier} active`;
-            
-            // Set orbit duration based on tier
-            const orbitDurations = { '25': '15s', '50': '20s', '75': '25s', 'infinity': '30s' };
-            satellite.style.setProperty('--orbit-duration', orbitDurations[tier]);
+            state.timeRemaining = state.selectedTime * 60;
+            state.totalTime = state.selectedTime * 60;
+            state.stats.total++;
 
             // Update UI
-            document.getElementById('noMission').style.display = 'none';
-            document.getElementById('activeMission').classList.add('visible');
-            document.getElementById('missionName').textContent = state.orbitName;
-            document.getElementById('missionName').style.color = config.color;
-            document.getElementById('missionObjective').textContent = state.objective;
+            dom.statusIdle.style.display = 'none';
+            dom.missionActive.classList.add('show');
+            dom.missionName.textContent = state.orbitName;
+            dom.missionObj.textContent = state.objective;
 
-            // Disable mission control inputs
-            document.querySelectorAll('.mission-control .input-field, .mission-control .orbit-option, .mission-control .btn-launch').forEach(el => {
-                el.style.pointerEvents = 'none';
-                el.style.opacity = '0.5';
-            });
+            // Set mission name color based on tier
+            const colors = {
+                '25': 'var(--orbit-25)',
+                '50': 'var(--orbit-50)',
+                '75': 'var(--orbit-75)',
+                'inf': 'var(--orbit-infinity)'
+            };
+            dom.missionName.style.color = colors[state.selectedTier];
 
+            // Activate satellite
+            dom.satellite.className = 'satellite visible orbiting t' + state.selectedTier;
+
+            // Disable controls
+            setControlsEnabled(false);
+
+            // Start timer
             startTimer();
+
+            showToast('ORBIT ENTERED', state.orbitName);
             saveState();
             updateStats();
         }
 
-        function resumeMission() {
-            // Calculate remaining time based on when we left
-            const elapsed = Date.now() - state.startTime;
-            const elapsedSeconds = Math.floor(elapsed / 1000);
-            state.timeRemaining = Math.max(0, state.totalTime - elapsedSeconds);
+        function setControlsEnabled(enabled) {
+            const opacity = enabled ? '1' : '0.5';
+            const pointer = enabled ? 'auto' : 'none';
 
-            if (state.timeRemaining <= 0) {
-                // Timer expired while away - auto complete
-                completeMission();
-                return;
-            }
-
-            // Resume UI
-            const tier = state.selectedTier;
-            const config = tierConfig[tier];
-
-            const satellite = document.getElementById('satellite');
-            satellite.className = `satellite orbit-${tier} active`;
-
-            document.querySelectorAll('.orbit-ring').forEach(ring => ring.classList.remove('active'));
-            document.querySelector(`.orbit-ring.orbit-${tier}`).classList.add('active');
-
-            document.getElementById('noMission').style.display = 'none';
-            document.getElementById('activeMission').classList.add('visible');
-            document.getElementById('missionName').textContent = state.orbitName;
-            document.getElementById('missionName').style.color = config.color;
-            document.getElementById('missionObjective').textContent = state.objective;
-
-            document.getElementById('orbitName').value = state.orbitName;
-            document.getElementById('orbitObjective').value = state.objective;
-
-            renderProcesses();
-            startTimer();
+            dom.tierBtns.forEach(btn => {
+                btn.style.opacity = opacity;
+                btn.style.pointerEvents = pointer;
+            });
+            dom.orbitName.style.opacity = opacity;
+            dom.orbitName.style.pointerEvents = pointer;
+            dom.orbitObjective.style.opacity = opacity;
+            dom.orbitObjective.style.pointerEvents = pointer;
+            dom.btnAddProcess.style.opacity = opacity;
+            dom.btnAddProcess.style.pointerEvents = pointer;
+            dom.btnLaunch.style.display = enabled ? 'block' : 'none';
         }
 
+        // ============ TIMER ============
         function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
+            updateTimerDisplay();
 
             timerInterval = setInterval(() => {
-                if (!state.isPaused) {
+                if (!state.isPaused && state.timeRemaining > 0) {
                     state.timeRemaining--;
                     updateTimerDisplay();
 
-                    if (state.timeRemaining <= 0) {
-                        // Time's up - can escape now
-                        timerComplete();
+                    if (state.timeRemaining === 0) {
+                        onTimerComplete();
                     }
                 }
             }, 1000);
         }
 
         function updateTimerDisplay() {
-            const hours = Math.floor(state.timeRemaining / 3600);
-            const minutes = Math.floor((state.timeRemaining % 3600) / 60);
-            const seconds = state.timeRemaining % 60;
+            const hrs = Math.floor(state.timeRemaining / 3600);
+            const mins = Math.floor((state.timeRemaining % 3600) / 60);
+            const secs = state.timeRemaining % 60;
 
             let display;
-            if (hours > 0) {
-                display = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (hrs > 0) {
+                display = `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             } else {
-                display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
 
-            document.getElementById('timerValue').textContent = display;
+            dom.timerDisplay.textContent = display;
 
-            // Color based on time remaining
-            const percentage = state.timeRemaining / state.totalTime;
-            const timerEl = document.getElementById('timerValue');
-            
-            if (percentage <= 0.1) {
-                timerEl.style.color = 'var(--orbit-75)';
-            } else if (percentage <= 0.25) {
-                timerEl.style.color = 'var(--orbit-50)';
+            // Color based on remaining time
+            const pct = state.timeRemaining / state.totalTime;
+            if (pct < 0.1) {
+                dom.timerDisplay.style.color = 'var(--orbit-75)';
+            } else if (pct < 0.25) {
+                dom.timerDisplay.style.color = 'var(--orbit-50)';
             } else {
-                timerEl.style.color = 'var(--orbit-25)';
+                dom.timerDisplay.style.color = 'var(--orbit-25)';
             }
         }
 
-        function timerComplete() {
-            // Check if enough processes completed
-            const completedProcesses = state.processes.filter(p => p.completed).length;
-            const allProcessesComplete = state.processes.length === 0 || completedProcesses === state.processes.length;
-
-            if (allProcessesComplete) {
-                // Can escape!
-                showEscapeModal();
-            } else {
-                // Must complete processes to escape
-                document.getElementById('timerValue').textContent = 'COMPLETE OBJECTIVES';
-                document.getElementById('timerValue').style.fontSize = '1.5rem';
-            }
+        function onTimerComplete() {
+            showToast('TIME COMPLETE', 'Complete processes to escape!');
         }
 
+        // ============ MISSION CONTROLS ============
         function togglePause() {
             state.isPaused = !state.isPaused;
-            const btn = document.getElementById('pauseBtn');
-            btn.textContent = state.isPaused ? '▶ RESUME' : '❚❚ PAUSE';
-
-            const satellite = document.getElementById('satellite');
-            satellite.style.animationPlayState = state.isPaused ? 'paused' : 'running';
-
-            saveState();
+            dom.btnPause.textContent = state.isPaused ? '▶ RESUME' : '❚❚ PAUSE';
+            dom.satellite.style.animationPlayState = state.isPaused ? 'paused' : 'running';
         }
 
-        function completeMission() {
-            // Check if can complete (all processes done OR no processes)
-            const completedProcesses = state.processes.filter(p => p.completed).length;
-            const canComplete = state.processes.length === 0 || completedProcesses === state.processes.length;
+        function attemptEscape() {
+            // Check if all processes are done (or no processes)
+            const allDone = state.processes.length === 0 || state.processes.every(p => p.done);
 
-            if (!canComplete && state.timeRemaining > 0) {
-                showWarning();
+            if (!allDone) {
+                showToast('CANNOT ESCAPE', 'Complete all processes first!');
                 return;
             }
 
-            finishOrbit('escaped');
+            // Can only escape if timer done OR all processes done
+            if (state.timeRemaining > 0 && state.processes.length > 0 && !allDone) {
+                showToast('CANNOT ESCAPE', 'Time remaining or processes incomplete');
+                return;
+            }
+
+            completeOrbit('escaped');
         }
 
         function abortMission() {
-            if (confirm('Aborting will break your streak. Are you sure?')) {
-                finishOrbit('aborted');
+            if (confirm('Abort mission? This will reset your streak.')) {
+                completeOrbit('aborted');
             }
         }
 
-        function finishOrbit(status) {
+        function completeOrbit(status) {
             clearInterval(timerInterval);
 
             const timeSpent = state.totalTime - state.timeRemaining;
-            state.totalTimeOrbited += timeSpent;
+            state.stats.timeOrbited += timeSpent;
 
-            // Update streak
             if (status === 'escaped') {
-                state.escapedOrbits++;
-                state.currentStreak++;
-                showEscapeModal();
+                state.stats.escaped++;
+                state.stats.streak++;
+                showEscapeModal(timeSpent);
             } else {
-                state.abortedOrbits++;
-                state.currentStreak = 0;
+                state.stats.streak = 0;
                 resetMission();
             }
 
@@ -1590,136 +1535,104 @@
                 name: state.orbitName,
                 tier: state.selectedTier,
                 status: status,
-                timeSpent: timeSpent,
+                time: timeSpent,
                 date: Date.now()
             });
-
-            // Keep only last 20 history items
-            state.history = state.history.slice(0, 20);
+            state.history = state.history.slice(0, 15);
 
             saveState();
             updateStats();
             renderHistory();
         }
 
-        function resetMission() {
-            state.isActive = false;
-            state.isPaused = false;
-            state.orbitName = '';
-            state.objective = '';
-            state.processes = [];
-            state.selectedTier = null;
+        function showEscapeModal(timeSpent) {
+            const mins = Math.floor(timeSpent / 60);
+            const secs = timeSpent % 60;
+            dom.modalTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
 
-            // Reset UI
-            document.getElementById('satellite').className = 'satellite';
-            document.querySelectorAll('.orbit-ring').forEach(ring => ring.classList.remove('active'));
-            document.querySelectorAll('.orbit-option').forEach(opt => opt.classList.remove('selected'));
-            
-            document.getElementById('noMission').style.display = 'block';
-            document.getElementById('activeMission').classList.remove('visible');
-            
-            document.getElementById('orbitName').value = '';
-            document.getElementById('orbitObjective').value = '';
-            document.getElementById('processList').innerHTML = '';
-            document.getElementById('timerValue').style.fontSize = '';
-            document.getElementById('timerValue').style.color = '';
-            
-            document.getElementById('powerFill').style.width = '0%';
-            document.getElementById('powerValue').textContent = '0';
+            const done = state.processes.filter(p => p.done).length;
+            dom.modalProcess.textContent = `${done}/${state.processes.length}`;
 
-            // Re-enable inputs
-            document.querySelectorAll('.mission-control .input-field, .mission-control .orbit-option, .mission-control .btn-launch').forEach(el => {
-                el.style.pointerEvents = '';
-                el.style.opacity = '';
-            });
-
-            document.getElementById('launchBtn').disabled = true;
-
-            saveState();
-        }
-
-        // ========== ESCAPE MODAL ==========
-        function showEscapeModal() {
-            const modal = document.getElementById('escapeModal');
-            const timeSpent = state.totalTime - state.timeRemaining;
-            const minutes = Math.floor(timeSpent / 60);
-            const seconds = timeSpent % 60;
-            
-            document.getElementById('escapeTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            const completed = state.processes.filter(p => p.completed).length;
-            document.getElementById('escapeProcesses').textContent = `${completed}/${state.processes.length}`;
-
-            modal.classList.add('active');
+            dom.escapeModal.classList.add('show');
         }
 
         function closeEscapeModal() {
-            document.getElementById('escapeModal').classList.remove('active');
+            dom.escapeModal.classList.remove('show');
             resetMission();
         }
 
-        // ========== WARNING ==========
-        function showWarning() {
-            const warning = document.getElementById('orbitalWarning');
-            warning.classList.add('active');
-            setTimeout(() => warning.classList.remove('active'), 1000);
+        function resetMission() {
+            state.isActive = false;
+            state.isPaused = false;
+            state.selectedTier = null;
+            state.orbitName = '';
+            state.objective = '';
+            state.processes = [];
+
+            // Reset UI
+            dom.satellite.className = 'satellite';
+            dom.orbitRings.forEach(r => r.classList.remove('active'));
+            dom.tierBtns.forEach(b => b.classList.remove('active'));
+
+            dom.statusIdle.style.display = 'block';
+            dom.missionActive.classList.remove('show');
+
+            dom.orbitName.value = '';
+            dom.orbitObjective.value = '';
+            dom.processList.innerHTML = '';
+            dom.btnPause.textContent = '❚❚ PAUSE';
+            dom.timerDisplay.style.color = '';
+
+            setControlsEnabled(true);
+            dom.btnLaunch.disabled = true;
+
+            updatePowerMeter();
         }
 
-        // ========== STATISTICS ==========
+        // ============ STATS & HISTORY ============
         function updateStats() {
-            document.getElementById('totalOrbits').textContent = state.totalOrbits;
-            document.getElementById('escapedOrbits').textContent = state.escapedOrbits;
-            document.getElementById('streakCount').textContent = state.currentStreak;
+            dom.statTotal.textContent = state.stats.total;
+            dom.statEscaped.textContent = state.stats.escaped;
+            dom.statStreak.textContent = state.stats.streak;
 
-            const hours = Math.floor(state.totalTimeOrbited / 3600);
-            const minutes = Math.floor((state.totalTimeOrbited % 3600) / 60);
-            document.getElementById('totalTime').textContent = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+            const totalMins = Math.floor(state.stats.timeOrbited / 60);
+            if (totalMins >= 60) {
+                const hrs = Math.floor(totalMins / 60);
+                const mins = totalMins % 60;
+                dom.statTime.textContent = `${hrs}h ${mins}m`;
+            } else {
+                dom.statTime.textContent = `${totalMins}m`;
+            }
         }
 
         function renderHistory() {
-            const container = document.getElementById('historyList');
-            container.innerHTML = '';
+            dom.historyList.innerHTML = '';
 
             state.history.forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'history-item';
                 el.innerHTML = `
-                    <div class="history-tier tier-${item.tier}"></div>
+                    <div class="history-dot t${item.tier}"></div>
                     <span class="history-name">${item.name}</span>
                     <span class="history-status ${item.status}">${item.status.toUpperCase()}</span>
                 `;
-                container.appendChild(el);
+                dom.historyList.appendChild(el);
             });
         }
 
-        // ========== UI UPDATE ==========
-        function updateUI() {
-            updateStats();
-            renderProcesses();
+        // ============ TOAST ============
+        function showToast(title, msg) {
+            document.querySelector('.toast-title').textContent = title;
+            dom.toastMsg.textContent = msg;
+            dom.toast.classList.add('show');
+
+            setTimeout(() => {
+                dom.toast.classList.remove('show');
+            }, 3000);
         }
 
-        // ========== SOUND ==========
-        function toggleSound() {
-            const btn = document.getElementById('soundToggle');
-            
-            if (btn.classList.contains('active')) {
-                btn.classList.remove('active');
-                btn.textContent = '◯ AMBIENT OFF';
-                stopSound();
-            } else {
-                btn.classList.add('active');
-                btn.textContent = '◉ AMBIENT ON';
-                startSound();
-            }
-        }
-
-        function startSound() {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Create ambient drone
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.type = 'sine';
-                oscillator.frequency
+        // ============ START ============
+        init();
+    </script>
+</body>
+</html>
