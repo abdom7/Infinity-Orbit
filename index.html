@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INFINITY ORBIT v8 — Variable Gravity</title>
+    <title>INFINITY ORBIT v9 — Responsive Gravity</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -68,7 +68,7 @@
         .orb-wrapper {
             position: absolute; 
             cursor: grab; z-index: 10; touch-action: none;
-            /* No fixed width/height here, set by inline style */
+            /* Font size is set dynamically via JS */
         }
         .orb-wrapper:active { cursor: grabbing; z-index: 100 !important; }
         
@@ -93,11 +93,22 @@
             animation: spin 30s linear infinite; pointer-events: none;
         }
 
-        /* SCALING CONTENT BASED ON SIZE */
-        /* We use container queries logic manually via JS or simple % based fonts */
-        .orb-icon { font-size: 250%; color: #fff; margin-bottom: 2%; text-shadow: 0 0 20px var(--c); line-height: 1; }
-        .orb-title { font-family: 'Rajdhani'; font-weight: 700; font-size: 90%; max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); }
-        .orb-time { font-family: 'Orbitron'; font-size: 60%; opacity: 0.8; margin-top: 2%; color: #fff; }
+        /* DYNAMIC SCALING TEXT */
+        /* Note: Units are EM, which scale based on parent Font-Size */
+        .orb-icon { 
+            font-size: 2.2em; /* Relative to wrapper font-size */
+            color: #fff; margin-bottom: 2%; text-shadow: 0 0 20px var(--c); line-height: 1; 
+        }
+        .orb-title { 
+            font-family: 'Rajdhani'; font-weight: 700; 
+            font-size: 0.9em; /* Relative to wrapper */
+            max-width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); 
+        }
+        .orb-time { 
+            font-family: 'Orbitron'; 
+            font-size: 0.5em; /* Relative to wrapper */
+            opacity: 0.8; margin-top: 2%; color: #fff; 
+        }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -254,9 +265,14 @@
             $('orbContainer').innerHTML = state.dock.map(o => {
                 const color = colors[o.tier]; const isLocked = checkLocked(o.id);
                 const size = o.size || 140; // Use stored size or default
+                
+                // --- DYNAMIC FONT CALCULATION ---
+                // Base size is size/9. If size is 140, font is ~15px. If 80, font is ~9px.
+                const fontSize = Math.max(8, size / 9); 
+
                 return `
                 <div class="orb-wrapper ${isLocked?'locked':''} ${o.completed?'completed':''}" id="orb-${o.id}" 
-                     style="left:${o.x}px; top:${o.y}px; width:${size}px; height:${size}px;" 
+                     style="left:${o.x}px; top:${o.y}px; width:${size}px; height:${size}px; font-size:${fontSize}px;" 
                      onmousedown="startDrag(event, ${o.id})" ontouchstart="startDrag(event, ${o.id})">
                     
                     <div class="orb-ctrls">
@@ -292,14 +308,15 @@
             if(!resizing.active) return;
             const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const diff = cX - resizing.startX;
-            const newSize = Math.max(80, resizing.startWidth + diff); // Min size 80px
+            const newSize = Math.max(70, resizing.startWidth + diff); // Min size 70px
             
             const el = $(`orb-${resizing.id}`);
             el.style.width = newSize + 'px';
             el.style.height = newSize + 'px';
             
-            // Live update links during resize is expensive but looks cool. 
-            // We rely on animateLinks loop for that.
+            // DYNAMIC FONT UPDATE DURING DRAG
+            const newFS = Math.max(8, newSize / 9);
+            el.style.fontSize = newFS + 'px';
         }
         function endResize() {
             if(!resizing.active) return;
@@ -358,7 +375,6 @@
                 if(s && t) {
                     const sSize = s.size || 140; const tSize = t.size || 140;
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    // Dynamic center calculation based on size
                     line.setAttribute('x1', s.x + (sSize/2)); line.setAttribute('y1', s.y + (sSize/2));
                     line.setAttribute('x2', t.x + (tSize/2)); line.setAttribute('y2', t.y + (tSize/2));
                     line.setAttribute('class', `connection-line ${s.completed?'active':''}`);
@@ -401,8 +417,8 @@
         // UTILS
         function resetProgress() { if(confirm("Reset day?")) { state.dock.forEach(o => o.completed = false); saveData(); renderSpace(); } }
         function renderLogs() { $('logList').innerHTML = state.history.map(h => `<div class="log-item"><div><div style="color:${h.color}">${h.name}</div><div style="font-size:0.7rem; color:#666">${h.time}</div></div><div style="text-align:right"><div class="log-score" style="color:${h.color}">${h.score}%</div><div style="font-size:0.6rem; color:#666">${h.status}</div></div></div>`).join(''); }
-        function saveData() { localStorage.setItem('infOrbitV8', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
-        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV8')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
+        function saveData() { localStorage.setItem('infOrbitV9', JSON.stringify({ dock: state.dock, links: state.links, history: state.history })); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('infOrbitV9')); if(d) { state.dock = d.dock || []; state.links = d.links || []; state.history = d.history || []; } }
         function clearLogs() { state.history = []; saveData(); renderLogs(); }
     </script>
 </body>
