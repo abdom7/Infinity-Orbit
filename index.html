@@ -2,642 +2,573 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFINITY ORBIT v4 — Draggable Space</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INFINITY ORBIT v5 — Holographic Command</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CORE STYLES --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        /* --- CORE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         :root {
-            --nolan-gold: #c9a227;
-            --nolan-orange: #d4740c;
-            --orbit-25: #4ecdc4;
-            --orbit-50: #ffe66d;
-            --orbit-75: #ff6b6b;
-            --orbit-infinity: #a855f7;
-            --panel-bg: rgba(10, 22, 40, 0.9);
-            --process-pos: #4ecdc4;
-            --process-neg: #ff6b6b;
+            --gold: #c9a227;
+            --orange: #d4740c;
+            --t25: #4ecdc4; --t50: #ffe66d; --t75: #ff6b6b; --tinf: #a855f7;
+            --glass: rgba(10, 22, 40, 0.65);
+            --border: rgba(255, 255, 255, 0.15);
         }
-
         body {
-            min-height: 100vh; background: #000; font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; color: #fff; /* Overflow hidden for dragging safety */
+            height: 100vh; background: #050505; font-family: 'Rajdhani', sans-serif;
+            overflow: hidden; color: #fff;
         }
 
-        /* --- BACKGROUND FX --- */
-        .space-bg {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at 50% 50%, #1a2030 0%, #000 100%);
-            z-index: 0;
+        /* --- BACKGROUND (Holographic Grid) --- */
+        .grid-bg {
+            position: fixed; inset: 0; z-index: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            pointer-events: none;
         }
-        .stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.6; }
 
         /* --- LAYOUT --- */
-        .app-container { position: relative; z-index: 10; height: 100vh; padding: 20px; display: flex; flex-direction: column; }
+        .app { position: relative; z-index: 10; height: 100vh; display: grid; grid-template-rows: 60px 1fr; padding: 10px; gap: 10px; }
         
-        .header { text-align: center; height: 60px; }
-        .title {
-            font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 8px;
-            background: linear-gradient(135deg, #fff 0%, var(--nolan-gold) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        .header { display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Bebas Neue'; font-size: 2rem; letter-spacing: 5px; background: linear-gradient(to right, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .dashboard {
-            display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px;
-            height: calc(100vh - 100px); width: 100%;
-        }
-        @media (max-width: 1100px) { .dashboard { grid-template-columns: 1fr; } }
+        .workspace { display: grid; grid-template-columns: 320px 1fr 280px; gap: 15px; height: 100%; overflow: hidden; }
+        @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } .side-panel { display: none; } .mobile-menu-btn { display: block; } }
 
-        /* --- PANELS --- */
-        .panel { 
-            background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 6px; display: flex; flex-direction: column; backdrop-filter: blur(10px);
-            transition: border-color 0.3s; overflow: hidden;
+        /* --- PANELS (Glassmorphism) --- */
+        .panel {
+            background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column;
+            transition: 0.3s;
         }
-        .panel.editing { border-color: var(--nolan-orange); box-shadow: 0 0 20px rgba(212, 116, 12, 0.2); }
+        .panel.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(201, 162, 39, 0.15); }
+
+        .panel-head { padding: 12px; border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.7rem; color: var(--gold); letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
+        .panel-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
+        .panel-body { padding: 15px; flex: 1; overflow-y: auto; }
+
+        /* --- INPUTS --- */
+        .input-group { margin-bottom: 12px; }
+        .label { font-family: 'Orbitron'; font-size: 0.5rem; color: #888; margin-bottom: 4px; display: block; }
+        .input {
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white;
+            padding: 8px 10px; font-family: 'Rajdhani'; font-size: 1rem; outline: none; border-radius: 4px;
+        }
+        .input:focus { border-color: var(--gold); }
         
-        .panel-header {
-            padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2);
-        }
-        .panel-dot { width: 6px; height: 6px; background: var(--nolan-gold); border-radius: 50%; }
-        .panel-title { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--nolan-gold); letter-spacing: 2px; }
-        .panel-body { padding: 20px; flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-
-        /* --- FORM ELEMENTS --- */
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-family: 'Orbitron'; font-size: 0.5rem; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
-        .form-input {
-            width: 100%; padding: 10px; background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
-            color: white; font-family: 'Rajdhani'; font-size: 1rem; outline: none;
-        }
-        .form-input:focus { border-color: var(--nolan-gold); }
-        
-        /* Date Input Specifics */
-        input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-
         /* Tiers */
-        .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .tier-btn {
-            padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px; cursor: pointer; text-align: center; transition: 0.2s;
+        .tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
+        .tier {
+            padding: 8px 0; text-align: center; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+            background: rgba(255,255,255,0.02); transition: 0.2s;
         }
-        .tier-btn:hover { background: rgba(255,255,255,0.08); }
-        .tier-btn.active { border-width: 2px; background: rgba(255,255,255,0.1); }
-        .t25 .tier-name { color: var(--orbit-25); } .tier-btn.active.t25 { border-color: var(--orbit-25); }
-        .t50 .tier-name { color: var(--orbit-50); } .tier-btn.active.t50 { border-color: var(--orbit-50); }
-        .t75 .tier-name { color: var(--orbit-75); } .tier-btn.active.t75 { border-color: var(--orbit-75); }
-        .tinf .tier-name { color: var(--orbit-infinity); } .tier-btn.active.tinf { border-color: var(--orbit-infinity); }
+        .tier.active { border-width: 2px; background: rgba(255,255,255,0.08); }
+        .t-name { font-family: 'Bebas Neue'; font-size: 1.1rem; }
+        
+        /* Color Mapping */
+        .t25 .t-name { color: var(--t25); } .tier.active.t25 { border-color: var(--t25); }
+        .t50 .t-name { color: var(--t50); } .tier.active.t50 { border-color: var(--t50); }
+        .t75 .t-name { color: var(--t75); } .tier.active.t75 { border-color: var(--t75); }
+        .tinf .t-name { color: var(--tinf); } .tier.active.tinf { border-color: var(--tinf); }
 
-        .btn-main {
-            width: 100%; padding: 15px; margin-top: 15px; border: none; cursor: pointer;
-            font-family: 'Bebas Neue'; font-size: 1.2rem; letter-spacing: 2px;
-            background: linear-gradient(90deg, var(--nolan-gold), var(--nolan-orange)); color: #000;
-            border-radius: 4px;
+        .btn {
+            width: 100%; padding: 12px; background: linear-gradient(90deg, var(--gold), var(--orange));
+            border: none; border-radius: 4px; font-family: 'Bebas Neue'; font-size: 1.1rem; letter-spacing: 1px;
+            color: black; cursor: pointer; margin-top: 10px; transition: 0.2s;
         }
-        .btn-main.updating { background: linear-gradient(90deg, var(--nolan-orange), #ff4500); color: white; }
+        .btn:hover { filter: brightness(1.1); }
 
-        /* --- ORBIT SPACE (Draggable Area) --- */
-        .orbit-space {
-            position: relative; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%);
-            overflow: hidden; /* Planets stay inside */
+        /* --- ORBIT SPACE (Physics Area) --- */
+        .space-area { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        
+        /* 3D ORBIT CARD */
+        .orb-wrapper {
+            position: absolute; width: 160px; height: 160px; perspective: 1000px;
+            cursor: grab; z-index: 10; touch-action: none; /* Critical for mobile drag */
+        }
+        .orb-wrapper:active { cursor: grabbing; z-index: 100 !important; }
+
+        .orb-card {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .orb-wrapper.flipped .orb-card { transform: rotateY(180deg); }
+
+        .face {
+            position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(15, 25, 40, 0.85); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        /* 3D CARD CONTAINER */
-        .orbit-container {
-            position: absolute; width: 150px; height: 150px; perspective: 1000px;
-            cursor: grab; z-index: 10;
+        /* Front */
+        .face-front::after {
+            content: ''; position: absolute; inset: -4px; border-radius: 50%;
+            border: 1px dashed var(--c); animation: spin 30s linear infinite; pointer-events: none;
         }
-        .orbit-container:active { cursor: grabbing; z-index: 100; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .orb-icon { font-size: 3rem; color: var(--c); text-shadow: 0 0 20px var(--c); margin-bottom: 5px; }
+        .orb-title { font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; max-width: 90%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .orbit-card {
-            position: relative; width: 100%; height: 100%; text-align: center;
-            transition: transform 0.6s; transform-style: preserve-3d;
+        /* Back */
+        .face-back {
+            transform: rotateY(180deg); border-radius: 12px; padding: 15px; align-items: flex-start;
+            background: rgba(10, 15, 25, 0.95); border-color: var(--c);
         }
-        .orbit-container.flipped .orbit-card { transform: rotateY(180deg); }
+        .meta-lbl { font-family: 'Orbitron'; font-size: 0.5rem; color: #666; margin-top: 8px; }
+        .meta-val { font-size: 0.9rem; line-height: 1.1; }
+        .meta-date { font-weight: bold; }
+        .meta-date.overdue { color: #ff4444; }
 
-        /* CARD FACES */
-        .orbit-face {
-            position: absolute; width: 100%; height: 100%;
-            -webkit-backface-visibility: hidden; backface-visibility: hidden;
-            border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(10, 22, 40, 0.9); border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-
-        /* FRONT FACE (Planet Visual) */
-        .orbit-face-front::before {
-            content: ''; position: absolute; inset: -5px; border-radius: 50%;
-            border: 1px dashed transparent; animation: rotate 20s linear infinite; pointer-events: none;
-        }
-        .t25 .orbit-face-front::before { border-color: var(--orbit-25); }
-        .t50 .orbit-face-front::before { border-color: var(--orbit-50); }
-        .t75 .orbit-face-front::before { border-color: var(--orbit-75); }
-        .tinf .orbit-face-front::before { border-color: var(--orbit-infinity); }
-
-        .planet-icon { font-size: 2.5rem; margin-bottom: 5px; pointer-events: none; }
-        .planet-name { font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; max-width: 90%; overflow: hidden; white-space: nowrap; pointer-events: none; }
-
-        /* BACK FACE (Flash Card Info) */
-        .orbit-face-back {
-            transform: rotateY(180deg); border-radius: 10px; /* Square card for info */
-            background: #0f1926; border: 1px solid var(--nolan-gold);
-            padding: 10px; align-items: flex-start; text-align: left;
-        }
-        .card-label { font-family: 'Orbitron'; font-size: 0.5rem; color: #666; margin-top: 5px; }
-        .card-val { font-size: 0.8rem; color: #fff; line-height: 1.1; margin-bottom: 2px; }
-        .card-obj { font-size: 0.7rem; color: #aaa; font-style: italic; max-height: 35px; overflow: hidden; }
-        .card-deadline { color: var(--orbit-75); font-weight: bold; }
-
-        /* CARD CONTROLS */
-        .orbit-controls {
-            position: absolute; top: 0; right: 0; display: flex; gap: 5px; z-index: 20;
+        /* Controls on Orbit */
+        .orb-ctrls {
+            position: absolute; top: -10px; right: -15px; display: flex; flex-direction: column; gap: 5px; z-index: 20;
         }
         .ctrl-btn {
-            width: 24px; height: 24px; background: #000; border: 1px solid #444; color: #888;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 10px; transition: 0.2s;
+            width: 30px; height: 30px; background: #000; border: 1px solid #333; border-radius: 50%;
+            color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
         }
-        .ctrl-btn:hover { color: white; border-color: white; transform: scale(1.1); }
-        .ctrl-info { border-color: var(--nolan-gold); color: var(--nolan-gold); }
-        .ctrl-edit { border-color: var(--nolan-orange); color: var(--nolan-orange); }
+        .ctrl-btn:hover { transform: scale(1.1); color: white; border-color: white; }
+        .c-launch { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(201, 162, 39, 0.3); }
 
-        /* --- ACTIVE MISSION --- */
-        .active-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 500;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
+        /* --- HUD OVERLAY (Active Mission) --- */
+        .hud-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column;
         }
-        .active-overlay.show { display: flex; }
-        .timer-display { font-family: 'Bebas Neue'; font-size: 6rem; line-height: 1; color: var(--nolan-gold); }
+        .hud-overlay.active { display: flex; }
+
+        .hud-timer { font-family: 'Bebas Neue'; font-size: 7rem; line-height: 1; color: var(--gold); text-shadow: 0 0 30px rgba(201, 162, 39, 0.3); }
+        .hud-title { font-family: 'Orbitron'; letter-spacing: 5px; color: #888; margin-bottom: 20px; }
         
+        .hud-integrity { width: 300px; margin-bottom: 20px; }
+        .bar-track { width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--t25); width: 100%; transition: 0.5s; box-shadow: 0 0 10px var(--t25); }
+        .hud-score { text-align: right; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--t25); margin-top: 5px; }
+
+        .hud-tasks { width: 320px; max-height: 300px; overflow-y: auto; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .task-row { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .task-row:hover { background: rgba(255,255,255,0.05); }
+        .task-chk { width: 16px; height: 16px; border: 1px solid #666; display: flex; align-items: center; justify-content: center; font-size: 10px; color: black; }
+        .task-row.done .task-chk { background: var(--t25); border-color: var(--t25); }
+        .task-row.done.neg .task-chk { background: var(--t75); border-color: var(--t75); }
+        
+        .hud-actions { display: flex; gap: 20px; margin-top: 30px; }
+        .hud-btn { padding: 10px 30px; background: transparent; border: 1px solid #444; color: #fff; font-family: 'Orbitron'; cursor: pointer; }
+        .hud-btn.abort:hover { border-color: var(--t75); color: var(--t75); }
+        .hud-btn.finish:hover { border-color: var(--t25); color: var(--t25); }
+
+        /* --- LOGS --- */
+        .log-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+        .log-score { font-family: 'Bebas Neue'; font-size: 1.2rem; }
+
         /* --- HELPERS --- */
-        .process-list { flex: 1; overflow-y: auto; min-height: 100px; margin-top: 10px; }
-        .process-item { display: flex; gap: 5px; padding: 5px; border-bottom: 1px solid #333; font-size: 0.8rem; }
-        .btn-add { background: none; border: 1px solid var(--nolan-gold); color: var(--nolan-gold); font-size: 0.6rem; padding: 2px 8px; cursor: pointer; }
-        
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal.open { display: flex; }
-        .modal-box { background: #0a1628; border: 1px solid var(--nolan-gold); padding: 20px; width: 300px; }
-
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+        .proc-tag { font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; margin-right: 5px; color: black; font-weight: bold; }
+        .tag-pos { background: var(--t25); } .tag-neg { background: var(--t75); }
     </style>
 </head>
 <body>
 
-    <div class="space-bg"></div>
-    <div class="stars" id="stars"></div>
+    <div class="grid-bg"></div>
 
-    <div class="app-container">
+    <div class="app">
         <header class="header">
-            <h1 class="title">INFINITY ORBIT</h1>
+            <div class="logo">INFINITY ORBIT</div>
         </header>
 
-        <div class="dashboard">
-            
-            <div class="panel" id="panelEditor">
-                <div class="panel-header">
-                    <div class="panel-dot"></div>
-                    <span class="panel-title" id="editorTitle">MISSION CREATOR</span>
+        <div class="workspace">
+            <div class="panel side-panel" id="editorPanel">
+                <div class="panel-head">
+                    <div class="panel-dot"></div> <span id="editorTitle">MISSION COMMAND</span>
                 </div>
                 <div class="panel-body">
-                    <div class="tier-grid">
-                        <div class="tier-btn t25" onclick="setTier('25', 25)"><div class="tier-name">25</div></div>
-                        <div class="tier-btn t50" onclick="setTier('50', 50)"><div class="tier-name">50</div></div>
-                        <div class="tier-btn t75" onclick="setTier('75', 75)"><div class="tier-name">75</div></div>
-                        <div class="tier-btn tinf" onclick="setTier('inf', 90)"><div class="tier-name">∞</div></div>
+                    <div class="tiers">
+                        <div class="tier t25" onclick="setTier('25', 25)"><div class="t-name">25</div></div>
+                        <div class="tier t50" onclick="setTier('50', 50)"><div class="t-name">50</div></div>
+                        <div class="tier t75" onclick="setTier('75', 75)"><div class="t-name">75</div></div>
+                        <div class="tier tinf" onclick="setTier('inf', 90)"><div class="t-name">∞</div></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="label">CODENAME</label>
+                        <input type="text" class="input" id="inpName" placeholder="e.g. Python Study">
+                    </div>
+                    <div class="input-group">
+                        <label class="label">OBJECTIVE (FLASH CARD)</label>
+                        <input type="text" class="input" id="inpObj" placeholder="Goal for the session...">
+                    </div>
+                    <div class="input-group">
+                        <label class="label">DEADLINE</label>
+                        <input type="datetime-local" class="input" id="inpDeadline" style="filter:invert(1);">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Orbit Name</label>
-                        <input type="text" class="form-input" id="inpName" placeholder="e.g. Coding...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Objective (Flash Card)</label>
-                        <input type="text" class="form-input" id="inpObj" placeholder="Goal for this orbit...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Deadline</label>
-                        <input type="datetime-local" class="form-input" id="inpDeadline">
-                    </div>
-
-                    <div class="process-section" style="flex:1; display:flex; flex-direction:column;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="form-label">PROCESSES</span>
-                            <button class="btn-add" onclick="openProcessModal()">+ ADD</button>
+                    <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:10px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <label class="label">PROCESS PROTOCOLS</label>
+                            <button onclick="toggleProcMode()" style="background:none; border:1px solid var(--gold); color:var(--gold); font-size:10px; padding:2px 8px; cursor:pointer;">+ ADD</button>
                         </div>
-                        <div class="process-list" id="editorProcessList"></div>
+                        <div id="procInputs" class="hidden" style="display:flex; gap:5px; margin-bottom:10px;">
+                            <input id="newProcTxt" class="input" style="font-size:0.8rem;" placeholder="Task...">
+                            <button onclick="addProc('pos')" style="background:var(--t25); border:none; width:30px;">+</button>
+                            <button onclick="addProc('neg')" style="background:var(--t75); border:none; width:30px;">-</button>
+                        </div>
+                        <div id="editorProcs" style="max-height:150px; overflow-y:auto;"></div>
                     </div>
 
-                    <button class="btn-main" id="btnAction" onclick="handleDockAction()">ADD TO SPACE</button>
-                    <button id="btnCancelEdit" style="display:none; width:100%; background:transparent; border:none; color:#555; margin-top:10px; cursor:pointer;" onclick="cancelEdit()">CANCEL</button>
+                    <button class="btn" id="btnSave" onclick="saveOrbit()">DEPLOY ORBIT</button>
+                    <button id="btnCancel" class="hidden" onclick="resetEditor()" style="width:100%; background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">CANCEL UPDATE</button>
                 </div>
             </div>
 
-            <div class="panel" style="background: rgba(0,0,0,0.3); border: none; overflow: hidden;">
-                <div class="orbit-space" id="orbitSpace">
-                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); opacity: 0.5; font-size: 0.7rem; pointer-events: none;">
-                        DRAG TO MOVE • DOUBLE CLICK TO LAUNCH
-                    </div>
+            <div class="panel space-area" id="spaceArea">
+                <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-family:'Orbitron'; font-size:0.6rem; color:rgba(255,255,255,0.3); pointer-events:none;">
+                    DRAG TO ARRANGE • CLICK ROCKET TO LAUNCH
                 </div>
             </div>
 
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-dot"></div>
-                    <span class="panel-title">LOGS</span>
+            <div class="panel side-panel">
+                <div class="panel-head">
+                    <div class="panel-dot"></div> FLIGHT LOGS
                 </div>
-                <div class="panel-body" id="historyList"></div>
-                <button onclick="clearLogs()" style="background:transparent; border:none; color:#444; font-size:0.6rem; padding:10px; cursor:pointer;">CLEAR HISTORY</button>
+                <div class="panel-body" id="logList"></div>
+                <button onclick="clearLogs()" style="background:transparent; border:none; color:#444; font-size:0.6rem; padding:10px; cursor:pointer;">PURGE DATA</button>
             </div>
         </div>
     </div>
 
-    <div class="active-overlay" id="activeOverlay">
-        <div style="font-family:'Orbitron'; color:#888; letter-spacing:4px;">CURRENT ORBIT</div>
-        <div class="timer-display" id="timerDisplay">00:00</div>
-        <div id="activeNameDisplay" style="font-size:1.5rem; margin-top:10px;">NAME</div>
-        <div style="width:300px; margin-top:20px;">
-            <div style="height:4px; background:#333; width:100%;"><div id="scoreBar" style="height:100%; width:100%; background:var(--nolan-gold);"></div></div>
-            <div style="text-align:right; font-size:0.8rem; margin-top:5px; color:var(--nolan-gold);" id="scoreValue">100% INTEGRITY</div>
+    <div class="hud-overlay" id="hud">
+        <div class="hud-title" id="hudName">MISSION ACTIVE</div>
+        <div class="hud-timer" id="hudTimer">00:00</div>
+        
+        <div class="hud-integrity">
+            <div class="bar-track"><div class="bar-fill" id="hudBar"></div></div>
+            <div class="hud-score" id="hudScore">100% INTEGRITY</div>
         </div>
-        <div id="activeChecklist" style="margin-top:20px; width:300px; max-height:200px; overflow-y:auto; background:#111; padding:10px;"></div>
-        <div style="margin-top:20px; display:flex; gap:20px;">
-            <button class="btn-main" style="width:auto; padding:10px 30px; background:#333; border:1px solid #555;" onclick="abortMission()">ABORT</button>
-            <button class="btn-main" style="width:auto; padding:10px 30px;" onclick="finishMission()">COMPLETE</button>
-        </div>
-    </div>
 
-    <div class="modal" id="modalProcess">
-        <div class="modal-box">
-            <h3 style="color:var(--nolan-gold); margin-bottom:10px;">ADD PROCESS</h3>
-            <input type="text" class="form-input" id="inpProcText" placeholder="Description...">
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-main" style="flex:1; padding:8px; background:var(--process-pos);" onclick="confirmAddProcess('pos')">BUILD (+)</button>
-                <button class="btn-main" style="flex:1; padding:8px; background:var(--process-neg);" onclick="confirmAddProcess('neg')">BURN (-)</button>
-            </div>
-            <button onclick="closeProcessModal()" style="width:100%; background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">CANCEL</button>
+        <div class="hud-tasks" id="hudList"></div>
+
+        <div class="hud-actions">
+            <button class="hud-btn abort" onclick="endMission('ABORTED')">ABORT</button>
+            <button class="hud-btn finish" onclick="endMission('COMPLETE')">FINISH</button>
         </div>
     </div>
 
     <script>
-        // --- STATE & CONFIG ---
-        const state = {
-            dock: [], // {id, x, y, name, obj, deadline, tier, duration, processes}
-            history: [],
-            editor: { isEditing: false, editId: null, tier: null, time: 0, processes: [] },
-            active: null,
-            timer: null
-        };
+        // --- CONFIG ---
         const colors = { '25': '#4ecdc4', '50': '#ffe66d', '75': '#ff6b6b', 'inf': '#a855f7' };
+        const state = {
+            dock: [],
+            history: [],
+            editor: { editing: false, id: null, tier: null, duration: 0, procs: [] },
+            active: null,
+            timerId: null
+        };
 
         // --- DOM ---
-        const dom = {
-            inpName: document.getElementById('inpName'),
-            inpObj: document.getElementById('inpObj'),
-            inpDeadline: document.getElementById('inpDeadline'),
-            editorList: document.getElementById('editorProcessList'),
-            orbitSpace: document.getElementById('orbitSpace'),
-            historyList: document.getElementById('historyList'),
-            activeOverlay: document.getElementById('activeOverlay'),
-            modalProcess: document.getElementById('modalProcess'),
-            inpProcText: document.getElementById('inpProcText'),
-            // Active
-            timerDisplay: document.getElementById('timerDisplay'),
-            activeName: document.getElementById('activeNameDisplay'),
-            scoreBar: document.getElementById('scoreBar'),
-            scoreValue: document.getElementById('scoreValue'),
-            activeChecklist: document.getElementById('activeChecklist'),
-            // Editor
-            editorTitle: document.getElementById('editorTitle'),
-            btnAction: document.getElementById('btnAction'),
-            btnCancelEdit: document.getElementById('btnCancelEdit')
-        };
+        const $ = (id) => document.getElementById(id);
 
         // --- INIT ---
         window.onload = () => {
-            createStars();
             loadData();
             renderSpace();
-            renderHistory();
+            renderLogs();
         };
 
-        function createStars() {
-            const el = document.getElementById('stars');
-            for(let i=0; i<80; i++){
-                let d = document.createElement('div');
-                d.className='star';
-                d.style.left = Math.random()*100+'%';
-                d.style.top = Math.random()*100+'%';
-                d.style.width = Math.random()*2+'px';
-                d.style.height = d.style.width;
-                el.appendChild(d);
-            }
+        // --- EDITOR LOGIC ---
+        function setTier(t, d) {
+            state.editor.tier = t; 
+            state.editor.duration = d;
+            document.querySelectorAll('.tier').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.t${t}`).classList.add('active');
         }
 
-        // --- EDITOR ---
-        function setTier(tier, time) {
-            state.editor.tier = tier;
-            state.editor.time = time;
-            document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.tier-btn.t${tier}`).classList.add('active');
-        }
+        function toggleProcMode() { $('procInputs').classList.toggle('hidden'); $('newProcTxt').focus(); }
 
-        function openProcessModal() { dom.modalProcess.classList.add('open'); dom.inpProcText.focus(); }
-        function closeProcessModal() { dom.modalProcess.classList.remove('open'); dom.inpProcText.value = ''; }
-        
-        function confirmAddProcess(type) {
-            const txt = dom.inpProcText.value.trim();
+        function addProc(type) {
+            const txt = $('newProcTxt').value.trim();
             if(!txt) return;
-            state.editor.processes.push({text: txt, type: type});
-            renderEditorList();
-            closeProcessModal();
+            state.editor.procs.push({ text: txt, type: type });
+            $('newProcTxt').value = '';
+            renderEditorProcs();
         }
 
-        function renderEditorList() {
-            dom.editorList.innerHTML = '';
-            state.editor.processes.forEach((p, i) => {
-                const d = document.createElement('div');
-                d.className = 'process-item';
-                d.style.color = p.type==='pos' ? 'var(--process-pos)' : 'var(--process-neg)';
-                d.innerHTML = `<span>${p.text}</span> <span style="margin-left:auto; cursor:pointer;" onclick="removeProc(${i})">×</span>`;
-                dom.editorList.appendChild(d);
-            });
+        function renderEditorProcs() {
+            $('editorProcs').innerHTML = state.editor.procs.map((p, i) => `
+                <div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:0.8rem;">
+                    <div><span class="proc-tag ${p.type === 'pos' ? 'tag-pos' : 'tag-neg'}">${p.type === 'pos' ? '+' : '-'}</span> ${p.text}</div>
+                    <div style="cursor:pointer;" onclick="delProc(${i})">×</div>
+                </div>
+            `).join('');
         }
-        function removeProc(i) { state.editor.processes.splice(i,1); renderEditorList(); }
+        function delProc(i) { state.editor.procs.splice(i, 1); renderEditorProcs(); }
 
-        // --- DOCK ACTIONS ---
-        function handleDockAction() {
-            const name = dom.inpName.value.trim();
-            if(!name || !state.editor.tier) return alert("Tier and Name required.");
+        function saveOrbit() {
+            const name = $('inpName').value.trim();
+            if (!name || !state.editor.tier) return alert("Name and Tier required");
 
             const data = {
-                id: state.editor.isEditing ? state.editor.editId : Date.now(),
+                id: state.editor.editing ? state.editor.id : Date.now(),
                 name: name,
-                obj: dom.inpObj.value.trim() || 'No Objective',
-                deadline: dom.inpDeadline.value || '',
+                obj: $('inpObj').value || 'No Objective',
+                deadline: $('inpDeadline').value,
                 tier: state.editor.tier,
-                duration: state.editor.time,
-                processes: [...state.editor.processes],
-                x: state.editor.isEditing ? getOrbitById(state.editor.editId).x : 50,
-                y: state.editor.isEditing ? getOrbitById(state.editor.editId).y : 50
+                duration: state.editor.duration,
+                procs: [...state.editor.procs],
+                x: state.editor.editing ? getOrbit(state.editor.id).x : 50,
+                y: state.editor.editing ? getOrbit(state.editor.id).y : 50
             };
 
-            if(state.editor.isEditing) {
+            if (state.editor.editing) {
                 const idx = state.dock.findIndex(o => o.id === data.id);
                 state.dock[idx] = data;
-                cancelEdit();
             } else {
                 state.dock.push(data);
-                resetEditor();
             }
+            
             saveData();
             renderSpace();
-        }
-
-        function getOrbitById(id) { return state.dock.find(o => o.id === id); }
-
-        function resetEditor() {
-            state.editor = { isEditing: false, editId: null, tier: null, time: 0, processes: [] };
-            dom.inpName.value = ''; dom.inpObj.value = ''; dom.inpDeadline.value = '';
-            dom.editorList.innerHTML = '';
-            document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
-            dom.editorTitle.innerText = "MISSION CREATOR";
-            dom.btnAction.innerText = "ADD TO SPACE";
-            dom.btnAction.classList.remove('updating');
-            dom.btnCancelEdit.style.display = 'none';
-            document.getElementById('panelEditor').classList.remove('editing');
+            resetEditor();
         }
 
         function editOrbit(id) {
-            const orb = getOrbitById(id);
-            state.editor.isEditing = true;
-            state.editor.editId = id;
-            state.editor.tier = orb.tier;
-            state.editor.time = orb.duration;
-            state.editor.processes = [...orb.processes];
-
-            dom.inpName.value = orb.name;
-            dom.inpObj.value = orb.obj;
-            dom.inpDeadline.value = orb.deadline;
-            setTier(orb.tier, orb.duration);
-            renderEditorList();
-
-            dom.editorTitle.innerText = "EDITING ORBIT";
-            dom.btnAction.innerText = "UPDATE ORBIT";
-            dom.btnAction.classList.add('updating');
-            dom.btnCancelEdit.style.display = 'block';
-            document.getElementById('panelEditor').classList.add('editing');
+            const o = getOrbit(id);
+            state.editor = { editing: true, id: id, tier: o.tier, duration: o.duration, procs: [...o.procs] };
+            $('inpName').value = o.name;
+            $('inpObj').value = o.obj;
+            $('inpDeadline').value = o.deadline;
+            setTier(o.tier, o.duration);
+            renderEditorProcs();
+            
+            $('editorTitle').innerText = "EDITING SIGNAL";
+            $('btnSave').innerText = "UPDATE ORBIT";
+            $('editorPanel').classList.add('active');
+            $('btnCancel').classList.remove('hidden');
         }
 
-        function cancelEdit() { resetEditor(); }
+        function resetEditor() {
+            state.editor = { editing: false, id: null, tier: null, duration: 0, procs: [] };
+            $('inpName').value = ''; $('inpObj').value = ''; $('inpDeadline').value = ''; $('editorProcs').innerHTML = '';
+            document.querySelectorAll('.tier').forEach(el => el.classList.remove('active'));
+            $('editorTitle').innerText = "MISSION COMMAND";
+            $('btnSave').innerText = "DEPLOY ORBIT";
+            $('editorPanel').classList.remove('active');
+            $('btnCancel').classList.add('hidden');
+        }
 
-        // --- ORBIT SPACE (DRAG & DROP) ---
+        // --- SPACE & DRAG (MOUSE + TOUCH) ---
         function renderSpace() {
-            dom.orbitSpace.innerHTML = '';
-            state.dock.forEach(orb => {
-                // Card Container
-                const cont = document.createElement('div');
-                cont.className = `orbit-container t${orb.tier}`;
-                cont.style.left = orb.x + 'px';
-                cont.style.top = orb.y + 'px';
-                cont.id = `orb-${orb.id}`;
-
-                // Drag Logic
-                let isDragging = false;
-                let startX, startY;
+            $('spaceArea').innerHTML = state.dock.map(o => {
+                const color = colors[o.tier];
+                const date = o.deadline ? new Date(o.deadline) : null;
+                const isOverdue = date && date < new Date();
+                const dateStr = date ? date.toLocaleDateString() : 'None';
                 
-                cont.onmousedown = (e) => {
-                    // Ignore clicks on controls
-                    if(e.target.closest('.orbit-controls')) return;
+                return `
+                <div class="orb-wrapper" id="orb-${o.id}" style="left:${o.x}px; top:${o.y}px;" onmousedown="startDrag(event, ${o.id})" ontouchstart="startDrag(event, ${o.id})">
                     
-                    isDragging = true;
-                    startX = e.clientX - cont.offsetLeft;
-                    startY = e.clientY - cont.offsetTop;
-                    cont.style.zIndex = 100;
-                };
-
-                window.addEventListener('mousemove', (e) => {
-                    if(!isDragging) return;
-                    e.preventDefault();
-                    let newX = e.clientX - startX;
-                    let newY = e.clientY - startY;
-                    
-                    // Boundary check
-                    const rect = dom.orbitSpace.getBoundingClientRect();
-                    newX = Math.max(0, Math.min(newX, rect.width - 150));
-                    newY = Math.max(0, Math.min(newY, rect.height - 150));
-
-                    cont.style.left = newX + 'px';
-                    cont.style.top = newY + 'px';
-                });
-
-                cont.onmouseup = () => {
-                    if(isDragging) {
-                        isDragging = false;
-                        cont.style.zIndex = 10;
-                        orb.x = parseInt(cont.style.left);
-                        orb.y = parseInt(cont.style.top);
-                        saveData();
-                    }
-                };
-
-                // Double click to launch
-                cont.ondblclick = () => launchMission(orb.id);
-
-                // HTML Structure
-                const dlDisplay = orb.deadline ? new Date(orb.deadline).toLocaleDateString() : 'None';
-                
-                cont.innerHTML = `
-                    <div class="orbit-controls">
-                        <div class="ctrl-btn ctrl-edit" onclick="editOrbit(${orb.id})">✎</div>
-                        <div class="ctrl-btn ctrl-info" onclick="toggleFlip(${orb.id})">i</div>
+                    <div class="orb-ctrls">
+                        <div class="ctrl-btn c-launch" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="launchMission(${o.id})">🚀</div>
+                        <div class="ctrl-btn" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="editOrbit(${o.id})">✎</div>
+                        <div class="ctrl-btn" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="toggleFlip(${o.id})">i</div>
                     </div>
-                    <div class="orbit-card">
-                        <div class="orbit-face orbit-face-front">
-                            <div class="planet-icon">●</div>
-                            <div class="planet-name">${orb.name}</div>
-                            <div style="font-size:0.6rem; opacity:0.6; margin-top:5px;">${orb.duration} MIN</div>
+
+                    <div class="orb-card">
+                        <div class="face face-front" style="--c:${color}">
+                            <div class="orb-icon">●</div>
+                            <div class="orb-title">${o.name}</div>
                         </div>
-                        <div class="orbit-face orbit-face-back">
-                            <div class="card-label">OBJECTIVE</div>
-                            <div class="card-obj">"${orb.obj}"</div>
-                            <div class="card-label">DEADLINE</div>
-                            <div class="card-val card-deadline">${dlDisplay}</div>
-                            <div class="card-label">TIER</div>
-                            <div class="card-val">${orb.tier.toUpperCase()}</div>
+                        <div class="face face-back" style="--c:${color}">
+                            <div class="meta-lbl">OBJECTIVE</div>
+                            <div class="meta-val" style="font-size:0.8rem; height:35px; overflow:hidden;">${o.obj}</div>
+                            <div class="meta-lbl">DEADLINE</div>
+                            <div class="meta-val meta-date ${isOverdue ? 'overdue' : ''}">${dateStr}</div>
+                            <div class="meta-lbl">DURATION</div>
+                            <div class="meta-val">${o.duration} MIN</div>
                         </div>
                     </div>
-                `;
-                dom.orbitSpace.appendChild(cont);
-            });
+                </div>`;
+            }).join('') + '<div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-family:\'Orbitron\'; font-size:0.6rem; color:rgba(255,255,255,0.3); pointer-events:none;">DRAG TO ARRANGE • ROCKET TO LAUNCH</div>';
         }
 
-        function toggleFlip(id) {
-            const el = document.getElementById(`orb-${id}`);
-            el.classList.toggle('flipped');
-        }
+        let drag = { active: false, id: null, offsetX: 0, offsetY: 0 };
 
-        // --- MISSION RUNNER ---
-        function launchMission(id) {
-            const orb = getOrbitById(id);
-            state.active = {
-                data: orb,
-                timeLeft: orb.duration * 60,
-                checklist: orb.processes.map(p => ({...p, done: false}))
+        function startDrag(e, id) {
+            if (e.target.closest('.orb-ctrls')) return; // Don't drag if clicking buttons
+            // Prevent default only if not clicking an input (not relevant here but good practice)
+            // e.preventDefault(); 
+            
+            const el = $(`orb-${id}`);
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+            drag = { 
+                active: true, 
+                id: id, 
+                offsetX: clientX - el.offsetLeft, 
+                offsetY: clientY - el.offsetTop 
             };
+            
+            el.style.zIndex = 1000;
+        }
 
-            dom.activeOverlay.classList.add('show');
-            dom.activeName.innerText = orb.name;
-            renderChecklist();
-            updateScore();
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('touchmove', doDrag, {passive: false});
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        function doDrag(e) {
+            if (!drag.active) return;
+            e.preventDefault(); // Stop scrolling on mobile
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            let x = clientX - drag.offsetX;
+            let y = clientY - drag.offsetY;
+
+            // Boundaries
+            const rect = $('spaceArea').getBoundingClientRect();
+            x = Math.max(0, Math.min(x, rect.width - 160));
+            y = Math.max(0, Math.min(y, rect.height - 160));
+
+            const el = $(`orb-${drag.id}`);
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+        }
+
+        function endDrag() {
+            if (!drag.active) return;
+            const o = getOrbit(drag.id);
+            const el = $(`orb-${drag.id}`);
+            o.x = parseInt(el.style.left);
+            o.y = parseInt(el.style.top);
+            el.style.zIndex = 10;
+            drag.active = false;
+            saveData();
+        }
+
+        function toggleFlip(id) { $(`orb-${id}`).classList.toggle('flipped'); }
+        function getOrbit(id) { return state.dock.find(o => o.id === id); }
+
+        // --- ACTIVE MISSION ---
+        function launchMission(id) {
+            const o = getOrbit(id);
+            state.active = { 
+                data: o, 
+                timeLeft: o.duration * 60, 
+                checklist: o.procs.map(p => ({...p, done: false})) 
+            };
+            
+            $('hudName').innerText = o.name.toUpperCase();
+            $('hud').classList.add('active');
+            renderHUDList();
+            updateIntegrity();
             startTimer();
         }
 
-        function renderChecklist() {
-            dom.activeChecklist.innerHTML = '';
-            state.active.checklist.forEach((p, i) => {
-                const div = document.createElement('div');
-                div.style.display = 'flex';
-                div.style.alignItems = 'center';
-                div.style.padding = '8px';
-                div.style.borderBottom = '1px solid #333';
-                div.style.cursor = 'pointer';
-                div.style.opacity = p.done ? '0.5' : '1';
-                div.onclick = () => { p.done = !p.done; renderChecklist(); updateScore(); };
-                
-                div.innerHTML = `
-                    <div style="width:15px; height:15px; border:1px solid #555; background:${p.done?colors[state.active.data.tier]:'transparent'}; margin-right:10px;"></div>
-                    <div style="color:${p.type==='pos'?'#4ecdc4':'#ff6b6b'}">${p.text}</div>
-                `;
-                dom.activeChecklist.appendChild(div);
-            });
+        function renderHUDList() {
+            $('hudList').innerHTML = state.active.checklist.map((p, i) => `
+                <div class="task-row ${p.done ? 'done' : ''} ${p.type}" onclick="toggleTask(${i})">
+                    <div class="task-chk">${p.done ? '✓' : ''}</div>
+                    <div style="flex:1; color:${p.type==='pos' ? '#fff' : '#ff9999'}">${p.text}</div>
+                </div>
+            `).join('');
         }
 
-        function updateScore() {
+        function toggleTask(i) {
+            state.active.checklist[i].done = !state.active.checklist[i].done;
+            renderHUDList();
+            updateIntegrity();
+        }
+
+        function updateIntegrity() {
             const list = state.active.checklist;
-            const pos = list.filter(x => x.type === 'pos');
-            const neg = list.filter(x => x.type === 'neg');
+            const pos = list.filter(p => p.type === 'pos');
+            const neg = list.filter(p => p.type === 'neg');
             
             let score = 100;
-            // Simplified scoring: Start 100. -15 for every Neg done. - (100/TotalPos) for every Pos missed.
+            // Scoring: Start 100. If you miss positives, you lose points. If you hit negatives, you lose 15.
             if(pos.length > 0) {
-                const val = 100 / pos.length;
-                const missed = pos.filter(x => !x.done).length;
-                score -= (missed * val);
+                const valPerPos = 100 / pos.length;
+                const missedPos = pos.filter(p => !p.done).length;
+                score -= (missedPos * valPerPos);
             }
-            const negHits = neg.filter(x => x.done).length;
-            score -= (negHits * 15);
+            
+            const hitNeg = neg.filter(p => p.done).length;
+            score -= (hitNeg * 15);
             
             score = Math.max(0, Math.round(score));
             state.active.score = score;
-            dom.scoreValue.innerText = score + "% INTEGRITY";
-            dom.scoreBar.style.width = score + "%";
+            
+            $('hudScore').innerText = score + "% INTEGRITY";
+            $('hudBar').style.width = score + "%";
+            $('hudBar').style.backgroundColor = score > 80 ? colors['25'] : (score > 50 ? colors['50'] : colors['75']);
         }
 
         function startTimer() {
-            clearInterval(state.timer);
-            updateTimer();
-            state.timer = setInterval(() => {
+            clearInterval(state.timerId);
+            updateTimerDisplay();
+            state.timerId = setInterval(() => {
                 state.active.timeLeft--;
-                updateTimer();
-                if(state.active.timeLeft <= 0) { clearInterval(state.timer); }
+                updateTimerDisplay();
+                if(state.active.timeLeft <= 0) clearInterval(state.timerId);
             }, 1000);
         }
 
-        function updateTimer() {
+        function updateTimerDisplay() {
             const m = Math.floor(state.active.timeLeft / 60);
             const s = state.active.timeLeft % 60;
-            dom.timerDisplay.innerText = `${m}:${s.toString().padStart(2,'0')}`;
+            $('hudTimer').innerText = `${m}:${s.toString().padStart(2,'0')}`;
         }
 
-        function finishMission() { closeMission('COMPLETE'); }
-        function abortMission() { closeMission('ABORTED'); }
-
-        function closeMission(status) {
-            clearInterval(state.timer);
-            dom.activeOverlay.classList.remove('show');
+        function endMission(status) {
+            clearInterval(state.timerId);
             state.history.unshift({
                 name: state.active.data.name,
                 score: state.active.score,
                 status: status,
-                date: new Date().toLocaleTimeString()
+                time: new Date().toLocaleTimeString()
             });
-            saveData();
-            renderHistory();
+            $('hud').classList.remove('active');
             state.active = null;
+            saveData();
+            renderLogs();
         }
 
-        // --- DATA ---
-        function renderHistory() {
-            dom.historyList.innerHTML = '';
-            state.history.forEach(h => {
-                const d = document.createElement('div');
-                d.style.padding = '10px';
-                d.style.borderBottom = '1px solid #333';
-                d.innerHTML = `
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--nolan-gold)">${h.name}</span>
-                        <span style="font-size:0.7rem; color:#666">${h.date}</span>
+        // --- LOGS ---
+        function renderLogs() {
+            $('logList').innerHTML = state.history.map(h => `
+                <div class="log-item">
+                    <div>
+                        <div style="color:${varColor(h.status)}">${h.name}</div>
+                        <div style="font-size:0.7rem; color:#666">${h.time}</div>
                     </div>
-                    <div style="font-size:0.8rem; display:flex; justify-content:space-between;">
-                        <span>${h.status}</span>
-                        <span>${h.score}%</span>
+                    <div style="text-align:right">
+                        <div class="log-score" style="color:${scoreColor(h.score)}">${h.score}%</div>
+                        <div style="font-size:0.6rem; color:#666">${h.status}</div>
                     </div>
-                `;
-                dom.historyList.appendChild(d);
-            });
+                </div>
+            `).join('');
         }
+        
+        function varColor(s) { return s === 'COMPLETE' ? colors['25'] : colors['75']; }
+        function scoreColor(s) { return s >= 80 ? colors['25'] : (s >= 50 ? colors['50'] : colors['75']); }
 
-        function saveData() { localStorage.setItem('infOrbitV4', JSON.stringify({dock:state.dock, history:state.history})); }
+        // --- STORAGE ---
+        function saveData() { localStorage.setItem('infOrbitV5', JSON.stringify({ dock: state.dock, history: state.history })); }
         function loadData() {
-            const d = JSON.parse(localStorage.getItem('infOrbitV4'));
+            const d = JSON.parse(localStorage.getItem('infOrbitV5'));
             if(d) { state.dock = d.dock || []; state.history = d.history || []; }
         }
-        function clearLogs() { state.history = []; saveData(); renderHistory(); }
+        function clearLogs() { state.history = []; saveData(); renderLogs(); }
+
     </script>
 </body>
 </html>
