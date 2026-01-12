@@ -1,0 +1,5360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Infinity Orbit - A cosmic productivity system">
+    <meta name="theme-color" content="#000000">
+    <title>INFINITY ORBIT — Cosmic Productivity System</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+    
+/* ========== css/_tokens.css ========== */
+/**
+ * DESIGN TOKENS
+ * Central place for all design variables
+ */
+
+:root {
+    /* ===== COLOR PALETTE ===== */
+    
+    /* Core Space Colors */
+    --color-void: #000000;
+    --color-deep-space: #020204;
+    --color-nebula: #0a0a12;
+    --color-cosmic-dust: #12121a;
+    
+    /* Tier Colors */
+    --tier-25: #00f0ff;
+    --tier-25-glow: rgba(0, 240, 255, 0.4);
+    --tier-50: #ffd700;
+    --tier-50-glow: rgba(255, 215, 0, 0.4);
+    --tier-75: #ff2a6d;
+    --tier-75-glow: rgba(255, 42, 109, 0.4);
+    --tier-infinity: #d300c5;
+    --tier-infinity-glow: rgba(211, 0, 197, 0.4);
+    
+    /* UI Accent Colors */
+    --color-gold: #c9a227;
+    --color-gold-dim: rgba(201, 162, 39, 0.3);
+    --color-orange: #d4740c;
+    --color-success: #00ff88;
+    --color-danger: #ff3344;
+    --color-warning: #ffaa00;
+    
+    /* Neutrals */
+    --color-white: #ffffff;
+    --color-gray-100: #f0f0f0;
+    --color-gray-200: #cccccc;
+    --color-gray-300: #999999;
+    --color-gray-400: #666666;
+    --color-gray-500: #444444;
+    --color-gray-600: #333333;
+    --color-gray-700: #222222;
+    --color-gray-800: #151515;
+    --color-gray-900: #0a0a0a;
+    
+    /* Glass Effect */
+    --glass-bg: rgba(8, 12, 18, 0.92);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    
+    /* ===== TYPOGRAPHY ===== */
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-tech: 'Orbitron', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* ===== SPACING ===== */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
+    
+    /* ===== BORDERS ===== */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    
+    /* ===== TRANSITIONS ===== */
+    --transition-fast: 150ms ease;
+    --transition-normal: 300ms ease;
+    --transition-slow: 500ms ease;
+    
+    /* ===== Z-INDEX SCALE ===== */
+    --z-base: 1;
+    --z-orbit: 10;
+    --z-orbit-active: 50;
+    --z-controls: 100;
+    --z-panel: 200;
+    --z-modal: 500;
+    --z-hud: 1000;
+    --z-toast: 2000;
+    
+    /* ===== SHADOWS ===== */
+    --shadow-glow-sm: 0 0 10px;
+    --shadow-glow-md: 0 0 20px;
+    --shadow-glow-lg: 0 0 40px;
+    --shadow-glow-xl: 0 0 60px;
+}
+
+/* ========== css/_base.css ========== */
+
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-ui);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--color-white);
+    background: var(--color-deep-space);
+    min-height: 100vh;
+    overflow: hidden;
+    -webkit-user-select:none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+input, textarea {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: none;
+    color: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+img, svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Focus Visible */
+:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-gray-800);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-gray-600);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}
+
+/* ========== css/_background.css ========== */
+/**
+ * COSMIC BACKGROUND
+ * Stars, nebula, black hole effects
+ */
+
+.cosmic-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Star Field */
+.stars {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.7), transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: stars-drift 120s linear infinite;
+}
+
+.stars--layer-2 {
+    background-image: 
+        radial-gradient(1px 1px at 50px 60px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(2px 2px at 100px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 150px 100px, rgba(255,255,255,0.5), transparent);
+    background-size: 300px 300px;
+    animation: stars-drift 200s linear infinite reverse;
+    opacity: 0.6;
+}
+
+.stars--layer-3 {
+    background-image: 
+        radial-gradient(1px 1px at 30px 90px, rgba(0,240,255,0.4), transparent),
+        radial-gradient(1px 1px at 120px 50px, rgba(211,0,197,0.3), transparent),
+        radial-gradient(1px 1px at 80px 140px, rgba(255,215,0,0.3), transparent);
+    background-size: 400px 400px;
+    animation: stars-drift 300s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes stars-drift {
+    from { transform: translateY(0) translateX(0); }
+    to { transform: translateY(-200px) translateX(-200px); }
+}
+
+/* Nebula */
+.nebula {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 20% 80%, rgba(211, 0, 197, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.04) 0%, transparent 60%);
+    animation: nebula-pulse 20s ease-in-out infinite alternate;
+}
+
+@keyframes nebula-pulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Black Hole */
+.black-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.black-hole__singularity {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        var(--color-void) 0%, 
+        var(--color-void) 20%,
+        transparent 70%
+    );
+}
+
+.black-hole__accretion {
+    position: absolute;
+    inset: -50px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, 
+        transparent,
+        rgba(255, 100, 50, 0.1),
+        rgba(255, 200, 100, 0.15),
+        rgba(255, 255, 200, 0.1),
+        transparent
+    );
+    animation: accretion-spin 30s linear infinite;
+    filter: blur(20px);
+}
+
+.black-hole__glow {
+    position: absolute;
+    inset: -100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        transparent 30%,
+        rgba(255, 150, 50, 0.05) 50%,
+        transparent 70%
+    );
+    animation: glow-pulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes accretion-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes glow-pulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Grid Overlay */
+.grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+}
+
+/* Vignette */
+.vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+}
+
+/* ========== css/_layout.css ========== */
+/**
+ * LAYOUT
+ * App structure and grid system
+ */
+
+.app {
+    position: relative;
+    z-index: var(--z-base);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    padding: var(--space-md);
+    gap: var(--space-md);
+}
+
+.app__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.app__workspace {
+    display: grid;
+    grid-template-columns: 320px 1fr 300px;
+    gap: var(--space-md);
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.logo__icon {
+    width: 40px;
+    height: 40px;
+    position: relative;
+}
+
+.logo__orbit {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--color-gold);
+    border-radius: 50%;
+    animation: logo-spin 10s linear infinite;
+}
+
+.logo__orbit::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: var(--color-gold);
+    border-radius: 50%;
+    box-shadow: var(--shadow-glow-sm) var(--color-gold);
+}
+
+.logo__core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: var(--color-white);
+    border-radius: 50%;
+    box-shadow: var(--shadow-glow-md) var(--color-gold);
+}
+
+@keyframes logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.logo__text {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    letter-spacing: 6px;
+    color: var(--color-white);
+    text-shadow: var(--shadow-glow-sm) rgba(255,255,255,0.3);
+}
+
+.logo__version {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-gray-400);
+    margin-left: var(--space-sm);
+}
+
+/* Header Controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.header-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: var(--glass-bg);
+    color: var(--color-gray-300);
+    font-size: 1.1rem;
+    transition: var(--transition-fast);
+}
+
+.header-btn:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+    box-shadow: var(--shadow-glow-sm) var(--color-gold-dim);
+}
+
+.header-btn.is-active {
+    background: var(--color-gold);
+    color: var(--color-void);
+    border-color: var(--color-gold);
+}
+
+.mobile-toggle {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .app__workspace {
+        grid-template-columns: 280px 1fr 260px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .app__workspace {
+        grid-template-columns: 1fr;
+    }
+    
+    .panel--editor,
+    .panel--logs {
+        display: none;
+    }
+    
+    .panel--editor.is-active,
+    .panel--logs.is-active {
+        display: flex;
+        position: fixed;
+        inset: var(--space-md);
+        z-index: var(--z-panel);
+    }
+    
+    .mobile-toggle {
+        display: flex;
+    }
+}
+
+@media (max-width: 600px) {
+    .app {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
+    }
+    
+    .logo__text {
+        font-size: 1.4rem;
+        letter-spacing: 3px;
+    }
+    
+    .logo__version {
+        display: none;
+    }
+}
+
+/* ========== css/_panel.css ========== */
+/**
+ * PANEL COMPONENT
+ * Side panels and containerss
+ */
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-normal);
+}
+
+.panel.is-focused {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 30px rgba(201, 162, 39, 0.1);
+}
+
+.panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--glass-highlight);
+}
+
+.panel__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--color-gray-300);
+    text-transform: uppercase;
+}
+
+.panel__indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--color-gold);
+    border-radius: 50%;
+    box-shadow: var(--shadow-glow-sm) var(--color-gold);
+    animation: indicator-pulse 2s ease-in-out infinite;
+}
+
+@keyframes indicator-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.panel__body {
+    flex: 1;
+    padding: var(--space-md);
+    overflow-y: auto;
+}
+
+.panel__footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--glass-border);
+}
+
+.panel__close {
+    display: none;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    color: var(--color-gray-400);
+    font-size: 1.2rem;
+    transition: var(--transition-fast);
+}
+
+.panel__close:hover {
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+@media (max-width: 1024px) {
+    .panel__close {
+        display: flex;
+    }
+}
+
+/* Panel Footer Actions */
+.panel-footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.panel-footer-actions__row {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.btn-util {
+    flex: 1;
+    padding: var(--space-sm);
+    background: transparent;
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-tech);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--color-gray-400);
+    transition: var(--transition-fast);
+}
+
+.btn-util:hover {
+    border-color: var(--color-gray-400);
+    color: var(--color-gray-200);
+}
+
+.btn-util--danger {
+    border-color: rgba(255, 42, 109, 0.3);
+    color: var(--tier-75);
+}
+
+.btn-util--danger:hover {
+    border-color: var(--tier-75);
+    background: rgba(255, 42, 109, 0.1);
+}
+
+.btn-util--gold {
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
+}
+
+.btn-util--gold:hover {
+    border-color: var(--color-gold);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+/* ========== css/_forms.css ========== */
+/**
+ * FORM COMPONENTS
+ * Inputs, buttons, tier selector
+ */
+
+/* Form Groups */
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-label {
+    display: block;
+    font-family: var(--font-tech);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--color-gray-400);
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-white);
+    transition: var(--transition-fast);
+}
+
+.form-input::placeholder {
+    color: var(--color-gray-500);
+}
+
+.form-input:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
+}
+
+.form-input--datetime {
+    color-scheme: dark;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+}
+
+/* Tier Selector */
+.tier-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    border: none;
+}
+
+.tier-option {
+    position: relative;
+    padding: var(--space-md) var(--space-sm);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-gray-700);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    overflow: hidden;
+}
+
+.tier-option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tier-color);
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.tier-option:hover::before {
+    opacity: 0.05;
+}
+
+.tier-option.is-selected {
+    border-color: var(--tier-color);
+    box-shadow: var(--shadow-glow-md) var(--tier-glow);
+}
+
+.tier-option.is-selected::before {
+    opacity: 0.1;
+}
+
+.tier-option__value {
+    position: relative;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--tier-color);
+    line-height: 1;
+}
+
+.tier-option__label {
+    position: relative;
+    font-family: var(--font-tech);
+    font-size: 0.55rem;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+    letter-spacing: 1px;
+}
+
+.tier-option--25 {
+    --tier-color: var(--tier-25);
+    --tier-glow: var(--tier-25-glow);
+}
+
+.tier-option--50 {
+    --tier-color: var(--tier-50);
+    --tier-glow: var(--tier-50-glow);
+}
+
+.tier-option--75 {
+    --tier-color: var(--tier-75);
+    --tier-glow: var(--tier-75-glow);
+}
+
+.tier-option--infinity {
+    --tier-color: var(--tier-infinity);
+    --tier-glow: var(--tier-infinity-glow);
+}
+
+/* Process Section */
+.process-section {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--glass-border);
+}
+
+.process-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.process-add-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-gold);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-tech);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--color-gold);
+    transition: var(--transition-fast);
+}
+
+.process-add-btn:hover {
+    background: var(--color-gold);
+    color: var(--color-void);
+}
+
+.process-input-row {
+    display: none;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    animation: fade-slide-in 0.2s ease;
+}
+
+.process-input-row.is-visible {
+    display: flex;
+}
+
+@keyframes fade-slide-in {
+    from { 
+        opacity: 0; 
+        transform: translateY(-5px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.process-input {
+    flex: 1;
+    padding: var(--space-sm);
+    font-size: 0.85rem;
+}
+
+.process-type-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: var(--transition-fast);
+}
+
+.process-type-btn--positive {
+    background: var(--tier-25);
+    color: var(--color-void);
+}
+
+.process-type-btn--positive:hover {
+    box-shadow: var(--shadow-glow-sm) var(--tier-25);
+}
+
+.process-type-btn--negative {
+    background: var(--tier-75);
+    color: var(--color-void);
+}
+
+.process-type-btn--negative:hover {
+    box-shadow: var(--shadow-glow-sm) var(--tier-75);
+}
+
+.process-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.process-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+    transition: var(--transition-fast);
+}
+
+.process-item:hover {
+    background: var(--glass-highlight);
+}
+
+.process-item__content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.process-tag {
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: var(--font-tech);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.process-tag--positive {
+    background: var(--tier-25);
+    color: var(--color-void);
+}
+
+.process-tag--negative {
+    background: var(--tier-75);
+    color: var(--color-void);
+}
+
+.process-item__text {
+    font-size: 0.9rem;
+    color: var(--color-gray-200);
+}
+
+.process-item__delete {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-500);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.process-item__delete:hover {
+    background: rgba(255, 42, 109, 0.2);
+    color: var(--tier-75);
+}
+
+/* Primary Button */
+.btn-primary {
+    width: 100%;
+    padding: var(--space-md);
+    background: linear-gradient(135deg, var(--color-gold), var(--color-orange));
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+    color: var(--color-void);
+    transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.btn-primary:hover::before {
+    transform: translateX(100%);
+}
+
+.btn-primary:hover {
+    box-shadow: var(--shadow-glow-md) var(--color-gold-dim);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: var(--space-sm);
+    background: transparent;
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--color-gray-400);
+    margin-top: var(--space-sm);
+    transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-gray-400);
+    color: var(--color-gray-200);
+}
+
+/* ========== css/_orbit.css ========== */
+/**
+ * ORBIT COMPONENT
+ * Orbit nodes in space area
+ */
+
+/* Space Area */
+.space-area {
+    position: relative;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.space-area__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: var(--z-base);
+}
+
+.space-area__orbits {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-orbit);
+}
+
+.space-area__status {
+    position: absolute;
+    bottom: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-tech);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--color-gray-500);
+    pointer-events: none;
+}
+
+.space-area__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.space-area__empty.hidden {
+    display: none;
+}
+
+.space-area__empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.2;
+}
+
+.space-area__empty-text {
+    font-family: var(--font-tech);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--color-gray-500);
+    text-align: center;
+}
+
+/* Orbit Node */
+.orbit {
+    position: absolute;
+    cursor: grab;
+    z-index: var(--z-orbit);
+    touch-action: none;
+    transition: z-index 0s;
+}
+
+.orbit:active {
+    cursor: grabbing;
+}
+
+.orbit.is-dragging {
+    z-index: var(--z-orbit-active) !important;
+    cursor: grabbing;
+}
+
+.orbit.is-locked {
+    opacity: 0.35;
+    filter: grayscale(0.8);
+    cursor: not-allowed;
+}
+
+.orbit.is-locked .orbit__controls,
+.orbit.is-locked .orbit__resize {
+    display: none;
+}
+
+.orbit.is-session-completed .orbit__core {
+    border-style: double;
+    border-width: 5px;
+}
+
+.orbit.is-link-source .orbit__core {
+    animation: link-source-pulse 0.8s ease-in-out infinite;
+}
+
+.orbit.is-link-target .orbit__core {
+    cursor: crosshair;
+    box-shadow: 
+        0 0 30px var(--orbit-color),
+        inset 0 0 20px rgba(255,255,255,0.2);
+}
+
+@keyframes link-source-pulse {
+    0%, 100% { box-shadow: 0 0 20px var(--orbit-color); }
+    50% { box-shadow: 0 0 40px var(--orbit-color), 0 0 60px var(--orbit-color); }
+}
+
+/* Orbit Core */
+.orbit__core {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, 
+        rgba(40, 40, 50, 0.9) 0%, 
+        rgba(10, 10, 15, 0.95) 100%
+    );
+    border: 2px solid var(--orbit-color);
+    box-shadow: 
+        0 0 20px var(--orbit-glow),
+        inset 0 0 30px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter: blur(5px);
+    transition: var(--transition-normal);
+}
+
+/* Orbit Rings */
+.orbit__ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px dashed var(--orbit-color);
+    opacity: 0.5;
+    animation: orbit-ring-spin 40s linear infinite;
+    pointer-events: none;
+}
+
+.orbit__ring--inner {
+    inset: -4px;
+    border-style: dotted;
+    animation-direction: reverse;
+    animation-duration: 30s;
+    opacity: 0.3;
+}
+
+@keyframes orbit-ring-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Orbit Particles */
+.orbit__particles {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.orbit__particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--orbit-color);
+    border-radius: 50%;
+    animation: particle-float 3s ease-in-out infinite;
+}
+
+@keyframes particle-float {
+    0%, 100% { 
+        opacity: 0; 
+        transform: translateY(0) scale(0); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: translateY(-20px) scale(1); 
+    }
+}
+
+/* Orbit Content */
+.orbit__icon {
+    font-size: 1.8em;
+    line-height: 1;
+    margin-bottom: 4%;
+    text-shadow: 0 0 20px var(--orbit-color);
+    color: var(--color-white);
+}
+
+.orbit__name {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.85em;
+    max-width: 80%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--orbit-color);
+}
+
+.orbit__duration {
+    font-family: var(--font-tech);
+    font-size: 0.5em;
+    color: var(--color-gray-300);
+    margin-top: 4%;
+    letter-spacing: 1px;
+}
+
+/* Orbit Controls */
+.orbit__controls {
+    position: absolute;
+    top: 0;
+    right: -36px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: var(--z-controls);
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: var(--transition-fast);
+}
+
+.orbit:hover .orbit__controls,
+.orbit.is-link-source .orbit__controls {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.orbit__ctrl-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--color-gray-600);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    color: var(--color-gray-400);
+    transition: var(--transition-fast);
+}
+
+.orbit__ctrl-btn:hover {
+    transform: scale(1.15);
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+.orbit__ctrl-btn--launch {
+    border-color: var(--orbit-color);
+    color: var(--orbit-color);
+    box-shadow: var(--shadow-glow-sm) var(--orbit-glow);
+}
+
+.orbit__ctrl-btn--launch:hover {
+    background: var(--orbit-color);
+    color: var(--color-void);
+}
+
+.orbit__ctrl-btn--launch:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.orbit__ctrl-btn--link {
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+.orbit__ctrl-btn--link.is-active {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: var(--color-void);
+    box-shadow: var(--shadow-glow-md) var(--color-gold);
+}
+
+.orbit__ctrl-btn--delete {
+    border-color: var(--tier-75);
+    color: var(--tier-75);
+}
+
+.orbit__ctrl-btn--delete:hover {
+    background: var(--tier-75);
+    color: var(--color-void);
+}
+
+/* Resize Handle */
+.orbit__resize {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    z-index: var(--z-controls);
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.orbit:hover .orbit__resize {
+    opacity: 0.6;
+}
+
+.orbit__resize:hover {
+    opacity: 1 !important;
+}
+
+.orbit__resize::before,
+.orbit__resize::after {
+    content: '';
+    position: absolute;
+    background: var(--color-white);
+    border-radius: 1px;
+}
+
+.orbit__resize::before {
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 2px;
+}
+
+.orbit__resize::after {
+    bottom: 0;
+    right: 0;
+    width: 2px;
+    height: 10px;
+}
+
+/* Tier Variants */
+.orbit--tier-25 {
+    --orbit-color: var(--tier-25);
+    --orbit-glow: var(--tier-25-glow);
+}
+
+.orbit--tier-50 {
+    --orbit-color: var(--tier-50);
+    --orbit-glow: var(--tier-50-glow);
+}
+
+.orbit--tier-75 {
+    --orbit-color: var(--tier-75);
+    --orbit-glow: var(--tier-75-glow);
+}
+
+.orbit--tier-infinity {
+    --orbit-color: var(--tier-infinity);
+    --orbit-glow: var(--tier-infinity-glow);
+}
+
+/* ========== css/_connections.css ========== */
+/**
+ * CONNECTIONS
+ * SVG lines between orbits
+ */
+
+.connection-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 2;
+    stroke-dasharray: 8, 8;
+    animation: connection-flow 20s linear infinite;
+}
+
+.connection-line--active {
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-dasharray: none;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+}
+
+.connection-line--locked {
+    stroke: rgba(255, 42, 109, 0.3);
+}
+
+@keyframes connection-flow {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -100; }
+}
+
+.connection-hitbox {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 20;
+    cursor: pointer;
+    pointer-events: stroke;
+}
+
+.connection-hitbox:hover + .connection-line {
+    stroke: rgba(255, 255, 255, 0.4);
+}
+
+.connection-arrow {
+    fill: rgba(255, 255, 255, 0.4);
+}
+
+/* ========== css/_hud.css ========== */
+/**
+ * HUD OVERLAY
+ * Mission active screen
+ */
+
+.hud {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-hud);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.hud.is-active {
+    display: flex;
+    animation: hud-enter 0.5s ease;
+}
+
+@keyframes hud-enter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Letterbox */
+.hud__letterbox {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--color-void);
+}
+
+.hud__letterbox--top {
+    top: 0;
+}
+
+.hud__letterbox--bottom {
+    bottom: 0;
+}
+
+/* Content */
+.hud__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 500px;
+    width: 90%;
+}
+
+.hud__mission-name {
+    font-family: var(--font-tech);
+    font-size: 1.2rem;
+    letter-spacing: 6px;
+    color: var(--hud-color, var(--color-gold));
+    margin-bottom: var(--space-lg);
+    text-shadow: var(--shadow-glow-md) var(--hud-color, var(--color-gold));
+}
+
+.hud__timer {
+    font-family: var(--font-display);
+    font-size: 8rem;
+    line-height: 1;
+    color: var(--color-white);
+    text-shadow: var(--shadow-glow-xl) var(--hud-color, var(--color-gold));
+    margin-bottom: var(--space-lg);
+}
+
+.hud__timer--warning {
+    animation: timer-warning 1s ease infinite;
+}
+
+.hud__timer--expired {
+    color: var(--tier-75);
+    animation: timer-expired 0.5s ease infinite;
+}
+
+@keyframes timer-warning {
+    0%, 100% { color: var(--color-white); }
+    50% { color: var(--tier-75); }
+}
+
+@keyframes timer-expired {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@media (max-width: 600px) {
+    .hud__timer {
+        font-size: 5rem;
+    }
+    
+    .hud__mission-name {
+        font-size: 0.9rem;
+        letter-spacing: 4px;
+    }
+}
+
+/* Integrity Bar */
+.hud__integrity {
+    width: 100%;
+    margin-bottom: var(--space-xl);
+}
+
+.hud__integrity-bar {
+    width: 100%;
+    height: 10px;
+    background: var(--color-gray-800);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 1px solid var(--color-gray-700);
+}
+
+.hud__integrity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--hud-color, var(--color-gold)), var(--color-white));
+    transition: width 0.5s ease;
+    box-shadow: var(--shadow-glow-sm) var(--hud-color, var(--color-gold));
+}
+
+.hud__integrity-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-sm);
+    font-family: var(--font-tech);
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+.hud__integrity-label {
+    color: var(--color-gray-500);
+}
+
+.hud__integrity-value {
+    color: var(--color-white);
+    font-weight: 600;
+}
+
+/* Checklist */
+.hud__checklist {
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-gray-700);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.hud__checklist-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.hud__checklist-item:last-child {
+    border-bottom: none;
+}
+
+.hud__checklist-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.hud__checklist-checkbox {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: transparent;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.hud__checklist-item.is-checked .hud__checklist-checkbox {
+    background: var(--hud-color, var(--color-gold));
+    border-color: var(--hud-color, var(--color-gold));
+    color: var(--color-void);
+}
+
+.hud__checklist-item--negative .hud__checklist-checkbox {
+    border-color: var(--tier-75);
+}
+
+.hud__checklist-item--negative.is-checked .hud__checklist-checkbox {
+    background: var(--tier-75);
+    border-color: var(--tier-75);
+}
+
+.hud__checklist-text {
+    flex: 1;
+    font-size: 1rem;
+}
+
+.hud__checklist-item--negative .hud__checklist-text {
+    color: rgba(255, 150, 150, 0.8);
+}
+
+.hud__checklist-type {
+    font-family: var(--font-tech);
+    font-size: 0.55rem;
+    padding: 2px 6px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+.hud__checklist-type--positive {
+    background: rgba(0, 240, 255, 0.2);
+    color: var(--tier-25);
+}
+
+.hud__checklist-type--negative {
+    background: rgba(255, 42, 109, 0.2);
+    color: var(--tier-75);
+}
+
+/* HUD Actions */
+.hud__actions {
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.hud__btn {
+    padding: var(--space-md) var(--space-2xl);
+    background: transparent;
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-tech);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    color: var(--color-white);
+    transition: var(--transition-fast);
+}
+
+.hud__btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.hud__btn--pause {
+    border-color: var(--tier-50);
+    color: var(--tier-50);
+}
+
+.hud__btn--pause:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.hud__btn--abort {
+    border-color: var(--tier-75);
+    color: var(--tier-75);
+}
+
+.hud__btn--abort:hover {
+    background: rgba(255, 42, 109, 0.1);
+}
+
+.hud__btn--complete {
+    border-color: var(--tier-25);
+    color: var(--tier-25);
+    box-shadow: var(--shadow-glow-sm) var(--tier-25-glow);
+}
+
+.hud__btn--complete:hover {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: var(--shadow-glow-md) var(--tier-25-glow);
+}
+
+@media (max-width: 600px) {
+    .hud__btn {
+        padding: var(--space-sm) var(--space-lg);
+        font-size: 0.75rem;
+    }
+}
+
+/* ========== css/_modals.css ========== */
+/**
+ * MODALS
+ * Overlay dialogs
+ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-overlay.is-active {
+    display: flex;
+    animation: modal-overlay-enter 0.3s ease;
+}
+
+@keyframes modal-overlay-enter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    width: 90%;
+    max-width: 450px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    animation: modal-scale-enter 0.3s ease;
+}
+
+@keyframes modal-scale-enter {
+    from { 
+        transform: scale(0.95); 
+        opacity: 0; 
+    }
+    to { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+}
+
+.modal__header {
+    padding: var(--space-lg);
+    text-align: center;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.modal__icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+}
+
+.modal__title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--color-white);
+}
+
+.modal__subtitle {
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--color-gray-400);
+    margin-top: var(--space-sm);
+}
+
+.modal__body {
+    padding: var(--space-lg);
+}
+
+.modal__question {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--color-gray-200);
+    margin-bottom: var(--space-lg);
+}
+
+.modal__actions {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.modal__btn {
+    flex: 1;
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    transition: var(--transition-fast);
+}
+
+.modal__btn--yes {
+    background: var(--color-success);
+    color: var(--color-void);
+}
+
+.modal__btn--yes:hover {
+    box-shadow: var(--shadow-glow-md) rgba(0, 255, 136, 0.3);
+}
+
+.modal__btn--no {
+    background: transparent;
+    border: 1px solid var(--tier-75);
+    color: var(--tier-75);
+}
+
+.modal__btn--no:hover {
+    background: rgba(255, 42, 109, 0.1);
+}
+
+/* Confirm Modal */
+.confirm-modal__message {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--color-gray-300);
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+}
+
+.confirm-modal__actions {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.confirm-modal__btn {
+    flex: 1;
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-tech);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: var(--transition-fast);
+}
+
+.confirm-modal__btn--cancel {
+    background: transparent;
+    border: 1px solid var(--color-gray-600);
+    color: var(--color-gray-400);
+}
+
+.confirm-modal__btn--cancel:hover {
+    border-color: var(--color-gray-400);
+    color: var(--color-white);
+}
+
+.confirm-modal__btn--confirm {
+    background: var(--tier-75);
+    color: var(--color-void);
+}
+
+.confirm-modal__btn--confirm:hover {
+    box-shadow: var(--shadow-glow-sm) var(--tier-75-glow);
+}
+
+/* Data Modal */
+.data-modal__textarea {
+    width: 100%;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-gray-200);
+    resize: none;
+    margin-bottom: var(--space-md);
+}
+
+.data-modal__textarea:focus {
+    border-color: var(--color-gold);
+}
+
+.data-modal__actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.data-modal__btn {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    transition: var(--transition-fast);
+}
+
+.data-modal__btn--export {
+    background: var(--color-gold);
+    color: var(--color-void);
+}
+
+.data-modal__btn--export:hover {
+    box-shadow: var(--shadow-glow-sm) var(--color-gold-dim);
+}
+
+.data-modal__btn--import {
+    background: var(--tier-25);
+    color: var(--color-void);
+}
+
+.data-modal__btn--import:hover {
+    box-shadow: var(--shadow-glow-sm) var(--tier-25-glow);
+}
+
+.data-modal__btn--close {
+    background: transparent;
+    border: 1px solid var(--color-gray-600);
+    color: var(--color-gray-400);
+}
+
+.data-modal__btn--close:hover {
+    border-color: var(--color-gray-400);
+    color: var(--color-white);
+}
+
+/* Shortcuts Modal */
+.shortcuts-modal__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.shortcuts-modal__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.shortcuts-modal__item:last-child {
+    border-bottom: none;
+}
+
+.shortcuts-modal__key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 var(--space-sm);
+    background: var(--color-gray-800);
+    border: 1px solid var(--color-gray-600);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-gray-200);
+}
+
+.shortcuts-modal__desc {
+    font-size: 0.85rem;
+    color: var(--color-gray-400);
+}
+
+/* ========== css/_logs.css ========== */
+/**
+ * LOG ENTRIES
+ * Flight log list
+ */
+
+.log-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.log-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: var(--glass-highlight);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--log-color);
+    transition: var(--transition-fast);
+}
+
+.log-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.log-entry__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.log-entry__name {
+    font-weight: 600;
+    color: var(--log-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.log-entry__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+}
+
+.log-entry__stats {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.log-entry__score {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--log-color);
+    line-height: 1;
+}
+
+.log-entry__status {
+    font-family: var(--font-tech);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+}
+
+.log-entry__status--complete {
+    color: var(--color-success);
+}
+
+.log-entry__status--aborted {
+    color: var(--tier-75);
+}
+
+.log-entry__status--incomplete {
+    color: var(--color-warning);
+}
+
+.log-empty {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--color-gray-500);
+}
+
+.log-empty__icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.3;
+}
+
+.log-empty__text {
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* ========== css/_toast.css ========== */
+/**
+ * TOAST NOTIFICATIONS
+ */
+
+.toast-container {
+    position: fixed;
+    top: var(--space-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-toast);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    pointer-events: none;
+}
+
+.toast {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-gold);
+    border-radius: var(--radius-full);
+    font-family: var(--font-tech);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: var(--color-void);
+    box-shadow: var(--shadow-glow-md) var(--color-gold-dim);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: var(--transition-normal);
+    pointer-events: auto;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast--success {
+    background: var(--color-success);
+    box-shadow: var(--shadow-glow-md) rgba(0, 255, 136, 0.3);
+}
+
+.toast--error {
+    background: var(--tier-75);
+    box-shadow: var(--shadow-glow-md) var(--tier-75-glow);
+}
+
+.toast--info {
+    background: var(--tier-25);
+    box-shadow: var(--shadow-glow-md) var(--tier-25-glow);
+}
+
+/* ========== css/_utilities.css ========== */
+/**
+ * UTILITY CLASSES
+ */
+
+.hidden {
+    display: none !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-gold {
+    color: var(--color-gold);
+}
+
+.text-danger {
+    color: var(--tier-75);
+}
+
+.text-success {
+    color: var(--color-success);
+}
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-shake {
+    animation: shake 0.3s ease;
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- ========== COSMIC BACKGROUND ========== -->
+    <div class="cosmic-bg" aria-hidden="true">
+        <div class="stars"></div>
+        <div class="stars stars--layer-2"></div>
+        <div class="stars stars--layer-3"></div>
+        <div class="nebula"></div>
+        <div class="black-hole">
+            <div class="black-hole__glow"></div>
+            <div class="black-hole__accretion"></div>
+            <div class="black-hole__singularity"></div>
+        </div>
+        <div class="grid-overlay"></div>
+        <div class="vignette"></div>
+    </div>
+
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- ========== MAIN APPLICATION ========== -->
+    <div class="app">
+        
+        <!-- HEADER -->
+        <header class="app__header">
+            <div class="logo">
+                <div class="logo__icon" aria-hidden="true">
+                    <div class="logo__orbit"></div>
+                    <div class="logo__core"></div>
+                </div>
+                <h1 class="logo__text">INFINITY ORBIT</h1>
+                <span class="logo__version">v2.0</span>
+            </div>
+            
+            <div class="header-controls">
+                <button class="header-btn mobile-toggle" id="btnToggleEditor" aria-label="Toggle Editor" title="Editor (E)">✎</button>
+                <button class="header-btn mobile-toggle" id="btnToggleLogs" aria-label="Toggle Logs" title="Logs (L)">📋</button>
+                <button class="header-btn" id="btnDataModal" aria-label="Import/Export" title="Data (I)">💾</button>
+                <button class="header-btn" id="btnShortcuts" aria-label="Shortcuts" title="Help (?)">⌨</button>
+                <button class="header-btn" id="btnToggleAudio" aria-label="Toggle Sound" title="Sound (M)">🔊</button>
+            </div>
+        </header>
+
+        <!-- WORKSPACE -->
+        <main class="app__workspace">
+            
+            <!-- EDITOR PANEL -->
+            <aside class="panel panel--editor" id="panelEditor" role="complementary" aria-label="Orbit Editor">
+                <div class="panel__header">
+                    <div class="panel__title">
+                        <span class="panel__indicator"></span>
+                        <span id="editorPanelTitle">MISSION COMMAND</span>
+                    </div>
+                    <button class="panel__close" id="btnCloseEditor" aria-label="Close">×</button>
+                </div>
+                
+                <div class="panel__body">
+                    <!-- Tier Selector -->
+                    <fieldset class="tier-selector" role="radiogroup" aria-label="Duration Tier">
+                        <button type="button" class="tier-option tier-option--25" data-tier="25" data-duration="25" role="radio" aria-checked="false">
+                            <div class="tier-option__value">25</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--50" data-tier="50" data-duration="50" role="radio" aria-checked="false">
+                            <div class="tier-option__value">50</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--75" data-tier="75" data-duration="75" role="radio" aria-checked="false">
+                            <div class="tier-option__value">75</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--infinity" data-tier="infinity" data-duration="1440" role="radio" aria-checked="false">
+                            <div class="tier-option__value">∞</div>
+                            <div class="tier-option__label">HORIZON</div>
+                        </button>
+                    </fieldset>
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitName">CODENAME</label>
+                        <input type="text" class="form-input" id="inputOrbitName" placeholder="e.g., Protocol Alpha" maxlength="50" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitObjective">OBJECTIVE</label>
+                        <input type="text" class="form-input" id="inputOrbitObjective" placeholder="What must you achieve?" maxlength="200" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitDeadline">DEADLINE</label>
+                        <input type="datetime-local" class="form-input form-input--datetime" id="inputOrbitDeadline">
+                        <p class="form-hint">Leave empty for daily/recurring orbits</p>
+                    </div>
+
+                    <!-- Process Section -->
+                    <section class="process-section">
+                        <div class="process-header">
+                            <label class="form-label">PROCESSES (RUBRIC)</label>
+                            <button type="button" class="process-add-btn" id="btnToggleProcessInput" aria-expanded="false">
+                                <span>+</span> ADD
+                            </button>
+                        </div>
+
+                        <div class="process-input-row" id="processInputRow">
+                            <input type="text" class="form-input process-input" id="inputProcessText" placeholder="Enter process..." maxlength="100">
+                            <button type="button" class="process-type-btn process-type-btn--positive" id="btnAddPositive" title="Positive">+</button>
+                            <button type="button" class="process-type-btn process-type-btn--negative" id="btnAddNegative" title="Negative">−</button>
+                        </div>
+
+                        <div class="process-list" id="processList" role="list"></div>
+                    </section>
+                </div>
+
+                <div class="panel__footer">
+                    <button type="button" class="btn-primary" id="btnSaveOrbit">INITIALIZE ORBIT</button>
+                    <button type="button" class="btn-secondary hidden" id="btnCancelEdit">CANCEL</button>
+                </div>
+            </aside>
+
+            <!-- SPACE AREA -->
+            <section class="panel space-area" id="spaceArea" role="main" aria-label="Orbit Space">
+                <svg class="space-area__svg" id="svgConnections">
+                    <defs>
+                        <marker id="arrowMarker" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" class="connection-arrow"/>
+                        </marker>
+                    </defs>
+                </svg>
+                
+                <div class="space-area__orbits" id="orbitContainer"></div>
+                
+                <div class="space-area__empty" id="emptyState">
+                    <div class="space-area__empty-icon">🌌</div>
+                    <p class="space-area__empty-text">NO ACTIVE ORBITS<br><span style="opacity:0.5">Initialize a mission to begin</span></p>
+                </div>
+
+                <div class="space-area__status"><span id="systemStatus">SYSTEM READY</span></div>
+            </section>
+
+            <!-- LOGS PANEL -->
+            <aside class="panel panel--logs" id="panelLogs" role="complementary" aria-label="Flight Logs">
+                <div class="panel__header">
+                    <div class="panel__title">
+                        <span class="panel__indicator"></span>
+                        FLIGHT LOGS
+                    </div>
+                    <button class="panel__close" id="btnCloseLogs" aria-label="Close">×</button>
+                </div>
+                
+                <div class="panel__body" id="logList"></div>
+
+                <div class="panel__footer">
+                    <div class="panel-footer-actions">
+                        <div class="panel-footer-actions__row">
+                            <button type="button" class="btn-util btn-util--gold" id="btnResetProgress">RESET PROGRESS</button>
+                            <button type="button" class="btn-util" id="btnClearLogs">PURGE LOGS</button>
+                        </div>
+                        <button type="button" class="btn-util btn-util--danger" id="btnClearLinks">SEVER ALL CONNECTIONS</button>
+                    </div>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+
+    <!-- ========== HUD OVERLAY ========== -->
+    <div class="hud" id="hud" role="dialog" aria-modal="true" aria-labelledby="hudMissionName">
+        <div class="hud__letterbox hud__letterbox--top"></div>
+        <div class="hud__letterbox hud__letterbox--bottom"></div>
+        
+        <div class="hud__content">
+            <h2 class="hud__mission-name" id="hudMissionName">MISSION ACTIVE</h2>
+            <div class="hud__timer" id="hudTimer" aria-live="polite">00:00</div>
+            
+            <div class="hud__integrity">
+                <div class="hud__integrity-bar">
+                    <div class="hud__integrity-fill" id="hudIntegrityFill" style="width: 100%"></div>
+                </div>
+                <div class="hud__integrity-labels">
+                    <span class="hud__integrity-label">INTEGRITY</span>
+                    <span class="hud__integrity-value" id="hudIntegrityValue">100%</span>
+                </div>
+            </div>
+
+            <div class="hud__checklist" id="hudChecklist" role="list"></div>
+
+            <div class="hud__actions">
+                <button type="button" class="hud__btn hud__btn--pause" id="btnPauseMission">PAUSE</button>
+                <button type="button" class="hud__btn hud__btn--abort" id="btnAbortMission">ABORT</button>
+                <button type="button" class="hud__btn hud__btn--complete" id="btnCompleteMission">COMPLETE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== POST-SESSION MODAL ========== -->
+    <div class="modal-overlay" id="modalPostSession" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon" id="postSessionIcon">🎯</div>
+                <h2 class="modal__title" id="postSessionTitle">MISSION DEBRIEF</h2>
+                <p class="modal__subtitle" id="postSessionSubtitle">Session Complete</p>
+            </div>
+            <div class="modal__body">
+                <p class="modal__question">Did you achieve the objective?</p>
+                <div class="modal__actions">
+                    <button type="button" class="modal__btn modal__btn--no" id="btnObjectiveNo">NOT YET</button>
+                    <button type="button" class="modal__btn modal__btn--yes" id="btnObjectiveYes">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CONFIRM MODAL ========== -->
+    <div class="modal-overlay" id="modalConfirm" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">⚠️</div>
+                <h2 class="modal__title" id="confirmTitle">CONFIRM ACTION</h2>
+            </div>
+            <div class="modal__body">
+                <p class="confirm-modal__message" id="confirmMessage">Are you sure?</p>
+                <div class="confirm-modal__actions">
+                    <button type="button" class="confirm-modal__btn confirm-modal__btn--cancel" id="btnConfirmCancel">CANCEL</button>
+                    <button type="button" class="confirm-modal__btn confirm-modal__btn--confirm" id="btnConfirmOk">CONFIRM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== DATA MODAL ========== -->
+    <div class="modal-overlay" id="modalData" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">💾</div>
+                <h2 class="modal__title">DATA MANAGEMENT</h2>
+                <p class="modal__subtitle">Export or Import your orbit data</p>
+            </div>
+            <div class="modal__body">
+                <textarea class="data-modal__textarea" id="dataTextarea" placeholder="JSON data..." spellcheck="false"></textarea>
+                <div class="data-modal__actions">
+                    <button type="button" class="data-modal__btn data-modal__btn--export" id="btnExportData">EXPORT</button>
+                    <button type="button" class="data-modal__btn data-modal__btn--import" id="btnImportData">IMPORT</button>
+                    <button type="button" class="data-modal__btn data-modal__btn--close" id="btnCloseDataModal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SHORTCUTS MODAL ========== -->
+    <div class="modal-overlay" id="modalShortcuts" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">⌨️</div>
+                <h2 class="modal__title">KEYBOARD SHORTCUTS</h2>
+            </div>
+            <div class="modal__body">
+                <div class="shortcuts-modal__list">
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">E</kbd><span class="shortcuts-modal__desc">Toggle Editor</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">L</kbd><span class="shortcuts-modal__desc">Toggle Logs</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">I</kbd><span class="shortcuts-modal__desc">Import/Export</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">M</kbd><span class="shortcuts-modal__desc">Toggle Sound</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">Space</kbd><span class="shortcuts-modal__desc">Pause/Resume</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">Esc</kbd><span class="shortcuts-modal__desc">Close/Cancel</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">?</kbd><span class="shortcuts-modal__desc">This Help</span></div>
+                </div>
+                <button type="button" class="btn-secondary mt-md" id="btnCloseShortcuts">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+        
+        
+// ========== js/config.js ==========
+/**
+ * CONFIGURATION
+ * Central configuration and constants
+ */
+
+const Config = {
+    // Storage
+    STORAGE_KEY: 'infinityOrbit_v2',
+    STORAGE_VERSION: '2.0',
+    
+    // Tier definitions
+    TIERS: {
+        '25': {
+            duration: 25,
+            color: '#00f0ff',
+            glow: 'rgba(0, 240, 255, 0.4)',
+            label: '25 MIN'
+        },
+        '50': {
+            duration: 50,
+            color: '#ffd700',
+            glow: 'rgba(255, 215, 0, 0.4)',
+            label: '50 MIN'
+        },
+        '75': {
+            duration: 75,
+            color: '#ff2a6d',
+            glow: 'rgba(255, 42, 109, 0.4)',
+            label: '75 MIN'
+        },
+        'infinity': {
+            duration: 1440,
+            color: '#d300c5',
+            glow: 'rgba(211, 0, 197, 0.4)',
+            label: '∞ HORIZON'
+        }
+    },
+    
+    // Orbit defaults
+    ORBIT: {
+        DEFAULT_SIZE: 140,
+        MIN_SIZE: 80,
+        MAX_SIZE: 250,
+        MARGIN: 20
+    },
+    
+    // Timer
+    TIMER: {
+        WARNING_THRESHOLD: 60, // seconds remaining
+        TICK_INTERVAL: 1000
+    },
+    
+    // Audio
+    AUDIO: {
+        ENABLED_DEFAULT: true,
+        VOLUME: 0.3
+    },
+    
+    // Logs
+    LOGS: {
+        MAX_ENTRIES: 100
+    },
+    
+    // Toast
+    TOAST: {
+        DEFAULT_DURATION: 3000,
+        ERROR_DURATION: 4000
+    }
+};
+
+// ========== js/state.js ==========
+/**
+ * APPLICATION STATE
+ * Centralized state management
+ */
+
+const State = {
+    // ===== DATA =====
+    orbits: [],
+    connections: [],
+    logs: [],
+    
+    // ===== EDITOR STATE =====
+    editor: {
+        isEditing: false,
+        editingId: null,
+        selectedTier: null,
+        processes: []
+    },
+    
+    // ===== MISSION STATE =====
+    mission: {
+        isActive: false,
+        isPaused: false,
+        orbitId: null,
+        timeRemaining: 0,
+        checklist: [],
+        timerId: null,
+        startTime: null
+    },
+    
+    // ===== UI STATE =====
+    ui: {
+        linkingOrbitId: null,
+        audioEnabled: Config.AUDIO.ENABLED_DEFAULT,
+        
+        dragging: {
+            active: false,
+            orbitId: null,
+            offsetX: 0,
+            offsetY: 0
+        },
+        
+        resizing: {
+            active: false,
+            orbitId: null,
+            startX: 0,
+            startSize: 0
+        }
+    },
+    
+    // ===== PENDING OPERATIONS =====
+    pending: {
+        confirmCallback: null,
+        postSessionData: null
+    },
+    
+    // ===== METHODS =====
+    
+    /**
+     * Reset editor state
+     */
+    resetEditor() {
+        this.editor = {
+            isEditing: false,
+            editingId: null,
+            selectedTier: null,
+            processes: []
+        };
+    },
+    
+    /**
+     * Reset mission state
+     */
+    resetMission() {
+        if (this.mission.timerId) {
+            clearInterval(this.mission.timerId);
+        }
+        
+        this.mission = {
+            isActive: false,
+            isPaused: false,
+            orbitId: null,
+            timeRemaining: 0,
+            checklist: [],
+            timerId: null,
+            startTime: null
+        };
+    },
+    
+    /**
+     * Reset UI state
+     */
+    resetUI() {
+        this.ui.linkingOrbitId = null;
+        this.ui.dragging = { active: false, orbitId: null, offsetX: 0, offsetY: 0 };
+        this.ui.resizing = { active: false, orbitId: null, startX: 0, startSize: 0 };
+    }
+};
+
+// ========== js/utils.js ==========
+/**
+ * UTILITY FUNCTIONS
+ * Helper functions used across the application
+ */
+
+const Utils = {
+    /**
+     * Generate unique ID
+     * @returns {string}
+     */
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    },
+    
+    /**
+     * Format seconds as MM:SS or -MM:SS
+     * @param {number} seconds
+     * @returns {string}
+     */
+    formatTime(seconds) {
+        const absSeconds = Math.abs(seconds);
+        const mins = Math.floor(absSeconds / 60);
+        const secs = absSeconds % 60;
+        const sign = seconds < 0 ? '-' : '';
+        return `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    },
+    
+    /**
+     * Format date for display
+     * @param {string} dateString - ISO date string
+     * @returns {string}
+     */
+    formatDate(dateString) {
+        if (!dateString) return 'No deadline';
+        
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    },
+    
+    /**
+     * Format timestamp for logs
+     * @param {Date} date
+     * @returns {string}
+     */
+    formatTimestamp(date = new Date()) {
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    },
+    
+    /**
+     * Format full date and time
+     * @param {string} isoString
+     * @returns {string}
+     */
+    formatDateTime(isoString) {
+        const date = new Date(isoString);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    },
+    
+    /**
+     * Clamp value between min and max
+     * @param {number} value
+     * @param {number} min
+     * @param {number} max
+     * @returns {number}
+     */
+    clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    },
+    
+    /**
+     * Debounce function execution
+     * @param {Function} func
+     * @param {number} wait
+     * @returns {Function}
+     */
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func.apply(this, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    /**
+     * Throttle function execution
+     * @param {Function} func
+     * @param {number} limit
+     * @returns {Function}
+     */
+    throttle(func, limit) {
+        let inThrottle;
+        return function executedFunction(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+    
+    /**
+     * Deep clone an object
+     * @param {Object} obj
+     * @returns {Object}
+     */
+    clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    },
+    
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} text
+     * @returns {string}
+     */
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+    
+    /**
+     * Get element by ID (cached)
+     * @param {string} id
+     * @returns {HTMLElement|null}
+     */
+    $(id) {
+        return document.getElementById(id);
+    },
+    
+    /**
+     * Query selector shorthand
+     * @param {string} selector
+     * @param {HTMLElement} context
+     * @returns {HTMLElement|null}
+     */
+    $(selector, context = document) {
+        return context.querySelector(selector);
+    },
+    
+    /**
+     * Query selector all shorthand
+     * @param {string} selector
+     * @param {HTMLElement} context
+     * @returns {NodeList}
+     */
+    $$(selector, context = document) {
+        return context.querySelectorAll(selector);
+    }
+};
+
+// ========== js/services/storage.js ==========
+/**
+ * STORAGE SERVICE
+ * LocalStorage persistence
+ */
+
+const Storage = {
+    /**
+     * Save current state to localStorage
+     */
+    save() {
+        try {
+            const data = {
+                orbits: State.orbits,
+                connections: State.connections,
+                logs: State.logs,
+                settings: {
+                    audioEnabled: State.ui.audioEnabled
+                },
+                version: Config.STORAGE_VERSION,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error('[Storage] Save failed:', error);
+            Toast.show('Failed to save data', 'error');
+            return false;
+        }
+    },
+    
+    /**
+     * Load state from localStorage
+     * @returns {boolean} Success status
+     */
+    load() {
+        try {
+            const raw = localStorage.getItem(Config.STORAGE_KEY);
+            
+            if (!raw) {
+                console.log('[Storage] No saved data found');
+                return false;
+            }
+            
+            const data = JSON.parse(raw);
+            
+            // Validate and load data
+            State.orbits = Array.isArray(data.orbits) ? data.orbits : [];
+            State.connections = Array.isArray(data.connections) ? data.connections : [];
+            State.logs = Array.isArray(data.logs) ? data.logs : [];
+            
+            // Load settings
+            if (data.settings) {
+                State.ui.audioEnabled = data.settings.audioEnabled ?? Config.AUDIO.ENABLED_DEFAULT;
+            }
+            
+            console.log('[Storage] Data loaded successfully');
+            return true;
+        } catch (error) {
+            console.error('[Storage] Load failed:', error);
+            return false;
+        }
+    },
+    
+    /**
+     * Export data as JSON string
+     * @returns {string}
+     */
+    export() {
+        const data = {
+            orbits: State.orbits,
+            connections: State.connections,
+            logs: State.logs,
+            exportedAt: new Date().toISOString(),
+            version: Config.STORAGE_VERSION
+        };
+        
+        return JSON.stringify(data, null, 2);
+    },
+    
+    /**
+     * Import data from JSON string
+     * @param {string} jsonString
+     * @returns {boolean} Success status
+     */
+    import(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+            
+            // Validate required fields
+            if (!data.orbits || !Array.isArray(data.orbits)) {
+                throw new Error('Invalid data format: missing orbits array');
+            }
+            
+            // Import data
+            State.orbits = data.orbits;
+            State.connections = Array.isArray(data.connections) ? data.connections : [];
+            State.logs = Array.isArray(data.logs) ? data.logs : [];
+            
+            // Save to storage
+            this.save();
+            
+            console.log('[Storage] Data imported successfully');
+            return true;
+        } catch (error) {
+            console.error('[Storage] Import failed:', error);
+            return false;
+        }
+    },
+    
+    /**
+     * Clear all stored data
+     */
+    clear() {
+        try {
+            localStorage.removeItem(Config.STORAGE_KEY);
+            State.orbits = [];
+            State.connections = [];
+            State.logs = [];
+            console.log('[Storage] Data cleared');
+            return true;
+        } catch (error) {
+            console.error('[Storage] Clear failed:', error);
+            return false;
+        }
+    }
+};
+
+// ========== js/services/audio.js ==========
+/**
+ * AUDIO SERVICE
+ * Sound effects using Web Audio API
+ */
+
+const Audio = {
+    context: null,
+    
+    /**
+     * Get or create AudioContext
+     * @returns {AudioContext}
+     */
+    getContext() {
+        if (!this.context) {
+            try {
+                this.context = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (error) {
+                console.warn('[Audio] Web Audio API not supported');
+                return null;
+            }
+        }
+        return this.context;
+    },
+    
+    /**
+     * Play a sound effect
+     * @param {string} type - Sound type: 'launch', 'complete', 'abort', 'click', 'warning', 'link'
+     */
+    play(type) {
+        if (!State.ui.audioEnabled) return;
+        
+        const ctx = this.getContext();
+        if (!ctx) return;
+        
+        try {
+            // Resume context if suspended (browser policy)
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            gainNode.gain.value = Config.AUDIO.VOLUME;
+            
+            const now = ctx.currentTime;
+            
+            switch (type) {
+                case 'launch':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(220, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(440, now + 0.2);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.3);
+                    break;
+                    
+                case 'complete':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523, now);
+                    oscillator.frequency.setValueAtTime(659, now + 0.1);
+                    oscillator.frequency.setValueAtTime(784, now + 0.2);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.4);
+                    break;
+                    
+                case 'abort':
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(400, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.3);
+                    break;
+                    
+                case 'click':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, now);
+                    gainNode.gain.value = 0.1;
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.05);
+                    break;
+                    
+                case 'warning':
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(200, now);
+                    oscillator.frequency.setValueAtTime(300, now + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.2);
+                    break;
+                    
+                case 'link':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(600, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(900, now + 0.15);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.2);
+                    break;
+                    
+                default:
+                    return;
+            }
+        } catch (error) {
+            console.warn('[Audio] Playback failed:', error);
+        }
+    },
+    
+    /**
+     * Toggle audio on/off
+     * @returns {boolean} New state
+     */
+    toggle() {
+        State.ui.audioEnabled = !State.ui.audioEnabled;
+        Storage.save();
+        return State.ui.audioEnabled;
+    }
+};
+
+// ========== js/services/toast.js ==========
+/**
+ * TOAST SERVICE
+ * Notification toasts
+ */
+
+const Toast = {
+    container: null,
+    
+    /**
+     * Initialize toast container reference
+     */
+    init() {
+        this.container = Utils.$('toastContainer');
+    },
+    
+    /**
+     * Show a toast notification
+     * @param {string} message
+     * @param {string} type - 'default', 'success', 'error', 'info'
+     * @param {number} duration - Duration in ms
+     */
+    show(message, type = 'default', duration = Config.TOAST.DEFAULT_DURATION) {
+        if (!this.container) {
+            this.init();
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast--${type}`;
+        toast.textContent = message;
+        toast.setAttribute('role', 'alert');
+        
+        this.container.appendChild(toast);
+        
+        // Trigger enter animation
+        requestAnimationFrame(() => {
+            toast.classList.add('is-visible');
+        });
+        
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.remove('is-visible');
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    },
+    
+    /**
+     * Show success toast
+     * @param {string} message
+     */
+    success(message) {
+        this.show(message, 'success');
+    },
+    
+    /**
+     * Show error toast
+     * @param {string} message
+     */
+    error(message) {
+        this.show(message, 'error', Config.TOAST.ERROR_DURATION);
+    },
+    
+    /**
+     * Show info toast
+     * @param {string} message
+     */
+    info(message) {
+        this.show(message, 'info');
+    }
+};
+
+// ========== js/controllers/orbits.js ==========
+/**
+ * ORBITS CONTROLLER
+ * Orbit CRUD operations
+ */
+
+const Orbits = {
+    /**
+     * Get orbit by ID
+     * @param {string} id
+     * @returns {Object|undefined}
+     */
+    get(id) {
+        return State.orbits.find(o => o.id === id);
+    },
+    
+    /**
+     * Get all orbits
+     * @returns {Array}
+     */
+    getAll() {
+        return State.orbits;
+    },
+    
+    /**
+     * Create a new orbit
+     * @param {Object} data
+     * @returns {Object} Created orbit
+     */
+    create(data) {
+        const tier = Config.TIERS[data.tier];
+        
+        const orbit = {
+            id: Utils.generateId(),
+            name: data.name,
+            objective: data.objective || '',
+            deadline: data.deadline || null,
+            tier: data.tier,
+            duration: tier.duration,
+            processes: Utils.clone(data.processes || []),
+            x: data.x ?? 100,
+            y: data.y ?? 100,
+            size: Config.ORBIT.DEFAULT_SIZE,
+            isSessionCompleted: false, // Completed a session (unlocks next orbit)
+            isObjectiveAchieved: false, // Achieved the objective
+            createdAt: new Date().toISOString()
+        };
+        
+        State.orbits.push(orbit);
+        Storage.save();
+        
+        console.log('[Orbits] Created:', orbit.name);
+        return orbit;
+    },
+    
+    /**
+     * Update an existing orbit
+     * @param {string} id
+     * @param {Object} data
+     * @returns {Object|null} Updated orbit
+     */
+    update(id, data) {
+        const orbit = this.get(id);
+        if (!orbit) return null;
+        
+        // Update allowed fields
+        if (data.name !== undefined) orbit.name = data.name;
+        if (data.objective !== undefined) orbit.objective = data.objective;
+        if (data.deadline !== undefined) orbit.deadline = data.deadline;
+        if (data.tier !== undefined) {
+            orbit.tier = data.tier;
+            orbit.duration = Config.TIERS[data.tier].duration;
+        }
+        if (data.processes !== undefined) orbit.processes = Utils.clone(data.processes);
+        
+        Storage.save();
+        
+        console.log('[Orbits] Updated:', orbit.name);
+        return orbit;
+    },
+    
+    /**
+     * Update orbit position
+     * @param {string} id
+     * @param {number} x
+     * @param {number} y
+     */
+    updatePosition(id, x, y) {
+        const orbit = this.get(id);
+        if (!orbit) return;
+        
+        orbit.x = x;
+        orbit.y = y;
+        Storage.save();
+    },
+    
+    /**
+     * Update orbit size
+     * @param {string} id
+     * @param {number} size
+     */
+    updateSize(id, size) {
+        const orbit = this.get(id);
+        if (!orbit) return;
+        
+        orbit.size = Utils.clamp(size, Config.ORBIT.MIN_SIZE, Config.ORBIT.MAX_SIZE);
+        Storage.save();
+    },
+    
+    /**
+     * Mark orbit session as completed (unlocks dependent orbits)
+     * @param {string} id
+     */
+    completeSession(id) {
+        const orbit = this.get(id);
+        if (!orbit) return;
+        
+        orbit.isSessionCompleted = true;
+        Storage.save();
+        
+        console.log('[Orbits] Session completed:', orbit.name);
+    },
+    
+    /**
+     * Mark orbit objective as achieved
+     * @param {string} id
+     */
+    achieveObjective(id) {
+        const orbit = this.get(id);
+        if (!orbit) return;
+        
+        orbit.isObjectiveAchieved = true;
+        Storage.save();
+        
+        console.log('[Orbits] Objective achieved:', orbit.name);
+    },
+    
+    /**
+     * Delete an orbit
+     * @param {string} id
+     * @returns {boolean} Success
+     */
+    delete(id) {
+        const index = State.orbits.findIndex(o => o.id === id);
+        if (index === -1) return false;
+        
+        const orbit = State.orbits[index];
+        
+        // Remove associated connections
+        Connections.removeAllForOrbit(id);
+        
+        // Remove orbit
+        State.orbits.splice(index, 1);
+        Storage.save();
+        
+        console.log('[Orbits] Deleted:', orbit.name);
+        return true;
+    },
+    
+    /**
+     * Check if orbit is locked (has incomplete prerequisite session)
+     * @param {string} id
+     * @returns {boolean}
+     */
+    isLocked(id) {
+        // Find all connections where this orbit is the target
+        const incomingConnections = State.connections.filter(c => c.targetId === id);
+        
+        if (incomingConnections.length === 0) return false;
+        
+        // Locked if ANY source orbit has not completed a session
+        return incomingConnections.some(conn => {
+            const sourceOrbit = this.get(conn.sourceId);
+            return sourceOrbit && !sourceOrbit.isSessionCompleted;
+        });
+    },
+    
+    /**
+     * Check if orbit can be deleted (no objective or objective achieved or confirmed)
+     * @param {string} id
+     * @returns {boolean}
+     */
+    canDeleteFreely(id) {
+        const orbit = this.get(id);
+        if (!orbit) return false;
+        
+        // Can delete freely if:
+        // 1. Objective is achieved
+        // 2. No objective set
+        // 3. Session already completed
+        if (orbit.isObjectiveAchieved) return true;
+        if (!orbit.objective || orbit.objective.trim() === '') return true;
+        if (orbit.isSessionCompleted) return true;
+        
+        return false;
+    },
+    
+    /**
+     * Reset all orbit progress (session completed + objective achieved)
+     */
+    resetAllProgress() {
+        State.orbits.forEach(orbit => {
+            orbit.isSessionCompleted = false;
+            orbit.isObjectiveAchieved = false;
+        });
+        Storage.save();
+        
+        console.log('[Orbits] All progress reset');
+    }
+};
+
+// ========== js/controllers/connections.js ==========
+/**
+ * CONNECTIONS CONTROLLER
+ * Manage orbit dependencies
+ */
+
+const Connections = {
+    /**
+     * Check if connection exists between two orbits (either direction)
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @returns {boolean}
+     */
+    exists(sourceId, targetId) {
+        return State.connections.some(c =>
+            (c.sourceId === sourceId && c.targetId === targetId) ||
+            (c.sourceId === targetId && c.targetId === sourceId)
+        );
+    },
+    
+    /**
+     * Get connection between two orbits
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @returns {Object|undefined}
+     */
+    get(sourceId, targetId) {
+        return State.connections.find(c =>
+            (c.sourceId === sourceId && c.targetId === targetId) ||
+            (c.sourceId === targetId && c.targetId === sourceId)
+        );
+    },
+    
+    /**
+     * Create a new connection
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @returns {boolean} Success
+     */
+    create(sourceId, targetId) {
+        if (sourceId === targetId) {
+            console.warn('[Connections] Cannot connect orbit to itself');
+            return false;
+        }
+        
+        if (this.exists(sourceId, targetId)) {
+            console.warn('[Connections] Connection already exists');
+            return false;
+        }
+        
+        State.connections.push({
+            id: Utils.generateId(),
+            sourceId,
+            targetId
+        });
+        
+        Storage.save();
+        console.log('[Connections] Created connection:', sourceId, '->', targetId);
+        return true;
+    },
+    
+    /**
+     * Remove a connection between two orbits
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @returns {boolean} Success
+     */
+    remove(sourceId, targetId) {
+        const index = State.connections.findIndex(c =>
+            (c.sourceId === sourceId && c.targetId === targetId) ||
+            (c.sourceId === targetId && c.targetId === sourceId)
+        );
+        
+        if (index === -1) return false;
+        
+        State.connections.splice(index, 1);
+        Storage.save();
+        
+        console.log('[Connections] Removed connection:', sourceId, '<->', targetId);
+        return true;
+    },
+    
+    /**
+     * Toggle connection (create if not exists, remove if exists)
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @returns {Object} { action: 'created' | 'removed' }
+     */
+    toggle(sourceId, targetId) {
+        if (this.exists(sourceId, targetId)) {
+            this.remove(sourceId, targetId);
+            return { action: 'removed' };
+        } else {
+            this.create(sourceId, targetId);
+            return { action: 'created' };
+        }
+    },
+    
+    /**
+     * Remove all connections for a specific orbit
+     * @param {string} orbitId
+     */
+    removeAllForOrbit(orbitId) {
+        State.connections = State.connections.filter(c =>
+            c.sourceId !== orbitId && c.targetId !== orbitId
+        );
+        Storage.save();
+    },
+    
+    /**
+     * Clear all connections
+     */
+    clearAll() {
+        State.connections = [];
+        Storage.save();
+        console.log('[Connections] All connections cleared');
+    },
+    
+    /**
+     * Get all connections
+     * @returns {Array}
+     */
+    getAll() {
+        return State.connections;
+    }
+};
+
+// ========== js/controllers/logs.js ==========
+/**
+ * LOGS CONTROLLER
+ * Flight log management
+ */
+
+const Logs = {
+    /**
+     * Add a new log entry
+     * @param {Object} data
+     * @returns {Object} Created log entry
+     */
+    add(data) {
+        const entry = {
+            id: Utils.generateId(),
+            orbitId: data.orbitId,
+            orbitName: data.orbitName,
+            tier: data.tier,
+            score: data.score,
+            status: data.status, // 'COMPLETE', 'ABORTED'
+            objectiveAchieved: data.objectiveAchieved || false,
+            processesSnapshot: Utils.clone(data.processes || []),
+            sessionDuration: data.sessionDuration, // Actual time spent
+            plannedDuration: data.plannedDuration, // Original orbit duration
+            timestamp: new Date().toISOString()
+        };
+        
+        // Add to beginning of array (newest first)
+        State.logs.unshift(entry);
+        
+        // Limit log entries
+        if (State.logs.length > Config.LOGS.MAX_ENTRIES) {
+            State.logs = State.logs.slice(0, Config.LOGS.MAX_ENTRIES);
+        }
+        
+        Storage.save();
+        
+        console.log('[Logs] Entry added:', entry.orbitName, entry.status, entry.score + '%');
+        return entry;
+    },
+    
+    /**
+     * Get all logs
+     * @returns {Array}
+     */
+    getAll() {
+        return State.logs;
+    },
+    
+    /**
+     * Get logs for a specific orbit
+     * @param {string} orbitId
+     * @returns {Array}
+     */
+    getByOrbit(orbitId) {
+        return State.logs.filter(log => log.orbitId === orbitId);
+    },
+    
+    /**
+     * Clear all logs
+     */
+    clear() {
+        State.logs = [];
+        Storage.save();
+        console.log('[Logs] All logs cleared');
+    },
+    
+    /**
+     * Get log statistics
+     * @returns {Object}
+     */
+    getStats() {
+        const logs = State.logs;
+        
+        if (logs.length === 0) {
+            return {
+                totalSessions: 0,
+                completedSessions: 0,
+                abortedSessions: 0,
+                averageScore: 0,
+                objectivesAchieved: 0
+            };
+        }
+        
+        const completed = logs.filter(l => l.status === 'COMPLETE');
+        const aborted = logs.filter(l => l.status === 'ABORTED');
+        const achieved = logs.filter(l => l.objectiveAchieved);
+        
+        const totalScore = logs.reduce((sum, l) => sum + l.score, 0);
+        
+        return {
+            totalSessions: logs.length,
+            completedSessions: completed.length,
+            abortedSessions: aborted.length,
+            averageScore: Math.round(totalScore / logs.length),
+            objectivesAchieved: achieved.length
+        };
+    }
+};
+
+// ========== js/controllers/mission.js ==========
+/**
+ * MISSION CONTROLLER
+ * Active mission/session management
+ */
+
+const Mission = {
+    /**
+     * Start a mission for an orbit
+     * @param {string} orbitId
+     * @returns {boolean} Success
+     */
+    start(orbitId) {
+        const orbit = Orbits.get(orbitId);
+        
+        if (!orbit) {
+            Toast.error('Orbit not found');
+            return false;
+        }
+        
+        if (Orbits.isLocked(orbitId)) {
+            Toast.error('Complete prerequisite missions first');
+            return false;
+        }
+        
+        if (State.mission.isActive) {
+            Toast.error('A mission is already active');
+            return false;
+        }
+        
+        // Initialize mission state
+        State.mission = {
+            isActive: true,
+            isPaused: false,
+            orbitId: orbitId,
+            timeRemaining: orbit.duration * 60, // Convert to seconds
+            checklist: orbit.processes.map(p => ({
+                ...p,
+                isChecked: false
+            })),
+            timerId: null,
+            startTime: Date.now()
+        };
+        
+        // Play launch sound
+        Audio.play('launch');
+        
+        // Start timer
+        this.startTimer();
+        
+        // Update HUD
+        Renderer.renderHUD();
+        
+        // Show HUD
+        const hud = Utils.$('hud');
+        hud.classList.add('is-active');
+        hud.style.setProperty('--hud-color', Config.TIERS[orbit.tier].color);
+        
+        Toast.info('Mission launched');
+        console.log('[Mission] Started:', orbit.name);
+        
+        return true;
+    },
+    
+    /**
+     * Start the countdown timer
+     */
+    startTimer() {
+        if (State.mission.timerId) {
+            clearInterval(State.mission.timerId);
+        }
+        
+        State.mission.timerId = setInterval(() => {
+            if (!State.mission.isPaused) {
+                State.mission.timeRemaining--;
+                this.updateTimerDisplay();
+                
+                // Warning at threshold
+                if (State.mission.timeRemaining === Config.TIMER.WARNING_THRESHOLD) {
+                    Audio.play('warning');
+                }
+            }
+        }, Config.TIMER.TICK_INTERVAL);
+    },
+    
+    /**
+     * Update the timer display in HUD
+     */
+    updateTimerDisplay() {
+        const timerEl = Utils.$('hudTimer');
+        const time = State.mission.timeRemaining;
+        
+        timerEl.textContent = Utils.formatTime(time);
+        
+        // Update timer styling based on state
+        timerEl.classList.remove('hud__timer--warning', 'hud__timer--expired');
+        
+        if (time <= Config.TIMER.WARNING_THRESHOLD && time > 0) {
+            timerEl.classList.add('hud__timer--warning');
+        } else if (time <= 0) {
+            timerEl.classList.add('hud__timer--expired');
+        }
+    },
+    
+    /**
+     * Toggle pause state
+     */
+    togglePause() {
+        if (!State.mission.isActive) return;
+        
+        State.mission.isPaused = !State.mission.isPaused;
+        
+        const btn = Utils.$('btnPauseMission');
+        btn.textContent = State.mission.isPaused ? 'RESUME' : 'PAUSE';
+        
+        if (State.mission.isPaused) {
+            Toast.info('Mission paused');
+        } else {
+            Toast.info('Mission resumed');
+        }
+    },
+    
+    /**
+     * Toggle a checklist item
+     * @param {number} index
+     */
+    toggleChecklistItem(index) {
+        if (!State.mission.isActive) return;
+        if (index < 0 || index >= State.mission.checklist.length) return;
+        
+        State.mission.checklist[index].isChecked = !State.mission.checklist[index].isChecked;
+        
+        Audio.play('click');
+        
+        this.updateIntegrity();
+        Renderer.renderHUDChecklist();
+    },
+    
+    /**
+     * Calculate and update integrity score
+     * @returns {number} Current score
+     */
+    updateIntegrity() {
+        const checklist = State.mission.checklist;
+        const positives = checklist.filter(p => p.type === 'positive');
+        const negatives = checklist.filter(p => p.type === 'negative');
+        
+        let score = 100;
+        
+        // Deduct for unchecked positives (things you should do but didn't)
+        if (positives.length > 0) {
+            const uncheckedPositives = positives.filter(p => !p.isChecked).length;
+            const deduction = (uncheckedPositives / positives.length) * 100;
+            score -= deduction;
+        }
+        
+        // Deduct for checked negatives (things you should avoid but did)
+        const checkedNegatives = negatives.filter(p => p.isChecked).length;
+        score -= checkedNegatives * 15; // 15% penalty per negative
+        
+        score = Math.max(0, Math.round(score));
+        
+        // Update display
+        Utils.$('hudIntegrityFill').style.width = `${score}%`;
+        Utils.$('hudIntegrityValue').textContent = `${score}%`;
+        
+        return score;
+    },
+    
+    /**
+     * End the current mission
+     * @param {string} status - 'COMPLETE' or 'ABORTED'
+     */
+    end(status) {
+        if (!State.mission.isActive) return;
+        
+        // Stop timer
+        if (State.mission.timerId) {
+            clearInterval(State.mission.timerId);
+            State.mission.timerId = null;
+        }
+        
+        const orbit = Orbits.get(State.mission.orbitId);
+        const score = this.updateIntegrity();
+        const sessionDuration = Math.floor((Date.now() - State.mission.startTime) / 1000);
+        
+        // Play appropriate sound
+        if (status === 'COMPLETE') {
+            Audio.play('complete');
+        } else {
+            Audio.play('abort');
+        }
+        
+        // Store data for post-session modal
+        State.pending.postSessionData = {
+            orbitId: orbit.id,
+            orbitName: orbit.name,
+            tier: orbit.tier,
+            score: score,
+            status: status,
+            processes: State.mission.checklist,
+            sessionDuration: sessionDuration,
+            plannedDuration: orbit.duration * 60
+        };
+        
+        // Mark session as completed if status is COMPLETE
+        if (status === 'COMPLETE') {
+            Orbits.completeSession(orbit.id);
+        }
+        
+        // Hide HUD
+        Utils.$('hud').classList.remove('is-active');
+        
+        // Show post-session modal
+        this.showPostSessionModal(status, score);
+        
+        // Reset mission state
+        State.resetMission();
+        
+        console.log('[Mission] Ended:', status, score + '%');
+    },
+    
+    /**
+     * Show post-session debrief modal
+     * @param {string} status
+     * @param {number} score
+     */
+    showPostSessionModal(status, score) {
+        Utils.$('postSessionIcon').textContent = status === 'COMPLETE' ? '🎯' : '⚠️';
+        Utils.$('postSessionSubtitle').textContent = `${status} • Integrity: ${score}%`;
+        Utils.$('modalPostSession').classList.add('is-active');
+    },
+    
+    /**
+     * Handle post-session objective answer
+     * @param {boolean} achieved
+     */
+    handleObjectiveAnswer(achieved) {
+        const data = State.pending.postSessionData;
+        
+        if (!data) {
+            console.error('[Mission] No pending session data');
+            return;
+        }
+        
+        data.objectiveAchieved = achieved;
+        
+        // Add log entry
+        Logs.add(data);
+        
+        // Update orbit if objective achieved
+        if (achieved) {
+            Orbits.achieveObjective(data.orbitId);
+            Toast.success('Objective achieved! Great work!');
+        } else {
+            Toast.info('Session logged. Keep pushing forward!');
+        }
+        
+        // Close modal
+        Utils.$('modalPostSession').classList.remove('is-active');
+        
+        // Clear pending data
+        State.pending.postSessionData = null;
+        
+        // Re-render
+        Renderer.renderOrbits();
+        Renderer.renderConnections();
+        Renderer.renderLogs();
+    },
+    
+    /**
+     * Abort mission with confirmation
+     */
+    abort() {
+        Modal.confirm('Abort this mission? Progress will be lost.', () => {
+            this.end('ABORTED');
+        });
+    }
+};
+
+// ========== js/controllers/editor.js ==========
+/**
+ * EDITOR CONTROLLER
+ * Orbit creation and editing
+ */
+
+const Editor = {
+    /**
+     * Select a tier
+     * @param {string} tier
+     */
+    selectTier(tier) {
+        State.editor.selectedTier = tier;
+        
+        // Update UI
+        document.querySelectorAll('.tier-option').forEach(el => {
+            const isSelected = el.dataset.tier === tier;
+            el.classList.toggle('is-selected', isSelected);
+            el.setAttribute('aria-checked', isSelected.toString());
+        });
+        
+        Audio.play('click');
+    },
+    
+    /**
+     * Toggle process input visibility
+     */
+    toggleProcessInput() {
+        const row = Utils.$('processInputRow');
+        const btn = Utils.$('btnToggleProcessInput');
+        
+        const isVisible = row.classList.toggle('is-visible');
+        btn.setAttribute('aria-expanded', isVisible.toString());
+        
+        if (isVisible) {
+            Utils.$('inputProcessText').focus();
+        }
+    },
+    
+    /**
+     * Add a process to the editor
+     * @param {string} type - 'positive' or 'negative'
+     */
+    addProcess(type) {
+        const input = Utils.$('inputProcessText');
+        const text = input.value.trim();
+        
+        if (!text) {
+            input.focus();
+            return;
+        }
+        
+        State.editor.processes.push({
+            text: text,
+            type: type
+        });
+        
+        input.value = '';
+        input.focus();
+        
+        Audio.play('click');
+        Renderer.renderEditorProcesses();
+    },
+    
+    /**
+     * Delete a process from the editor
+     * @param {number} index
+     */
+    deleteProcess(index) {
+        if (index < 0 || index >= State.editor.processes.length) return;
+        
+        State.editor.processes.splice(index, 1);
+        Renderer.renderEditorProcesses();
+    },
+    
+    /**
+     * Load an orbit into the editor for editing
+     * @param {string} orbitId
+     */
+    loadOrbit(orbitId) {
+        const orbit = Orbits.get(orbitId);
+        if (!orbit) return;
+        
+        // Set editor state
+        State.editor.isEditing = true;
+        State.editor.editingId = orbitId;
+        State.editor.selectedTier = orbit.tier;
+        State.editor.processes = Utils.clone(orbit.processes);
+        
+        // Populate form fields
+        Utils.$('inputOrbitName').value = orbit.name;
+        Utils.$('inputOrbitObjective').value = orbit.objective || '';
+        Utils.$('inputOrbitDeadline').value = orbit.deadline || '';
+        
+        // Select tier
+        this.selectTier(orbit.tier);
+        
+        // Update UI
+        Utils.$('editorPanelTitle').textContent = 'EDIT ORBIT';
+        Utils.$('btnSaveOrbit').textContent = 'UPDATE ORBIT';
+        Utils.$('btnCancelEdit').classList.remove('hidden');
+        Utils.$('panelEditor').classList.add('is-focused');
+        
+        // Render processes
+        Renderer.renderEditorProcesses();
+        
+        // Show panel on mobile
+        Utils.$('panelEditor').classList.add('is-active');
+        
+        console.log('[Editor] Loaded orbit for editing:', orbit.name);
+    },
+    
+    /**
+     * Save the current editor state (create or update orbit)
+     */
+    save() {
+        const name = Utils.$('inputOrbitName').value.trim();
+        const objective = Utils.$('inputOrbitObjective').value.trim();
+        const deadline = Utils.$('inputOrbitDeadline').value;
+        const tier = State.editor.selectedTier;
+        const processes = State.editor.processes;
+        
+        // Validation
+        if (!name) {
+            Toast.error('Please enter a codename');
+            Utils.$('inputOrbitName').focus();
+            return;
+        }
+        
+        if (!tier) {
+            Toast.error('Please select a duration tier');
+            return;
+        }
+        
+        const data = {
+            name,
+            objective,
+            deadline,
+            tier,
+            processes
+        };
+        
+        if (State.editor.isEditing) {
+            // Update existing orbit
+            Orbits.update(State.editor.editingId, data);
+            Toast.success('Orbit updated');
+        } else {
+            // Create new orbit with random position
+            const spaceArea = Utils.$('spaceArea');
+            const rect = spaceArea.getBoundingClientRect();
+            
+            data.x = Math.random() * (rect.width - Config.ORBIT.DEFAULT_SIZE - 100) + 50;
+            data.y = Math.random() * (rect.height - Config.ORBIT.DEFAULT_SIZE - 100) + 50;
+            
+            Orbits.create(data);
+            Toast.success('Orbit initialized');
+        }
+        
+        Audio.play('launch');
+        
+        // Reset editor and re-render
+        this.reset();
+        Renderer.renderOrbits();
+        Renderer.renderConnections();
+    },
+    
+    /**
+     * Reset editor to default state
+     */
+    reset() {
+        // Reset state
+        State.resetEditor();
+        
+        // Clear form fields
+        Utils.$('inputOrbitName').value = '';
+        Utils.$('inputOrbitObjective').value = '';
+        Utils.$('inputOrbitDeadline').value = '';
+        Utils.$('inputProcessText').value = '';
+        
+        // Reset tier selection
+        document.querySelectorAll('.tier-option').forEach(el => {
+            el.classList.remove('is-selected');
+            el.setAttribute('aria-checked', 'false');
+        });
+        
+        // Update UI
+        Utils.$('editorPanelTitle').textContent = 'MISSION COMMAND';
+        Utils.$('btnSaveOrbit').textContent = 'INITIALIZE ORBIT';
+        Utils.$('btnCancelEdit').classList.add('hidden');
+        Utils.$('panelEditor').classList.remove('is-focused');
+        Utils.$('processInputRow').classList.remove('is-visible');
+        Utils.$('btnToggleProcessInput').setAttribute('aria-expanded', 'false');
+        
+        // Re-render processes (empty)
+        Renderer.renderEditorProcesses();
+    }
+};
+
+// ========== js/controllers/dragdrop.js ==========
+/**
+ * DRAG & DROP CONTROLLER
+ * Orbit dragging functionality
+ */
+
+const DragDrop = {
+    /**
+     * Start dragging an orbit
+     * @param {Event} e
+     * @param {string} orbitId
+     */
+    start(e, orbitId) {
+        // Ignore if clicking on controls or resize handle
+        if (e.target.closest('.orbit__controls') || e.target.closest('.orbit__resize')) {
+            return;
+        }
+        
+        const orbit = Orbits.get(orbitId);
+        if (!orbit) return;
+        
+        // Don't drag locked orbits
+        if (Orbits.isLocked(orbitId)) return;
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+        
+        State.ui.dragging = {
+            active: true,
+            orbitId: orbitId,
+            offsetX: clientX - orbit.x,
+            offsetY: clientY - orbit.y
+        };
+        
+        // Add dragging class
+        const orbitEl = document.querySelector(`[data-orbit-id="${orbitId}"]`);
+        if (orbitEl) {
+            orbitEl.classList.add('is-dragging');
+        }
+    },
+    
+    /**
+     * Handle drag movement
+     * @param {Event} e
+     */
+    move(e) {
+        if (!State.ui.dragging.active) return;
+        
+        e.preventDefault();
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+        
+        const orbit = Orbits.get(State.ui.dragging.orbitId);
+        if (!orbit) return;
+        
+        const spaceArea = Utils.$('spaceArea');
+        const rect = spaceArea.getBoundingClientRect();
+        
+        // Calculate new position
+        let x = clientX - State.ui.dragging.offsetX;
+        let y = clientY - State.ui.dragging.offsetY;
+        
+        // Constrain to space area bounds
+        const margin = Config.ORBIT.MARGIN;
+        x = Utils.clamp(x, margin, rect.width - orbit.size - margin);
+        y = Utils.clamp(y, margin, rect.height - orbit.size - margin);
+        
+        // Update DOM directly for smooth movement
+        const orbitEl = document.querySelector(`[data-orbit-id="${orbit.id}"]`);
+        if (orbitEl) {
+            orbitEl.style.left = `${x}px`;
+            orbitEl.style.top = `${y}px`;
+        }
+        
+        // Update orbit position in memory (for connection rendering)
+        orbit.x = x;
+        orbit.y = y;
+        
+        // Re-render connections in real-time
+        Renderer.renderConnections();
+    },
+    
+    /**
+     * End drag operation
+     */
+    end() {
+        if (!State.ui.dragging.active) return;
+        
+        const orbitId = State.ui.dragging.orbitId;
+        const orbitEl = document.querySelector(`[data-orbit-id="${orbitId}"]`);
+        
+        if (orbitEl) {
+            orbitEl.classList.remove('is-dragging');
+            
+            // Save final position
+            const x = parseInt(orbitEl.style.left, 10);
+            const y = parseInt(orbitEl.style.top, 10);
+            
+            Orbits.updatePosition(orbitId, x, y);
+        }
+        
+        // Reset dragging state
+        State.ui.dragging = {
+            active: false,
+            orbitId: null,
+            offsetX: 0,
+            offsetY: 0
+        };
+    }
+};
+
+// ========== js/controllers/resize.js ==========
+/**
+ * RESIZE CONTROLLER
+ * Orbit resizing functionality
+ */
+
+const Resize = {
+    /**
+     * Start resizing an orbit
+     * @param {Event} e
+     * @param {string} orbitId
+     */
+    start(e, orbitId) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        const orbit = Orbits.get(orbitId);
+        if (!orbit) return;
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        
+        State.ui.resizing = {
+            active: true,
+            orbitId: orbitId,
+            startX: clientX,
+            startSize: orbit.size
+        };
+    },
+    
+    /**
+     * Handle resize movement
+     * @param {Event} e
+     */
+    move(e) {
+        if (!State.ui.resizing.active) return;
+        
+        e.preventDefault();
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const diff = clientX - State.ui.resizing.startX;
+        
+        const newSize = Utils.clamp(
+            State.ui.resizing.startSize + diff,
+            Config.ORBIT.MIN_SIZE,
+            Config.ORBIT.MAX_SIZE
+        );
+        
+        // Update DOM directly
+        const orbitEl = document.querySelector(`[data-orbit-id="${State.ui.resizing.orbitId}"]`);
+        if (orbitEl) {
+            orbitEl.style.width = `${newSize}px`;
+            orbitEl.style.height = `${newSize}px`;
+            orbitEl.style.fontSize = `${Math.max(10, newSize / 10)}px`;
+        }
+    },
+    
+    /**
+     * End resize operation
+     */
+    end() {
+        if (!State.ui.resizing.active) return;
+        
+        const orbitEl = document.querySelector(`[data-orbit-id="${State.ui.resizing.orbitId}"]`);
+        
+        if (orbitEl) {
+            const newSize = parseInt(orbitEl.style.width, 10);
+            Orbits.updateSize(State.ui.resizing.orbitId, newSize);
+        }
+        
+        // Re-render connections (positions may have shifted visually)
+        Renderer.renderConnections();
+        
+        // Reset resizing state
+        State.ui.resizing = {
+            active: false,
+            orbitId: null,
+            startX: 0,
+            startSize: 0
+        };
+    }
+};
+
+// ========== js/controllers/linking.js ==========
+/**
+ * LINKING CONTROLLER
+ * Orbit connection/linking functionality
+ */
+
+const Linking = {
+    /**
+     * Start or cancel link mode
+     * @param {string} orbitId
+     */
+    start(orbitId) {
+        if (State.ui.linkingOrbitId === orbitId) {
+            // Cancel link mode if clicking same orbit
+            this.cancel();
+        } else {
+            // Start link mode
+            State.ui.linkingOrbitId = orbitId;
+            Toast.info('Select target orbit to connect/disconnect');
+            
+            // Re-render to show link mode UI
+            Renderer.renderOrbits();
+            Renderer.renderConnections();
+        }
+    },
+    
+    /**
+     * Complete link to target orbit
+     * @param {string} targetId
+     */
+    complete(targetId) {
+        if (!State.ui.linkingOrbitId) return;
+        
+        const sourceId = State.ui.linkingOrbitId;
+        
+        if (sourceId === targetId) {
+            Toast.error('Cannot link orbit to itself');
+            return;
+        }
+        
+        // Toggle connection
+        const result = Connections.toggle(sourceId, targetId);
+        
+        if (result.action === 'created') {
+            Toast.success('Orbits connected');
+            Audio.play('link');
+        } else {
+            Toast.info('Connection severed');
+        }
+        
+        // Exit link mode
+        this.cancel();
+    },
+    
+    /**
+     * Cancel link mode
+     */
+    cancel() {
+        State.ui.linkingOrbitId = null;
+        
+        // Re-render to hide link mode UI
+        Renderer.renderOrbits();
+        Renderer.renderConnections();
+    },
+    
+    /**
+     * Check if currently in link mode
+     * @returns {boolean}
+     */
+    isActive() {
+        return State.ui.linkingOrbitId !== null;
+    }
+};
+
+// ========== js/controllers/modal.js ==========
+/**
+ * MODAL CONTROLLER
+ * Modal dialogs management
+ */
+
+const Modal = {
+    /**
+     * Show confirmation modal
+     * @param {string} message
+     * @param {Function} callback - Called if user confirms
+     */
+    confirm(message, callback) {
+        Utils.$('confirmMessage').textContent = message;
+        State.pending.confirmCallback = callback;
+        Utils.$('modalConfirm').classList.add('is-active');
+    },
+    
+    /**
+     * Handle confirm OK button
+     */
+    handleConfirmOk() {
+        const callback = State.pending.confirmCallback;
+        
+        // Close modal first
+        Utils.$('modalConfirm').classList.remove('is-active');
+        
+        // Execute callback
+        if (typeof callback === 'function') {
+            callback();
+        }
+        
+        // Clear pending callback
+        State.pending.confirmCallback = null;
+    },
+    
+    /**
+     * Handle confirm Cancel button
+     */
+    handleConfirmCancel() {
+        State.pending.confirmCallback = null;
+        Utils.$('modalConfirm').classList.remove('is-active');
+    },
+    
+    /**
+     * Show data import/export modal
+     */
+    showDataModal() {
+        Utils.$('dataTextarea').value = '';
+        Utils.$('modalData').classList.add('is-active');
+    },
+    
+    /**
+     * Handle data export
+     */
+    handleExport() {
+        const data = Storage.export();
+        Utils.$('dataTextarea').value = data;
+        
+        // Select all text for easy copying
+        Utils.$('dataTextarea').select();
+        
+        Toast.success('Data exported - copy the JSON above');
+    },
+    
+    /**
+     * Handle data import
+     */
+    handleImport() {
+        const jsonString = Utils.$('dataTextarea').value.trim();
+        
+        if (!jsonString) {
+            Toast.error('Please paste JSON data first');
+            return;
+        }
+        
+        const success = Storage.import(jsonString);
+        
+        if (success) {
+            Toast.success('Data imported successfully');
+            Utils.$('modalData').classList.remove('is-active');
+            
+            // Re-render everything
+            Renderer.renderOrbits();
+            Renderer.renderConnections();
+            Renderer.renderLogs();
+        } else {
+            Toast.error('Invalid data format');
+        }
+    },
+    
+    /**
+     * Close data modal
+     */
+    closeDataModal() {
+        Utils.$('modalData').classList.remove('is-active');
+    },
+    
+    /**
+     * Show keyboard shortcuts modal
+     */
+    showShortcuts() {
+        Utils.$('modalShortcuts').classList.add('is-active');
+    },
+    
+    /**
+     * Close shortcuts modal
+     */
+    closeShortcuts() {
+        Utils.$('modalShortcuts').classList.remove('is-active');
+    },
+    
+    /**
+     * Close all modals
+     */
+    closeAll() {
+        Utils.$('modalPostSession').classList.remove('is-active');
+        Utils.$('modalConfirm').classList.remove('is-active');
+        Utils.$('modalData').classList.remove('is-active');
+        Utils.$('modalShortcuts').classList.remove('is-active');
+        
+        State.pending.confirmCallback = null;
+    },
+    
+    /**
+     * Check if any modal is open
+     * @returns {boolean}
+     */
+    isAnyOpen() {
+        return document.querySelector('.modal-overlay.is-active') !== null;
+    }
+};
+
+// ========== js/renderer.js ==========
+/**
+ * RENDERER
+ * DOM rendering functions
+ */
+
+const Renderer = {
+    /**
+     * Render all orbits in the space area
+     */
+    renderOrbits() {
+        const container = Utils.$('orbitContainer');
+        const emptyState = Utils.$('emptyState');
+        
+        if (State.orbits.length === 0) {
+            emptyState.classList.remove('hidden');
+            container.innerHTML = '';
+            return;
+        }
+        
+        emptyState.classList.add('hidden');
+        
+        container.innerHTML = State.orbits.map(orbit => {
+            const tier = Config.TIERS[orbit.tier];
+            const isLocked = Orbits.isLocked(orbit.id);
+            const isLinkSource = State.ui.linkingOrbitId === orbit.id;
+            const isLinkTarget = State.ui.linkingOrbitId && State.ui.linkingOrbitId !== orbit.id;
+            
+            // Build class list
+            const classes = [
+                'orbit',
+                `orbit--tier-${orbit.tier}`,
+                isLocked ? 'is-locked' : '',
+                orbit.isSessionCompleted ? 'is-session-completed' : '',
+                isLinkSource ? 'is-link-source' : '',
+                isLinkTarget ? 'is-link-target' : ''
+            ].filter(Boolean).join(' ');
+            
+            const fontSize = Math.max(10, orbit.size / 10);
+            
+            // Determine icon
+            let icon = '●';
+            if (orbit.isObjectiveAchieved) {
+                icon = '★';
+            } else if (orbit.isSessionCompleted) {
+                icon = '✓';
+            } else if (isLocked) {
+                icon = '🔒';
+            }
+            
+            return `
+                <div 
+                    class="${classes}"
+                    data-orbit-id="${orbit.id}"
+                    style="
+                        left: ${orbit.x}px;
+                        top: ${orbit.y}px;
+                        width: ${orbit.size}px;
+                        height: ${orbit.size}px;
+                        font-size: ${fontSize}px;
+                        --orbit-color: ${tier.color};
+                        --orbit-glow: ${tier.glow};
+                    "
+                >
+                    <div class="orbit__ring"></div>
+                    <div class="orbit__ring orbit__ring--inner"></div>
+                    
+                    <div class="orbit__controls">
+                        <button 
+                            class="orbit__ctrl-btn orbit__ctrl-btn--launch"
+                            data-action="launch"
+                            data-orbit-id="${orbit.id}"
+                            aria-label="Launch mission"
+                            title="Launch (Enter)"
+                            ${isLocked ? 'disabled' : ''}
+                        >🚀</button>
+                        <button 
+                            class="orbit__ctrl-btn orbit__ctrl-btn--link ${isLinkSource ? 'is-active' : ''}"
+                            data-action="link"
+                            data-orbit-id="${orbit.id}"
+                            aria-label="Link orbit"
+                            title="Link"
+                        >🔗</button>
+                        <button 
+                            class="orbit__ctrl-btn"
+                            data-action="edit"
+                            data-orbit-id="${orbit.id}"
+                            aria-label="Edit orbit"
+                            title="Edit"
+                        >✎</button>
+                        <button 
+                            class="orbit__ctrl-btn orbit__ctrl-btn--delete"
+                            data-action="delete"
+                            data-orbit-id="${orbit.id}"
+                            aria-label="Delete orbit"
+                            title="Delete"
+                        >×</button>
+                    </div>
+                    
+                    <div class="orbit__core" data-action="core-click" data-orbit-id="${orbit.id}">
+                        <div class="orbit__particles">
+                            ${this.generateParticles(5, tier.color)}
+                        </div>
+                        <div class="orbit__icon">${icon}</div>
+                        <div class="orbit__name">${Utils.escapeHtml(orbit.name)}</div>
+                        <div class="orbit__duration">${tier.label}</div>
+                    </div>
+                    
+                    <div 
+                        class="orbit__resize" 
+                        data-action="resize" 
+                        data-orbit-id="${orbit.id}"
+                    ></div>
+                </div>
+            `;
+        }).join('');
+    },
+    
+    /**
+     * Generate particle elements for orbit animation
+     * @param {number} count
+     * @param {string} color
+     * @returns {string}
+     */
+    generateParticles(count, color) {
+        return Array.from({ length: count }, (_, i) => {
+            const angle = (360 / count) * i;
+            const delay = i * 0.6;
+            const left = 50 + 35 * Math.cos(angle * Math.PI / 180);
+            const top = 50 + 35 * Math.sin(angle * Math.PI / 180);
+            
+            return `
+                <div 
+                    class="orbit__particle" 
+                    style="
+                        left: ${left}%;
+                        top: ${top}%;
+                        animation-delay: ${delay}s;
+                        background: ${color};
+                    "
+                ></div>
+            `;
+        }).join('');
+    },
+    
+    /**
+     * Render connection lines between orbits
+     */
+    renderConnections() {
+        const svg = Utils.$('svgConnections');
+        const defs = svg.querySelector('defs');
+        
+        // Clear existing lines but keep defs
+        svg.innerHTML = '';
+        svg.appendChild(defs);
+        
+        State.connections.forEach(conn => {
+            const source = Orbits.get(conn.sourceId);
+            const target = Orbits.get(conn.targetId);
+            
+            if (!source || !target) return;
+            
+            // Calculate center points
+            const sourceX = source.x + source.size / 2;
+            const sourceY = source.y + source.size / 2;
+            const targetX = target.x + target.size / 2;
+            const targetY = target.y + target.size / 2;
+            
+            // Determine line state
+            const isActive = source.isSessionCompleted;
+            const isLocked = !source.isSessionCompleted;
+            
+            // Build class list
+            const lineClasses = [
+                'connection-line',
+                isActive ? 'connection-line--active' : '',
+                isLocked ? 'connection-line--locked' : ''
+            ].filter(Boolean).join(' ');
+            
+            // Create visible line
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', sourceX);
+            line.setAttribute('y1', sourceY);
+            line.setAttribute('x2', targetX);
+            line.setAttribute('y2', targetY);
+            line.setAttribute('class', lineClasses);
+            line.setAttribute('marker-end', 'url(#arrowMarker)');
+            
+            // Create invisible hitbox for interaction
+            const hitbox = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            hitbox.setAttribute('x1', sourceX);
+            hitbox.setAttribute('y1', sourceY);
+            hitbox.setAttribute('x2', targetX);
+            hitbox.setAttribute('y2', targetY);
+            hitbox.setAttribute('class', 'connection-hitbox');
+            hitbox.setAttribute('data-source-id', conn.sourceId);
+            hitbox.setAttribute('data-target-id', conn.targetId);
+            
+            svg.appendChild(line);
+            svg.appendChild(hitbox);
+        });
+    },
+    
+    /**
+     * Render flight logs
+     */
+    renderLogs() {
+        const container = Utils.$('logList');
+        const logs = State.logs;
+        
+        if (logs.length === 0) {
+            container.innerHTML = `
+                <div class="log-empty">
+                    <div class="log-empty__icon">📭</div>
+                    <div class="log-empty__text">NO FLIGHT LOGS YET</div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = logs.map(log => {
+            const tier = Config.TIERS[log.tier];
+            const statusClass = log.status.toLowerCase();
+            const objectiveIcon = log.objectiveAchieved ? '★' : '○';
+            const objectiveText = log.objectiveAchieved ? 'Achieved' : 'In Progress';
+            
+            return `
+                <div class="log-entry" style="--log-color: ${tier.color}">
+                    <div class="log-entry__info">
+                        <div class="log-entry__name">${Utils.escapeHtml(log.orbitName)}</div>
+                        <div class="log-entry__meta">
+                            <span>${Utils.formatDateTime(log.timestamp)}</span>
+                            <span>•</span>
+                            <span>${objectiveIcon} ${objectiveText}</span>
+                        </div>
+                    </div>
+                    <div class="log-entry__stats">
+                        <div class="log-entry__score">${log.score}%</div>
+                        <div class="log-entry__status log-entry__status--${statusClass}">
+                            ${log.status}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+    
+    /**
+     * Render HUD (mission active screen)
+     */
+    renderHUD() {
+        const orbit = Orbits.get(State.mission.orbitId);
+        if (!orbit) return;
+        
+        Utils.$('hudMissionName').textContent = orbit.name.toUpperCase();
+        
+        this.renderHUDChecklist();
+        Mission.updateTimerDisplay();
+        Mission.updateIntegrity();
+    },
+    
+    /**
+     * Render HUD checklist
+     */
+    renderHUDChecklist() {
+        const container = Utils.$('hudChecklist');
+        const checklist = State.mission.checklist;
+        
+        if (checklist.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--color-gray-500);">
+                    No processes defined for this orbit
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = checklist.map((item, index) => {
+            const typeClass = item.type === 'negative' ? 'hud__checklist-item--negative' : '';
+            const checkedClass = item.isChecked ? 'is-checked' : '';
+            const typeLabel = item.type === 'positive' ? 'DO' : 'AVOID';
+            const typeTagClass = `hud__checklist-type--${item.type}`;
+            
+            return `
+                <div 
+                    class="hud__checklist-item ${typeClass} ${checkedClass}"
+                    data-checklist-index="${index}"
+                    role="checkbox"
+                    aria-checked="${item.isChecked}"
+                    tabindex="0"
+                >
+                    <div class="hud__checklist-checkbox">
+                        ${item.isChecked ? '✓' : ''}
+                    </div>
+                    <div class="hud__checklist-text">
+                        ${Utils.escapeHtml(item.text)}
+                    </div>
+                    <div class="hud__checklist-type ${typeTagClass}">
+                        ${typeLabel}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+    
+    /**
+     * Render editor process list
+     */
+    renderEditorProcesses() {
+        const container = Utils.$('processList');
+        const processes = State.editor.processes;
+        
+        if (processes.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--color-gray-500); font-size: 0.85rem;">
+                    No processes added yet
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = processes.map((proc, index) => {
+            const tagClass = `process-tag--${proc.type}`;
+            const tagSymbol = proc.type === 'positive' ? '+' : '−';
+            
+            return `
+                <div class="process-item" data-process-index="${index}">
+                    <div class="process-item__content">
+                        <span class="process-tag ${tagClass}">${tagSymbol}</span>
+                        <span class="process-item__text">${Utils.escapeHtml(proc.text)}</span>
+                    </div>
+                    <button 
+                        type="button"
+                        class="process-item__delete"
+                        data-action="delete-process"
+                        data-process-index="${index}"
+                        aria-label="Delete process"
+                    >×</button>
+                </div>
+            `;
+        }).join('');
+    },
+    
+    /**
+     * Update system status text
+     * @param {string} message
+     */
+    updateStatus(message) {
+        Utils.$('systemStatus').textContent = message;
+    },
+    
+    /**
+     * Render everything
+     */
+    renderAll() {
+        this.renderOrbits();
+        this.renderConnections();
+        this.renderLogs();
+        this.renderEditorProcesses();
+    }
+};
+
+// ========== js/events.js ==========
+/**
+ * EVENTS
+ * Event listeners and handlers
+ */
+
+const Events = {
+    /**
+     * Initialize all event listeners
+     */
+    init() {
+        this.initTierSelector();
+        this.initEditorEvents();
+        this.initOrbitEvents();
+        this.initHUDEvents();
+        this.initModalEvents();
+        this.initHeaderEvents();
+        this.initPanelEvents();
+        this.initKeyboardEvents();
+        this.initGlobalEvents();
+        
+        console.log('[Events] All event listeners initialized');
+    },
+    
+    /**
+     * Tier selector events
+     */
+    initTierSelector() {
+        document.querySelectorAll('.tier-option').forEach(el => {
+            el.addEventListener('click', () => {
+                Editor.selectTier(el.dataset.tier);
+            });
+        });
+    },
+    
+    /**
+     * Editor panel events
+     */
+    initEditorEvents() {
+        // Toggle process input
+        Utils.$('btnToggleProcessInput').addEventListener('click', () => {
+            Editor.toggleProcessInput();
+        });
+        
+        // Add process buttons
+        Utils.$('btnAddPositive').addEventListener('click', () => {
+            Editor.addProcess('positive');
+        });
+        
+        Utils.$('btnAddNegative').addEventListener('click', () => {
+            Editor.addProcess('negative');
+        });
+        
+        // Process input enter key
+        Utils.$('inputProcessText').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                Editor.addProcess('positive');
+            }
+        });
+        
+        // Process list deletion (event delegation)
+        Utils.$('processList').addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('[data-action="delete-process"]');
+            if (deleteBtn) {
+                const index = parseInt(deleteBtn.dataset.processIndex, 10);
+                Editor.deleteProcess(index);
+            }
+        });
+        
+        // Save orbit
+        Utils.$('btnSaveOrbit').addEventListener('click', () => {
+            Editor.save();
+        });
+        
+        // Cancel edit
+        Utils.$('btnCancelEdit').addEventListener('click', () => {
+            Editor.reset();
+        });
+    },
+    
+    /**
+     * Orbit interaction events
+     */
+    initOrbitEvents() {
+        const container = Utils.$('orbitContainer');
+        
+        // Mouse/touch down on orbits
+        container.addEventListener('mousedown', (e) => this.handleOrbitMouseDown(e));
+        container.addEventListener('touchstart', (e) => this.handleOrbitMouseDown(e), { passive: false });
+        
+        // Click on orbits (for buttons and core)
+        container.addEventListener('click', (e) => this.handleOrbitClick(e));
+        
+        // Global mouse/touch move and up
+        document.addEventListener('mousemove', (e) => this.handleGlobalMouseMove(e));
+        document.addEventListener('touchmove', (e) => this.handleGlobalMouseMove(e), { passive: false });
+        document.addEventListener('mouseup', () => this.handleGlobalMouseUp());
+        document.addEventListener('touchend', () => this.handleGlobalMouseUp());
+        
+        // Space area click (cancel link mode)
+        Utils.$('spaceArea').addEventListener('click', (e) => {
+            if (e.target.id === 'spaceArea' || e.target.closest('.space-area__svg')) {
+                if (Linking.isActive()) {
+                    Linking.cancel();
+                }
+            }
+        });
+        
+        // Connection line double-click to delete
+        Utils.$('svgConnections').addEventListener('dblclick', (e) => {
+            const hitbox = e.target.closest('.connection-hitbox');
+            if (hitbox) {
+                const sourceId = hitbox.dataset.sourceId;
+                const targetId = hitbox.dataset.targetId;
+                
+                Modal.confirm('Remove this connection?', () => {
+                    Connections.remove(sourceId, targetId);
+                    Renderer.renderOrbits();
+                    Renderer.renderConnections();
+                    Toast.info('Connection removed');
+                });
+            }
+        });
+    },
+    
+    /**
+     * Handle mousedown/touchstart on orbit container
+     * @param {Event} e
+     */
+    handleOrbitMouseDown(e) {
+        const orbitEl = e.target.closest('.orbit');
+        if (!orbitEl) return;
+        
+        const orbitId = orbitEl.dataset.orbitId;
+        
+        // Check for resize handle
+        if (e.target.closest('.orbit__resize')) {
+            Resize.start(e, orbitId);
+            return;
+        }
+        
+        // Check for control buttons (don't start drag)
+        if (e.target.closest('.orbit__controls')) {
+            return;
+        }
+        
+        // Start drag
+        DragDrop.start(e, orbitId);
+    },
+    
+    /**
+     * Handle click on orbit container
+     * @param {Event} e
+     */
+    handleOrbitClick(e) {
+        const actionEl = e.target.closest('[data-action]');
+        if (!actionEl) return;
+        
+        const action = actionEl.dataset.action;
+        const orbitId = actionEl.dataset.orbitId;
+        
+        switch (action) {
+            case 'launch':
+                Mission.start(orbitId);
+                break;
+                
+            case 'link':
+                Linking.start(orbitId);
+                break;
+                
+            case 'edit':
+                Editor.loadOrbit(orbitId);
+                break;
+                
+            case 'delete':
+                this.handleOrbitDelete(orbitId);
+                break;
+                
+            case 'core-click':
+                // If in link mode, complete the link
+                if (Linking.isActive()) {
+                    Linking.complete(orbitId);
+                }
+                break;
+        }
+    },
+    
+    /**
+     * Handle orbit deletion
+     * @param {string} orbitId
+     */
+    handleOrbitDelete(orbitId) {
+        const orbit = Orbits.get(orbitId);
+        if (!orbit) return;
+        
+        if (Orbits.canDeleteFreely(orbitId)) {
+            Modal.confirm(`Delete orbit "${orbit.name}"?`, () => {
+                Orbits.delete(orbitId);
+                Renderer.renderOrbits();
+                Renderer.renderConnections();
+                Toast.info('Orbit deleted');
+            });
+        } else {
+            // Warn about incomplete objective
+            Modal.confirm(
+                `"${orbit.name}" has an incomplete objective. Deleting breaks your commitment. Continue?`,
+                () => {
+                    Orbits.delete(orbitId);
+                    Renderer.renderOrbits();
+                    Renderer.renderConnections();
+                    Toast.error('Orbit deleted (commitment broken)');
+                }
+            );
+        }
+    },
+    
+    /**
+     * Handle global mouse/touch move
+     * @param {Event} e
+     */
+    handleGlobalMouseMove(e) {
+        if (State.ui.dragging.active) {
+            DragDrop.move(e);
+        } else if (State.ui.resizing.active) {
+            Resize.move(e);
+        }
+    },
+    
+    /**
+     * Handle global mouse/touch up
+     */
+    handleGlobalMouseUp() {
+        if (State.ui.dragging.active) {
+            DragDrop.end();
+        } else if (State.ui.resizing.active) {
+            Resize.end();
+        }
+    },
+    
+    /**
+     * HUD events
+     */
+    initHUDEvents() {
+        // Checklist item toggle
+        Utils.$('hudChecklist').addEventListener('click', (e) => {
+            const item = e.target.closest('.hud__checklist-item');
+            if (item) {
+                const index = parseInt(item.dataset.checklistIndex, 10);
+                Mission.toggleChecklistItem(index);
+            }
+        });
+        
+        // Keyboard support for checklist
+        Utils.$('hudChecklist').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const item = e.target.closest('.hud__checklist-item');
+                if (item) {
+                    e.preventDefault();
+                    const index = parseInt(item.dataset.checklistIndex, 10);
+                    Mission.toggleChecklistItem(index);
+                }
+            }
+        });
+        
+        // HUD buttons
+        Utils.$('btnPauseMission').addEventListener('click', () => {
+            Mission.togglePause();
+        });
+        
+        Utils.$('btnAbortMission').addEventListener('click', () => {
+            Mission.abort();
+        });
+        
+        Utils.$('btnCompleteMission').addEventListener('click', () => {
+            Mission.end('COMPLETE');
+        });
+    },
+    
+    /**
+     * Modal events
+     */
+    initModalEvents() {
+        // Post-session modal
+        Utils.$('btnObjectiveYes').addEventListener('click', () => {
+            Mission.handleObjectiveAnswer(true);
+        });
+        
+        Utils.$('btnObjectiveNo').addEventListener('click', () => {
+            Mission.handleObjectiveAnswer(false);
+        });
+        
+        // Confirm modal
+        Utils.$('btnConfirmOk').addEventListener('click', () => {
+            Modal.handleConfirmOk();
+        });
+        
+        Utils.$('btnConfirmCancel').addEventListener('click', () => {
+            Modal.handleConfirmCancel();
+        });
+        
+        // Data modal
+        Utils.$('btnExportData').addEventListener('click', () => {
+            Modal.handleExport();
+        });
+        
+        Utils.$('btnImportData').addEventListener('click', () => {
+            Modal.handleImport();
+        });
+        
+        Utils.$('btnCloseDataModal').addEventListener('click', () => {
+            Modal.closeDataModal();
+        });
+        
+        // Shortcuts modal
+        Utils.$('btnCloseShortcuts').addEventListener('click', () => {
+            Modal.closeShortcuts();
+        });
+        
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    // Don't close post-session modal by clicking outside
+                    if (overlay.id !== 'modalPostSession') {
+                        overlay.classList.remove('is-active');
+                    }
+                }
+            });
+        });
+    },
+    
+    /**
+     * Header button events
+     */
+    initHeaderEvents() {
+        // Data modal
+        Utils.$('btnDataModal').addEventListener('click', () => {
+            Modal.showDataModal();
+        });
+        
+        // Shortcuts
+        Utils.$('btnShortcuts').addEventListener('click', () => {
+            Modal.showShortcuts();
+        });
+        
+        // Audio toggle
+        Utils.$('btnToggleAudio').addEventListener('click', () => {
+            const enabled = Audio.toggle();
+            Utils.$('btnToggleAudio').textContent = enabled ? '🔊' : '🔇';
+            Toast.info(enabled ? 'Sound enabled' : 'Sound muted');
+        });
+    },
+    
+    /**
+     * Panel events
+     */
+    initPanelEvents() {
+        // Mobile panel toggles
+        Utils.$('btnToggleEditor').addEventListener('click', () => {
+            Utils.$('panelEditor').classList.toggle('is-active');
+            Utils.$('panelLogs').classList.remove('is-active');
+        });
+        
+        Utils.$('btnToggleLogs').addEventListener('click', () => {
+            Utils.$('panelLogs').classList.toggle('is-active');
+            Utils.$('panelEditor').classList.remove('is-active');
+        });
+        
+        // Panel close buttons
+        Utils.$('btnCloseEditor').addEventListener('click', () => {
+            Utils.$('panelEditor').classList.remove('is-active');
+        });
+        
+        Utils.$('btnCloseLogs').addEventListener('click', () => {
+            Utils.$('panelLogs').classList.remove('is-active');
+        });
+        
+        // Panel footer actions
+        Utils.$('btnResetProgress').addEventListener('click', () => {
+            Modal.confirm('Reset all orbit progress? This will unlock all orbits.', () => {
+                Orbits.resetAllProgress();
+                Renderer.renderOrbits();
+                Renderer.renderConnections();
+                Toast.success('Progress reset');
+            });
+        });
+        
+        Utils.$('btnClearLogs').addEventListener('click', () => {
+            Modal.confirm('Purge all flight logs? This cannot be undone.', () => {
+                Logs.clear();
+                Renderer.renderLogs();
+                Toast.success('Logs purged');
+            });
+        });
+        
+        Utils.$('btnClearLinks').addEventListener('click', () => {
+            Modal.confirm('Sever all orbit connections?', () => {
+                Connections.clearAll();
+                Renderer.renderOrbits();
+                Renderer.renderConnections();
+                Toast.success('All connections severed');
+            });
+        });
+    },
+    
+    /**
+     * Keyboard shortcuts
+     */
+    initKeyboardEvents() {
+        document.addEventListener('keydown', (e) => {
+            // Ignore if typing in input
+            if (e.target.matches('input, textarea')) return;
+            
+            // Escape key
+            if (e.key === 'Escape') {
+                if (State.mission.isActive) {
+                    Mission.togglePause();
+                } else if (Linking.isActive()) {
+                    Linking.cancel();
+                } else if (Modal.isAnyOpen()) {
+                    Modal.closeAll();
+                }
+                return;
+            }
+            
+            // Space key (pause/resume in mission)
+            if ((e.key === ' ' || e.code === 'Space') && State.mission.isActive) {
+                e.preventDefault();
+                Mission.togglePause();
+                return;
+            }
+            
+            // Don't process other shortcuts if modal is open or mission is active
+            if (Modal.isAnyOpen() || State.mission.isActive) return;
+            
+            switch (e.key.toLowerCase()) {
+                case 'e':
+                    Utils.$('panelEditor').classList.toggle('is-active');
+                    Utils.$('panelLogs').classList.remove('is-active');
+                    break;
+                    
+                case 'l':
+                    Utils.$('panelLogs').classList.toggle('is-active');
+                    Utils.$('panelEditor').classList.remove('is-active');
+                    break;
+                    
+                case 'i':
+                    Modal.showDataModal();
+                    break;
+                    
+                case 'm':
+                    Utils.$('btnToggleAudio').click();
+                    break;
+                    
+                case '?':
+                    Modal.showShortcuts();
+                    break;
+            }
+        });
+    },
+    
+    /**
+     * Global/window events
+     */
+    initGlobalEvents() {
+        // Window resize - update connections
+        window.addEventListener('resize', Utils.debounce(() => {
+            Renderer.renderConnections();
+        }, 250));
+        
+        // Before unload - warn if mission active
+        window.addEventListener('beforeunload', (e) => {
+            if (State.mission.isActive) {
+                e.preventDefault();
+                e.returnValue = 'A mission is in progress. Are you sure you want to leave?';
+            }
+        });
+    }
+};
+
+// ========== js/app.js ==========
+/**
+ * APP
+ * Application initialization and bootstrap
+ */
+
+const App = {
+    /**
+     * Initialize the application
+     */
+    init() {
+        console.log('🌌 Infinity Orbit v2.0 - Initializing...');
+        
+        // Initialize services
+        Toast.init();
+        
+        // Load saved data
+        Storage.load();
+        
+        // Update audio button state
+        Utils.$('btnToggleAudio').textContent = State.ui.audioEnabled ? '🔊' : '🔇';
+        
+        // Initialize event listeners
+        Events.init();
+        
+        // Initial render
+        Renderer.renderAll();
+        
+        // Update status
+        Renderer.updateStatus('SYSTEM ONLINE');
+        
+        console.log('✨ Infinity Orbit v2.0 - Ready!');
+        console.log(`   📊 ${State.orbits.length} orbits loaded`);
+        console.log(`   🔗 ${State.connections.length} connections`);
+        console.log(`   📜 ${State.logs.length} log entries`);
+    }
+};
+
+// ===== BOOTSTRAP =====
+// Start the application when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => App.init());
+} else {
+    App.init();
+}
+
+        
+    })();
+    </script>
+
+</body>
+</html>

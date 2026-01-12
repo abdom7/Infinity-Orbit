@@ -1,0 +1,146 @@
+/**
+ * COSMIC BACKGROUND
+ * Stars, nebula, black hole effects
+ */
+
+.cosmic-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Star Field */
+.stars {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.7), transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: stars-drift 120s linear infinite;
+}
+
+.stars--layer-2 {
+    background-image: 
+        radial-gradient(1px 1px at 50px 60px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(2px 2px at 100px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 150px 100px, rgba(255,255,255,0.5), transparent);
+    background-size: 300px 300px;
+    animation: stars-drift 200s linear infinite reverse;
+    opacity: 0.6;
+}
+
+.stars--layer-3 {
+    background-image: 
+        radial-gradient(1px 1px at 30px 90px, rgba(0,240,255,0.4), transparent),
+        radial-gradient(1px 1px at 120px 50px, rgba(211,0,197,0.3), transparent),
+        radial-gradient(1px 1px at 80px 140px, rgba(255,215,0,0.3), transparent);
+    background-size: 400px 400px;
+    animation: stars-drift 300s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes stars-drift {
+    from { transform: translateY(0) translateX(0); }
+    to { transform: translateY(-200px) translateX(-200px); }
+}
+
+/* Nebula */
+.nebula {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 20% 80%, rgba(211, 0, 197, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.04) 0%, transparent 60%);
+    animation: nebula-pulse 20s ease-in-out infinite alternate;
+}
+
+@keyframes nebula-pulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Black Hole */
+.black-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.black-hole__singularity {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        var(--color-void) 0%, 
+        var(--color-void) 20%,
+        transparent 70%
+    );
+}
+
+.black-hole__accretion {
+    position: absolute;
+    inset: -50px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, 
+        transparent,
+        rgba(255, 100, 50, 0.1),
+        rgba(255, 200, 100, 0.15),
+        rgba(255, 255, 200, 0.1),
+        transparent
+    );
+    animation: accretion-spin 30s linear infinite;
+    filter: blur(20px);
+}
+
+.black-hole__glow {
+    position: absolute;
+    inset: -100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        transparent 30%,
+        rgba(255, 150, 50, 0.05) 50%,
+        transparent 70%
+    );
+    animation: glow-pulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes accretion-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes glow-pulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Grid Overlay */
+.grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+}
+
+/* Vignette */
+.vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+}

@@ -1,0 +1,43 @@
+/**
+ * CONNECTIONS
+ * SVG lines between orbits
+ */
+
+.connection-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 2;
+    stroke-dasharray: 8, 8;
+    animation: connection-flow 20s linear infinite;
+}
+
+.connection-line--active {
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-dasharray: none;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+}
+
+.connection-line--locked {
+    stroke: rgba(255, 42, 109, 0.3);
+}
+
+@keyframes connection-flow {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -100; }
+}
+
+.connection-hitbox {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 20;
+    cursor: pointer;
+    pointer-events: stroke;
+}
+
+.connection-hitbox:hover + .connection-line {
+    stroke: rgba(255, 255, 255, 0.4);
+}
+
+.connection-arrow {
+    fill: rgba(255, 255, 255, 0.4);
+}

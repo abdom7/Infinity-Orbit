@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Infinity Orbit - A cosmic productivity system">
+    <meta name="theme-color" content="#000000">
+    <title>INFINITY ORBIT — Cosmic Productivity System</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+    /* __CSS_INJECT__ */
+    </style>
+</head>
+<body>
+
+    <!-- ========== COSMIC BACKGROUND ========== -->
+    <div class="cosmic-bg" aria-hidden="true">
+        <div class="stars"></div>
+        <div class="stars stars--layer-2"></div>
+        <div class="stars stars--layer-3"></div>
+        <div class="nebula"></div>
+        <div class="black-hole">
+            <div class="black-hole__glow"></div>
+            <div class="black-hole__accretion"></div>
+            <div class="black-hole__singularity"></div>
+        </div>
+        <div class="grid-overlay"></div>
+        <div class="vignette"></div>
+    </div>
+
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- ========== MAIN APPLICATION ========== -->
+    <div class="app">
+        
+        <!-- HEADER -->
+        <header class="app__header">
+            <div class="logo">
+                <div class="logo__icon" aria-hidden="true">
+                    <div class="logo__orbit"></div>
+                    <div class="logo__core"></div>
+                </div>
+                <h1 class="logo__text">INFINITY ORBIT</h1>
+                <span class="logo__version">v2.0</span>
+            </div>
+            
+            <div class="header-controls">
+                <button class="header-btn mobile-toggle" id="btnToggleEditor" aria-label="Toggle Editor" title="Editor (E)">✎</button>
+                <button class="header-btn mobile-toggle" id="btnToggleLogs" aria-label="Toggle Logs" title="Logs (L)">📋</button>
+                <button class="header-btn" id="btnDataModal" aria-label="Import/Export" title="Data (I)">💾</button>
+                <button class="header-btn" id="btnShortcuts" aria-label="Shortcuts" title="Help (?)">⌨</button>
+                <button class="header-btn" id="btnToggleAudio" aria-label="Toggle Sound" title="Sound (M)">🔊</button>
+            </div>
+        </header>
+
+        <!-- WORKSPACE -->
+        <main class="app__workspace">
+            
+            <!-- EDITOR PANEL -->
+            <aside class="panel panel--editor" id="panelEditor" role="complementary" aria-label="Orbit Editor">
+                <div class="panel__header">
+                    <div class="panel__title">
+                        <span class="panel__indicator"></span>
+                        <span id="editorPanelTitle">MISSION COMMAND</span>
+                    </div>
+                    <button class="panel__close" id="btnCloseEditor" aria-label="Close">×</button>
+                </div>
+                
+                <div class="panel__body">
+                    <!-- Tier Selector -->
+                    <fieldset class="tier-selector" role="radiogroup" aria-label="Duration Tier">
+                        <button type="button" class="tier-option tier-option--25" data-tier="25" data-duration="25" role="radio" aria-checked="false">
+                            <div class="tier-option__value">25</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--50" data-tier="50" data-duration="50" role="radio" aria-checked="false">
+                            <div class="tier-option__value">50</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--75" data-tier="75" data-duration="75" role="radio" aria-checked="false">
+                            <div class="tier-option__value">75</div>
+                            <div class="tier-option__label">MINUTES</div>
+                        </button>
+                        <button type="button" class="tier-option tier-option--infinity" data-tier="infinity" data-duration="1440" role="radio" aria-checked="false">
+                            <div class="tier-option__value">∞</div>
+                            <div class="tier-option__label">HORIZON</div>
+                        </button>
+                    </fieldset>
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitName">CODENAME</label>
+                        <input type="text" class="form-input" id="inputOrbitName" placeholder="e.g., Protocol Alpha" maxlength="50" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitObjective">OBJECTIVE</label>
+                        <input type="text" class="form-input" id="inputOrbitObjective" placeholder="What must you achieve?" maxlength="200" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inputOrbitDeadline">DEADLINE</label>
+                        <input type="datetime-local" class="form-input form-input--datetime" id="inputOrbitDeadline">
+                        <p class="form-hint">Leave empty for daily/recurring orbits</p>
+                    </div>
+
+                    <!-- Process Section -->
+                    <section class="process-section">
+                        <div class="process-header">
+                            <label class="form-label">PROCESSES (RUBRIC)</label>
+                            <button type="button" class="process-add-btn" id="btnToggleProcessInput" aria-expanded="false">
+                                <span>+</span> ADD
+                            </button>
+                        </div>
+
+                        <div class="process-input-row" id="processInputRow">
+                            <input type="text" class="form-input process-input" id="inputProcessText" placeholder="Enter process..." maxlength="100">
+                            <button type="button" class="process-type-btn process-type-btn--positive" id="btnAddPositive" title="Positive">+</button>
+                            <button type="button" class="process-type-btn process-type-btn--negative" id="btnAddNegative" title="Negative">−</button>
+                        </div>
+
+                        <div class="process-list" id="processList" role="list"></div>
+                    </section>
+                </div>
+
+                <div class="panel__footer">
+                    <button type="button" class="btn-primary" id="btnSaveOrbit">INITIALIZE ORBIT</button>
+                    <button type="button" class="btn-secondary hidden" id="btnCancelEdit">CANCEL</button>
+                </div>
+            </aside>
+
+            <!-- SPACE AREA -->
+            <section class="panel space-area" id="spaceArea" role="main" aria-label="Orbit Space">
+                <svg class="space-area__svg" id="svgConnections">
+                    <defs>
+                        <marker id="arrowMarker" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" class="connection-arrow"/>
+                        </marker>
+                    </defs>
+                </svg>
+                
+                <div class="space-area__orbits" id="orbitContainer"></div>
+                
+                <div class="space-area__empty" id="emptyState">
+                    <div class="space-area__empty-icon">🌌</div>
+                    <p class="space-area__empty-text">NO ACTIVE ORBITS<br><span style="opacity:0.5">Initialize a mission to begin</span></p>
+                </div>
+
+                <div class="space-area__status"><span id="systemStatus">SYSTEM READY</span></div>
+            </section>
+
+            <!-- LOGS PANEL -->
+            <aside class="panel panel--logs" id="panelLogs" role="complementary" aria-label="Flight Logs">
+                <div class="panel__header">
+                    <div class="panel__title">
+                        <span class="panel__indicator"></span>
+                        FLIGHT LOGS
+                    </div>
+                    <button class="panel__close" id="btnCloseLogs" aria-label="Close">×</button>
+                </div>
+                
+                <div class="panel__body" id="logList"></div>
+
+                <div class="panel__footer">
+                    <div class="panel-footer-actions">
+                        <div class="panel-footer-actions__row">
+                            <button type="button" class="btn-util btn-util--gold" id="btnResetProgress">RESET PROGRESS</button>
+                            <button type="button" class="btn-util" id="btnClearLogs">PURGE LOGS</button>
+                        </div>
+                        <button type="button" class="btn-util btn-util--danger" id="btnClearLinks">SEVER ALL CONNECTIONS</button>
+                    </div>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+
+    <!-- ========== HUD OVERLAY ========== -->
+    <div class="hud" id="hud" role="dialog" aria-modal="true" aria-labelledby="hudMissionName">
+        <div class="hud__letterbox hud__letterbox--top"></div>
+        <div class="hud__letterbox hud__letterbox--bottom"></div>
+        
+        <div class="hud__content">
+            <h2 class="hud__mission-name" id="hudMissionName">MISSION ACTIVE</h2>
+            <div class="hud__timer" id="hudTimer" aria-live="polite">00:00</div>
+            
+            <div class="hud__integrity">
+                <div class="hud__integrity-bar">
+                    <div class="hud__integrity-fill" id="hudIntegrityFill" style="width: 100%"></div>
+                </div>
+                <div class="hud__integrity-labels">
+                    <span class="hud__integrity-label">INTEGRITY</span>
+                    <span class="hud__integrity-value" id="hudIntegrityValue">100%</span>
+                </div>
+            </div>
+
+            <div class="hud__checklist" id="hudChecklist" role="list"></div>
+
+            <div class="hud__actions">
+                <button type="button" class="hud__btn hud__btn--pause" id="btnPauseMission">PAUSE</button>
+                <button type="button" class="hud__btn hud__btn--abort" id="btnAbortMission">ABORT</button>
+                <button type="button" class="hud__btn hud__btn--complete" id="btnCompleteMission">COMPLETE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== POST-SESSION MODAL ========== -->
+    <div class="modal-overlay" id="modalPostSession" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon" id="postSessionIcon">🎯</div>
+                <h2 class="modal__title" id="postSessionTitle">MISSION DEBRIEF</h2>
+                <p class="modal__subtitle" id="postSessionSubtitle">Session Complete</p>
+            </div>
+            <div class="modal__body">
+                <p class="modal__question">Did you achieve the objective?</p>
+                <div class="modal__actions">
+                    <button type="button" class="modal__btn modal__btn--no" id="btnObjectiveNo">NOT YET</button>
+                    <button type="button" class="modal__btn modal__btn--yes" id="btnObjectiveYes">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CONFIRM MODAL ========== -->
+    <div class="modal-overlay" id="modalConfirm" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">⚠️</div>
+                <h2 class="modal__title" id="confirmTitle">CONFIRM ACTION</h2>
+            </div>
+            <div class="modal__body">
+                <p class="confirm-modal__message" id="confirmMessage">Are you sure?</p>
+                <div class="confirm-modal__actions">
+                    <button type="button" class="confirm-modal__btn confirm-modal__btn--cancel" id="btnConfirmCancel">CANCEL</button>
+                    <button type="button" class="confirm-modal__btn confirm-modal__btn--confirm" id="btnConfirmOk">CONFIRM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== DATA MODAL ========== -->
+    <div class="modal-overlay" id="modalData" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">💾</div>
+                <h2 class="modal__title">DATA MANAGEMENT</h2>
+                <p class="modal__subtitle">Export or Import your orbit data</p>
+            </div>
+            <div class="modal__body">
+                <textarea class="data-modal__textarea" id="dataTextarea" placeholder="JSON data..." spellcheck="false"></textarea>
+                <div class="data-modal__actions">
+                    <button type="button" class="data-modal__btn data-modal__btn--export" id="btnExportData">EXPORT</button>
+                    <button type="button" class="data-modal__btn data-modal__btn--import" id="btnImportData">IMPORT</button>
+                    <button type="button" class="data-modal__btn data-modal__btn--close" id="btnCloseDataModal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SHORTCUTS MODAL ========== -->
+    <div class="modal-overlay" id="modalShortcuts" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal__header">
+                <div class="modal__icon">⌨️</div>
+                <h2 class="modal__title">KEYBOARD SHORTCUTS</h2>
+            </div>
+            <div class="modal__body">
+                <div class="shortcuts-modal__list">
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">E</kbd><span class="shortcuts-modal__desc">Toggle Editor</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">L</kbd><span class="shortcuts-modal__desc">Toggle Logs</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">I</kbd><span class="shortcuts-modal__desc">Import/Export</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">M</kbd><span class="shortcuts-modal__desc">Toggle Sound</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">Space</kbd><span class="shortcuts-modal__desc">Pause/Resume</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">Esc</kbd><span class="shortcuts-modal__desc">Close/Cancel</span></div>
+                    <div class="shortcuts-modal__item"><kbd class="shortcuts-modal__key">?</kbd><span class="shortcuts-modal__desc">This Help</span></div>
+                </div>
+                <button type="button" class="btn-secondary mt-md" id="btnCloseShortcuts">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+        
+        /* __JS_INJECT__ */
+        
+    })();
+    </script>
+
+</body>
+</html>

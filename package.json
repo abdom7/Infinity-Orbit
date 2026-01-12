@@ -1,0 +1,12 @@
+{
+  "name": "infinity-orbit",
+  "version": "2.0.0",
+  "description": "Cosmic productivity system - Notion widget",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "dev": "node build.js && open dist/index.html"
+  },
+  "author": "Infinity Blocks",
+  "license": "MIT"
+}

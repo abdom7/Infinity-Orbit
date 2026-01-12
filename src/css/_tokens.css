@@ -1,0 +1,91 @@
+/**
+ * DESIGN TOKENS
+ * Central place for all design variables
+ */
+
+:root {
+    /* ===== COLOR PALETTE ===== */
+    
+    /* Core Space Colors */
+    --color-void: #000000;
+    --color-deep-space: #020204;
+    --color-nebula: #0a0a12;
+    --color-cosmic-dust: #12121a;
+    
+    /* Tier Colors */
+    --tier-25: #00f0ff;
+    --tier-25-glow: rgba(0, 240, 255, 0.4);
+    --tier-50: #ffd700;
+    --tier-50-glow: rgba(255, 215, 0, 0.4);
+    --tier-75: #ff2a6d;
+    --tier-75-glow: rgba(255, 42, 109, 0.4);
+    --tier-infinity: #d300c5;
+    --tier-infinity-glow: rgba(211, 0, 197, 0.4);
+    
+    /* UI Accent Colors */
+    --color-gold: #c9a227;
+    --color-gold-dim: rgba(201, 162, 39, 0.3);
+    --color-orange: #d4740c;
+    --color-success: #00ff88;
+    --color-danger: #ff3344;
+    --color-warning: #ffaa00;
+    
+    /* Neutrals */
+    --color-white: #ffffff;
+    --color-gray-100: #f0f0f0;
+    --color-gray-200: #cccccc;
+    --color-gray-300: #999999;
+    --color-gray-400: #666666;
+    --color-gray-500: #444444;
+    --color-gray-600: #333333;
+    --color-gray-700: #222222;
+    --color-gray-800: #151515;
+    --color-gray-900: #0a0a0a;
+    
+    /* Glass Effect */
+    --glass-bg: rgba(8, 12, 18, 0.92);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    
+    /* ===== TYPOGRAPHY ===== */
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-tech: 'Orbitron', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* ===== SPACING ===== */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
+    
+    /* ===== BORDERS ===== */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    
+    /* ===== TRANSITIONS ===== */
+    --transition-fast: 150ms ease;
+    --transition-normal: 300ms ease;
+    --transition-slow: 500ms ease;
+    
+    /* ===== Z-INDEX SCALE ===== */
+    --z-base: 1;
+    --z-orbit: 10;
+    --z-orbit-active: 50;
+    --z-controls: 100;
+    --z-panel: 200;
+    --z-modal: 500;
+    --z-hud: 1000;
+    --z-toast: 2000;
+    
+    /* ===== SHADOWS ===== */
+    --shadow-glow-sm: 0 0 10px;
+    --shadow-glow-md: 0 0 20px;
+    --shadow-glow-lg: 0 0 40px;
+    --shadow-glow-xl: 0 0 60px;
+}

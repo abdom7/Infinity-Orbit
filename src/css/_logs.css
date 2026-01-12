@@ -1,0 +1,97 @@
+/**
+ * LOG ENTRIES
+ * Flight log list
+ */
+
+.log-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.log-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: var(--glass-highlight);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--log-color);
+    transition: var(--transition-fast);
+}
+
+.log-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.log-entry__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.log-entry__name {
+    font-weight: 600;
+    color: var(--log-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.log-entry__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+}
+
+.log-entry__stats {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.log-entry__score {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--log-color);
+    line-height: 1;
+}
+
+.log-entry__status {
+    font-family: var(--font-tech);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--color-gray-500);
+    margin-top: var(--space-xs);
+}
+
+.log-entry__status--complete {
+    color: var(--color-success);
+}
+
+.log-entry__status--aborted {
+    color: var(--tier-75);
+}
+
+.log-entry__status--incomplete {
+    color: var(--color-warning);
+}
+
+.log-empty {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--color-gray-500);
+}
+
+.log-empty__icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.3;
+}
+
+.log-empty__text {
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
